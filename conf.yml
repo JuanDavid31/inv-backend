@@ -1,0 +1,50 @@
+plantilla: Hello, %s!
+
+nombrePorDefecto: ${DW_DEFAULT_NAME:-Stranger}
+#Volverlo una variable del entorno
+jwtKey: -75, -1, 38, 13, -46, -2, 116, -128, 93, -109, 80, 55, 32, -41, 89, 65, 39, -11, -85, 53, 2, -81, 18, -101, -4, 9, -1, -99, -115, -63, -27, -32
+
+# Database settings.
+database:
+
+  # the name of your JDBC driver
+  driverClass: org.postgresql.Driver
+
+  # the username
+  user: postgres
+
+  # the password
+  password: 1234
+
+  # the JDBC URL
+  url: jdbc:postgresql://localhost:5432/inv
+
+# use the simple server factory if you only want to run on a single port
+#server:
+#  type: simple
+#  connector:
+#    type: http
+#    port: 8080
+
+
+
+# Logging settings.
+logging:
+
+  # The default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
+  level: INFO
+
+  # Logger-specific levels.
+  loggers:
+
+    # Sets the level for 'com.example.app' to DEBUG.
+    com.example.app: DEBUG
+
+    # Redirects SQL logs to a separate file
+    org.hibernate.SQL:
+      level: DEBUG
+
+  # Logback's Time Based Rolling Policy - archivedLogFilenamePattern: /tmp/application-%d{yyyy-MM-dd}.log.gz
+  # Logback's Size and Time Based Rolling Policy -  archivedLogFilenamePattern: /tmp/application-%d{yyyy-MM-dd}-%i.log.gz
+  # Logback's Fixed Window Rolling Policy -  archivedLogFilenamePattern: /tmp/application-%i.log.gz
+
