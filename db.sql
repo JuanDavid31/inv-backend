@@ -94,14 +94,12 @@ INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematic
 
 CREATE TABLE NODO(
     c_id serial,
-    a_email varchar(30),
-    c_id_problematica int,
+    a_id_pers_prob varchar(40),
     a_url_foto varchar(250)
 );
 
 ALTER TABLE NODO ADD CONSTRAINT PK_NODO primary key(c_id);
-ALTER TABLE NODO add constraint FK_NODO_PERSONA foreign key(a_email) REFERENCES PERSONA(a_email);
-ALTER TABLE NODO add constraint FK_NODO_PROBLEMATICA foreign key(c_id_problematica) REFERENCES PROBLEMATICA(c_id);
+ALTER TABLE NODO add constraint FK_NODO_PERS_PROB foreign key(a_id_pers_prob) REFERENCES PERSONA_PROBLEMATICA(a_id);
 
 
 --declarar la función que va a eliminar todas los registros de todas las tablas

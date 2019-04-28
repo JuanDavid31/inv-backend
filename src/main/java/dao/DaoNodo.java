@@ -11,10 +11,25 @@ public class DaoNodo {
         this.jdbi = jdbi;
     }
 
-    public boolean agregarNodo(Nodo nodo){
-        return jdbi.withHandle(handle ->
-                handle.createUpdate("INSERT INTO NODO(a_email, c_id_problematica, a_url_foto) VALUES(:email, :idProblematica, :urlFoto)")
+    public int agregarNodo(Nodo nodo){
+        return jdbi.inTransaction(handle ->handle.createUpdate("INSERT INTO NODO(a_id_pers_prob) VALUES(concat(:email, :idProblematica))")
+                    .bindBean(nodo)
+                    .executeAndReturnGeneratedKeys()
+                    .mapTo(Integer.class)
+                    .findOnly());
+    }
+
+    public boolean actualizarNodo(Nodo nodo){
+        return jdbi.withHandle(handle -> handle.createUpdate("UPDATE NODO SET a_url_foto = :urlFoto where c_id = :id")
                 .bindBean(nodo)
                 .execute() > 0);
+    }
+
+    public Nodo eliminarNodo(int id) {
+        return jdbi.withHandle(handle -> handle.createUpdate("DELETE FROM NODO WHERE c_id = :id")
+                .bind("id", id)
+                .executeAndReturnGeneratedKeys()
+                .mapToBean(Nodo.class)
+                .findOnly());
     }
 }

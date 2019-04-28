@@ -1,33 +1,32 @@
 package rest;
 
-import com.codahale.metrics.annotation.Timed;
 import dao.DaoInvitacion;
 import dao.DaoProblematica;
 import entity.Invitacion;
-import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+import entity.Nodo;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import usecase.FotoUseCase;
 
-
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 @Path("/problematicas")
-/*@Consumes(MediaType.APPLICATION_JSON)*/
+@Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class ProblematicaResource {
 
     private final DaoProblematica daoProblematica;
     private final DaoInvitacion daoInvitacion;
+    private final FotoUseCase fotoUseCase;
 
-    public ProblematicaResource(DaoProblematica daoProblematica, DaoInvitacion daoInvitacion){
+    public ProblematicaResource(DaoProblematica daoProblematica, DaoInvitacion daoInvitacion, FotoUseCase fotoUseCase){
         this.daoProblematica = daoProblematica;
         this.daoInvitacion = daoInvitacion;
+        this.fotoUseCase = fotoUseCase;
     }
 
     @Path("/{idProblematica}/personas/{emailRemitente}/invitaciones")
@@ -37,7 +36,7 @@ public class ProblematicaResource {
         return Response.ok(personas).build();
     }
 
-    //TODO: A esto le falta algo
+    //TODO: A esto le falta un queryParam
     @Path("/{idProblematica}")
     @POST
     public Response avanzarFase(@PathParam("idProblematica") int idProblematica){
@@ -48,29 +47,16 @@ public class ProblematicaResource {
     }
 
     @Path("/{idProblematica}/nodos")
-    @Consumes({MediaType.MULTIPART_FORM_DATA, MediaType.APPLICATION_JSON})
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     @POST
-    public Response subirNodo(FormDataMultiPart foto){
-/*        try {
-            *//*Files.copy(foto, Paths.get("~/fotos/foto.png"));*//*
-        } catch (IOException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }*/
-        return Response.ok().build();
-    }
+    public Response subirNodo(@NotNull @HeaderParam("extension") String extensionFoto,
+                               @NotNull @FormDataParam("foto") InputStream foto,
+                               @NotNull @FormDataParam("email") String email,
+                               @PathParam("idProblematica") int idProblematica){
 
-    @Path("/{idProblematica}/nodos1")
-    @Consumes({MediaType.MULTIPART_FORM_DATA, MediaType.APPLICATION_JSON})
-    @POST
-    public Response subirNodo2(@FormDataParam("foto") InputStream foto){
-        try {
-             Files.copy(foto, Paths.get("~/fotos/foto.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-        return Response.ok().build();
+        Nodo nodo = fotoUseCase.guardarFoto(new Nodo(email, idProblematica), foto, extensionFoto);
+        return nodo != null ?
+                Response.ok(nodo).build() :
+                Response.status(Response.Status.BAD_REQUEST).build();
     }
-
 }
