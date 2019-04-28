@@ -2,6 +2,7 @@ package entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.jdbi.v3.core.mapper.reflect.ColumnName;
 import org.joda.time.DateTime;
 
@@ -26,6 +27,9 @@ public class Problematica {
     @JsonProperty
     @JsonFormat(pattern="dd/MM/yyyy HH:mm:ss")
     private LocalDateTime fechaCreacion;
+
+    @JsonProperty
+    private int fase;
 
     public Problematica(){}
 
@@ -87,5 +91,14 @@ public class Problematica {
 
     public void setFechaCreacion(LocalDateTime fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
+    }
+
+    @ColumnName("c_fase")
+    public int getFase() {
+        return fase;
+    }
+
+    public void setFase(int fase) {
+        this.fase = fase;
     }
 }

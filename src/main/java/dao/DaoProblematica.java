@@ -38,4 +38,9 @@ public class DaoProblematica {
                 .mapToBean(Problematica.class)
                 .list());
     }
+
+    public boolean avanzarFaseProblematica(int idProblematica){
+        return jdbi.withHandle(handle -> handle.createUpdate("update problematica set c_fase = c_fase + 1 where c_id = :idProblematica")
+                .bind("idProblematica", idProblematica).execute() > 0);
+    }
 }

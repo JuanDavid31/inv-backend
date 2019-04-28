@@ -2,7 +2,10 @@ package rest;
 
 import dao.DaoInvitacion;
 import entity.Invitacion;
+import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -26,18 +29,22 @@ public class InvitacionResource {
                 Response.status(Response.Status.BAD_REQUEST).build();
     }
 
-    //TODO: Posible paso de queryParam para saber si rechaza o acepta la invitación
-
     @PUT
-    public Response aceptarInvitacion(Invitacion invitacion){
-        boolean aceptoCorrectamente = daoInvitacion.aceptarInvitacion(invitacion);
-        return aceptoCorrectamente ?
+    public Response responderInvitacion(@Valid @NotNull Invitacion invitacion,
+                                        @QueryParam("aceptar") @NotEmpty Boolean acepto){
+        boolean operacionExitosa;
+        if(acepto){
+            operacionExitosa = daoInvitacion.aceptarInvitacion(invitacion);
+        }else{
+            operacionExitosa = daoInvitacion.rechazarInvitacion(invitacion);
+        }
+        return operacionExitosa ?
                 Response.ok().build() :
                 Response.status(Response.Status.BAD_REQUEST).build();
     }
 
     @DELETE
-    public Response eliminarORechazarInvitacion(Invitacion invitacion){
+    public Response eliminarInvitacion(@Valid @NotNull Invitacion invitacion){
         boolean seElimino = daoInvitacion.eliminarInvitacion(invitacion);
         return seElimino ?
                 Response.ok().build() :

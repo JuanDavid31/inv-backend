@@ -5,6 +5,7 @@ import io.dropwizard.testing.ResourceHelpers;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.postgres.PostgresPlugin;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -23,25 +24,36 @@ public class DaoInvitacionTest {
             new DropwizardAppRule<ConfiguracionApp>(App.class, ResourceHelpers.resourceFilePath("conf.yml"));
 
     static DaoInvitacion daoInvitacion;
+    static Jdbi jdbi;
 
     @BeforeClass
     public static void preparacion(){
         final JdbiFactory factory = new JdbiFactory();
-        final Jdbi jdbi = factory.build(RULE.getEnvironment(), RULE.getConfiguration().getDataSourceFactory(), "postgres");
+        jdbi = factory.build(RULE.getEnvironment(), RULE.getConfiguration().getDataSourceFactory(), "postgres");
         jdbi.installPlugin(new PostgresPlugin());
         daoInvitacion = new DaoInvitacion(jdbi);
+    }
+
+    @Before
+    public void prepararDB(){
         jdbi.useHandle(handle -> handle.createUpdate("SELECT truncate_tables('postgres')").execute());
         jdbi.useHandle(handle -> handle.createUpdate("SELECT agregarDummyData()").execute());
     }
 
     @Test
-    public void darInvitarYAceptar(){
+    public void darPersonasInvitadas(){
         List<Invitacion> personas = daoInvitacion.darPersonasInvitadas("juan1@.com", 1);
         assertEquals(3, personas.size());
+    }
 
+    @Test
+    public void darInvitacionesVigentes(){
         List<Map<String, Object>> invitaciones = daoInvitacion.darInvitacionesVigentes("juan4@.com");
-        assertEquals(2, invitaciones.size());
+        assertEquals(3, invitaciones.size());
+    }
 
+    @Test
+    public void aceptarInvitacion(){
         boolean seAcepto = daoInvitacion.aceptarInvitacion(new Invitacion("",
                 1,
                 "juan1@.com",
@@ -50,6 +62,18 @@ public class DaoInvitacionTest {
                 false));
 
         assertTrue(seAcepto);
+    }
+
+    @Test
+    public void rechazarInvitacion(){
+        boolean seRechazo = daoInvitacion.rechazarInvitacion(new Invitacion("",
+                2,
+                "david1@.com",
+                "juan4@.com",
+                false,
+                false));
+
+        assertTrue(seRechazo);
     }
 
     @Test

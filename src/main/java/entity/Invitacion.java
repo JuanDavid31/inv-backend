@@ -11,6 +11,7 @@ public class Invitacion {
     public String nombreDestinatario;
     public boolean estaVigente;
     public boolean paraInterventor;
+    public boolean rechazada;
 
     public Invitacion() {
     }
@@ -21,16 +22,6 @@ public class Invitacion {
         this.emailRemitente = emailRemitente;
         this.emailDestinatario = emailDestinatario;
         this.estaVigente = estaVigente;
-        this.paraInterventor = paraInterventor;
-    }
-
-    //Para mostrar invitaciones hechas
-    public Invitacion(String id, int idProblematica, String emailRemitente, String emailDestinatario, String nombreDestinatario, boolean paraInterventor) {
-        this.id = id;
-        this.idProblematica = idProblematica;
-        this.emailRemitente = emailRemitente;
-        this.emailDestinatario = emailDestinatario;
-        this.nombreDestinatario = nombreDestinatario;
         this.paraInterventor = paraInterventor;
     }
 
@@ -95,5 +86,14 @@ public class Invitacion {
 
     public void setNombreDestinatario(String nombreDestinatario) {
         this.nombreDestinatario = nombreDestinatario;
+    }
+
+    @ColumnName("b_rechazada")
+    public boolean getRechazada() {
+        return rechazada;
+    }
+
+    public void setRechazada(boolean rechazada) {
+        this.rechazada = rechazada;
     }
 }
