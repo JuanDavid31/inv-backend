@@ -58,7 +58,7 @@ public class App extends Application<ConfiguracionApp> {
         final InvitacionResource invitacionResource =
                 new InvitacionResource(new DaoInvitacion(jdbi));
 
-        final NodoResource nodoResource = new NodoResource(fotoUseCase);
+        final NodoResource nodoResource = new NodoResource(fotoUseCase, new DaoNodo(jdbi));
 
         final PlantillaHealthCheck plantillaCheck = new PlantillaHealthCheck(configuracionApp.getPlantilla());
 

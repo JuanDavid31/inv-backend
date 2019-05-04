@@ -36,10 +36,11 @@ public class DaoInvitacion {
                 .findOnly());
     }
 
-    public boolean eliminarInvitacion(Invitacion invitacion){
+    public boolean eliminarInvitacion(Invitacion invitacion, String idInvitacion){
         return jdbi.withHandle(handle ->
                 handle.createUpdate("DELETE FROM INVITACION I WHERE I.a_email_destinatario = :emailDestinatario AND " +
-                "I.a_email_remitente = :emailRemitente AND I.c_id_problematica = :idProblematica")
+                "I.a_email_remitente = :emailRemitente AND I.c_id_problematica = :idProblematica AND a_id = :idInvitacion")
+                .bind("idInvitacion", idInvitacion)
                 .bindBean(invitacion)
                 .execute()) > 0;
     }
@@ -56,7 +57,7 @@ public class DaoInvitacion {
                 .list());
     }
 
-    public boolean aceptarInvitacion(Invitacion invitacion){
+    public boolean aceptarInvitacion(Invitacion invitacion, String idInvitacion){
         return jdbi.inTransaction(handle -> {
             boolean seAgrego = handle.createUpdate("INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) " +
                     "VALUES(concat(:emailDestinatario, :idProblematica), :emailDestinatario, :idProblematica, :paraInterventor)")
@@ -64,7 +65,8 @@ public class DaoInvitacion {
                     .execute() > 0;
 
             boolean seElimino = handle.createUpdate("UPDATE INVITACION SET b_vigente = false WHERE a_email_destinatario = :emailDestinatario AND " +
-                    "c_id_problematica = :idProblematica")
+                    "c_id_problematica = :idProblematica AND a_id = :idInvitacion")
+                    .bind("idInvitacion", idInvitacion)
                     .bindBean(invitacion)
                     .execute() > 0;
 
@@ -73,8 +75,8 @@ public class DaoInvitacion {
         });
     }
 
-    public boolean rechazarInvitacion(Invitacion invitacion){
-        return jdbi.inTransaction(handle -> handle.createUpdate("UPDATE INVITACION SET b_rechazada = true, b_vigente = false " +
+    public boolean rechazarInvitacion(Invitacion invitacion, String idInvitacion){
+        return jdbi.withHandle(handle -> handle.createUpdate("UPDATE INVITACION SET b_rechazada = true, b_vigente = false " +
             "WHERE a_email_destinatario = :emailDestinatario AND a_email_remitente = :emailRemitente AND c_id_problematica = :idProblematica")
             .bindBean(invitacion)
             .execute() > 0);

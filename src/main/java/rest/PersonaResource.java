@@ -1,8 +1,10 @@
 package rest;
 
 import dao.DaoInvitacion;
+import dao.DaoNodo;
 import dao.DaoPersona;
 import dao.DaoProblematica;
+import entity.Nodo;
 import entity.Persona;
 import entity.Problematica;
 import filter.VerificadorAuth;
@@ -23,11 +25,13 @@ public class PersonaResource {
     private final DaoPersona daoPersona;
     private final DaoProblematica daoProblematica;
     private final DaoInvitacion daoInvitacion;
+    private final DaoNodo daoNodo;
 
-    public PersonaResource(DaoPersona daoPersona, DaoProblematica daoProblematica, DaoInvitacion daoInvitacion) {
+    public PersonaResource(DaoPersona daoPersona, DaoProblematica daoProblematica, DaoInvitacion daoInvitacion, DaoNodo daoNodo) {
         this.daoPersona = daoPersona;
         this.daoProblematica = daoProblematica;
         this.daoInvitacion = daoInvitacion;
+        this.daoNodo = daoNodo;
     }
 
     @POST
@@ -67,11 +71,10 @@ public class PersonaResource {
     }
 
     @GET
-    @Path("/tabla/crear")
-    public Response crearTabla(){
-        daoPersona.eliminarTablas();
-        daoPersona.crearTable();
-        return Response.ok("Eliminada y creada").build();
+    @Path("/{email}/problematicas/{idProblematica}/nodos")
+    public Response darNodos(@PathParam("email") String email,
+                             @PathParam("idProblematica") Integer idProblematica){
+        List<Nodo> nodos = daoNodo.darNodos(email + idProblematica);
+        return Response.ok(nodos).build();
     }
-
 }

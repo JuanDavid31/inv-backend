@@ -30,13 +30,15 @@ public class InvitacionResource {
     }
 
     @PUT
-    public Response responderInvitacion(@Valid @NotNull Invitacion invitacion,
+    @Path("/{idInvitacion}")
+    public Response responderInvitacion(@PathParam("idInvitacion") String idInvitacion,
+                                        @Valid @NotNull Invitacion invitacion,
                                         @QueryParam("aceptar") @NotEmpty Boolean acepto){
         boolean operacionExitosa;
         if(acepto){
-            operacionExitosa = daoInvitacion.aceptarInvitacion(invitacion);
+            operacionExitosa = daoInvitacion.aceptarInvitacion(invitacion, idInvitacion);
         }else{
-            operacionExitosa = daoInvitacion.rechazarInvitacion(invitacion);
+            operacionExitosa = daoInvitacion.rechazarInvitacion(invitacion, idInvitacion);
         }
         return operacionExitosa ?
                 Response.ok().build() :
@@ -44,8 +46,10 @@ public class InvitacionResource {
     }
 
     @DELETE
-    public Response eliminarInvitacion(@Valid @NotNull Invitacion invitacion){
-        boolean seElimino = daoInvitacion.eliminarInvitacion(invitacion);
+    @Path("/{idInvitacion}")
+    public Response eliminarInvitacion(@PathParam("idInvitacion") String idInvitacion,
+                                        @Valid @NotNull Invitacion invitacion){
+        boolean seElimino = daoInvitacion.eliminarInvitacion(invitacion, idInvitacion);
         return seElimino ?
                 Response.ok().build() :
                 Response.status(Response.Status.BAD_REQUEST).build();

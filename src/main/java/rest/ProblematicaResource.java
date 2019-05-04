@@ -1,10 +1,13 @@
 package rest;
 
+import dao.DaoGrupo;
 import dao.DaoInvitacion;
 import dao.DaoProblematica;
+import entity.Grupo;
 import entity.Invitacion;
 import entity.Nodo;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.hibernate.validator.constraints.NotEmpty;
 import usecase.FotoUseCase;
 
 import javax.validation.constraints.NotNull;
@@ -21,11 +24,13 @@ public class ProblematicaResource {
 
     private final DaoProblematica daoProblematica;
     private final DaoInvitacion daoInvitacion;
+    private final DaoGrupo daoGrupo;
     private final FotoUseCase fotoUseCase;
 
-    public ProblematicaResource(DaoProblematica daoProblematica, DaoInvitacion daoInvitacion, FotoUseCase fotoUseCase){
+    public ProblematicaResource(DaoProblematica daoProblematica, DaoInvitacion daoInvitacion, DaoGrupo daoGrupo, FotoUseCase fotoUseCase){
         this.daoProblematica = daoProblematica;
         this.daoInvitacion = daoInvitacion;
+        this.daoGrupo = daoGrupo;
         this.fotoUseCase = fotoUseCase;
     }
 
@@ -59,4 +64,57 @@ public class ProblematicaResource {
                 Response.ok(nodo).build() :
                 Response.status(Response.Status.BAD_REQUEST).build();
     }
+
+    @Path("/{idProblematica}/grupos")
+    @GET
+    public Response darGrupos(@PathParam("idProblematica") int idProblematica){
+        List<Grupo> grupos = daoGrupo.darGrupos(idProblematica);
+        return Response.ok(grupos).build();
+    }
+
+    @POST
+    @Path("/{idProblematica}/grupos")
+    public Response agregarGrupo(@PathParam("idProblematica") int idProblematica, Grupo grupo){
+        Grupo nuevoGrupo = daoGrupo.agregarGrupo(idProblematica, grupo);
+        return Response.ok(nuevoGrupo).build();
+    }
+
+    @Path("/{idProblematica}/grupos/{idGrupo}")
+    @PUT
+    public Response cambiarNombreGrupo(@PathParam("idProblematica") int idProblematica,
+                                       @PathParam("idGrupo") int idGrupo,
+                                       Grupo grupo){
+        boolean seActualizo = daoGrupo.actualizarGrupo(idGrupo, grupo);
+        return seActualizo ?
+                Response.ok(seActualizo).build() :
+                Response.status(Response.Status.BAD_REQUEST).build();
+    }
+
+    @Path("/{idProblematica}/grupos/{idGrupo}")
+    @PUT
+    public Response apadrinarGrupo(@PathParam("idProblematica") int idProblematica,
+                                   @PathParam("idGrupo") int idGrupo,
+                                   @QueryParam("apadrinar") @NotEmpty Boolean apadrinar,
+                                   int idPadre){
+        boolean todoBien;
+        if(apadrinar){
+            todoBien = daoGrupo.apadrinar(idGrupo, idPadre, idProblematica);
+        }else{
+            todoBien = daoGrupo.desApadrinar(idGrupo, idProblematica);
+        }
+        return todoBien ?
+                Response.ok().build() :
+                Response.status(Response.Status.BAD_REQUEST).build();
+    }
+
+    @Path("/{idProblematica}/grupos/{idGrupo}")
+    @DELETE
+    public Response eliminarGrupo(@PathParam("idProblematica") int idProblematica,
+                                  @PathParam("idGrupo") int idGrupo){
+        boolean seElimino = daoGrupo.eliminarGrupo(idGrupo, idProblematica);
+        return seElimino ?
+                Response.ok().build() :
+                Response.status(Response.Status.BAD_REQUEST).build();
+    }
+
 }

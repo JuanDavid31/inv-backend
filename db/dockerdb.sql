@@ -4,9 +4,9 @@ GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO public;
 
 CREATE TABLE PERSONA(
-    a_email varchar(30),
-    d_nombre varchar(30),
-    a_pass_hasheado varchar(150)
+    a_email varchar(30) not null,
+    d_nombre varchar(30) not null,
+    a_pass_hasheado varchar(150) not null
 );
 
 alter table PERSONA ADD CONSTRAINT PK_PERSONA primary key(a_email);
@@ -23,11 +23,11 @@ INSERT INTO PERSONA(a_email, d_nombre, a_pass_hasheado) VALUES('david4@.com', 'D
 INSERT INTO PERSONA(a_email, d_nombre, a_pass_hasheado) VALUES('david5@.com', 'David5', '1234');
 
 CREATE TABLE PROBLEMATICA(
-    c_id SERIAL,
-    a_nombre varchar(60),
-    a_descripcion varchar(500),
-    f_fecha_creacion timestamp,
-    c_fase integer
+    c_id SERIAL not null,
+    a_nombre varchar(60) not null,
+    a_descripcion varchar(500) not null,
+    f_fecha_creacion timestamp not null,
+    c_fase integer not null
 );
 
 alter table PROBLEMATICA add constraint PK_PROBLEMATICA primary key(c_id);
@@ -37,10 +37,10 @@ INSERT INTO PROBLEMATICA(a_nombre, a_descripcion, f_fecha_creacion, c_fase) VALU
 INSERT INTO PROBLEMATICA(a_nombre, a_descripcion, f_fecha_creacion, c_fase) VALUES('Problematica 2', 'Descripcion2', now(), 0);
 
 CREATE TABLE PERSONA_PROBLEMATICA(
-    a_id varchar(40),
-    a_email varchar(30),
-    c_id_problematica int,
-    b_interventor boolean
+    a_id varchar(40) not null,
+    a_email varchar(30) not null,
+    c_id_problematica int not null,
+    b_interventor boolean not null
 );
 
 ALTER TABLE PERSONA_PROBLEMATICA add constraint PK_PERSONA_PROBLEMATICA primary key(a_id);
@@ -57,13 +57,13 @@ INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor
 INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('david3@.com2', 'david3@.com', 2, false);
 
 CREATE TABLE INVITACION(
-  a_email_remitente varchar(30),
-  a_email_destinatario varchar(30),
-  c_id_problematica int,
-  a_id varchar(100),
-  b_vigente boolean,
-  b_para_interventor boolean,
-  b_rechazada boolean
+  a_email_remitente varchar(30) not null,
+  a_email_destinatario varchar(30) not null,
+  c_id_problematica int not null,
+  a_id varchar(100) not null,
+  b_vigente boolean not null,
+  b_para_interventor boolean not null,
+  b_rechazada boolean not null
 );
 
 ALTER TABLE INVITACION add constraint PK_INVICATION primary key(a_id);
@@ -93,13 +93,15 @@ INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematic
     VALUES('david1@.com', 'juan4@.com', 2, '2david1@.comjuan4@.com', true, false, false);
 
 CREATE TABLE NODO(
-    c_id serial,
-    a_id_pers_prob varchar(40),
-    a_url_foto varchar(250)
+    c_id serial not null,
+    a_id_pers_prob varchar(40) not null,
+    a_url_foto varchar(250) not null,
+    c_id_padre int
 );
 
 ALTER TABLE NODO ADD CONSTRAINT PK_NODO primary key(c_id);
 ALTER TABLE NODO add constraint FK_NODO_PERS_PROB foreign key(a_id_pers_prob) REFERENCES PERSONA_PROBLEMATICA(a_id);
+alter table NODO ADD CONSTRAINT FK_NODO_PADRE foreign key(c_id_padre) REFERENCES NODO(c_id);
 
 
 --declarar la función que va a eliminar todas los registros de todas las tablas

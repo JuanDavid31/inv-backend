@@ -8,6 +8,7 @@ public class Nodo {
     public String email;
     public int idProblematica;
     public String urlFoto;
+    public int idPadre;
 
     public Nodo(){
 
@@ -18,6 +19,7 @@ public class Nodo {
         this.idProblematica = idProblematica;
     }
 
+    @ColumnName("c_id")
     public int getId() {
         return id;
     }
@@ -49,5 +51,14 @@ public class Nodo {
 
     public void setUrlFoto(String urlFoto) {
         this.urlFoto = urlFoto;
+    }
+
+    @ColumnName("c_id_padre")
+    public int getIdPadre() {
+        return idPadre;
+    }
+
+    public void setIdPadre(int idPadre) {
+        this.idPadre = idPadre;
     }
 }
