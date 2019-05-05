@@ -65,12 +65,16 @@ public class ProblematicaResource {
                 Response.status(Response.Status.BAD_REQUEST).build();
     }
 
+    //TODO: Tal vez este metodo deba retornar muchas más información, como todos los nodos que contiene cada grupo
+
     @Path("/{idProblematica}/grupos")
     @GET
     public Response darGrupos(@PathParam("idProblematica") int idProblematica){
         List<Grupo> grupos = daoGrupo.darGrupos(idProblematica);
         return Response.ok(grupos).build();
     }
+
+    //TODO: Probablemente esto sea reemplazado por los Websockets
 
     @POST
     @Path("/{idProblematica}/grupos")
@@ -79,7 +83,7 @@ public class ProblematicaResource {
         return Response.ok(nuevoGrupo).build();
     }
 
-    @Path("/{idProblematica}/grupos/{idGrupo}")
+    /*@Path("/{idProblematica}/grupos/{idGrupo}")
     @PUT
     public Response cambiarNombreGrupo(@PathParam("idProblematica") int idProblematica,
                                        @PathParam("idGrupo") int idGrupo,
@@ -105,7 +109,7 @@ public class ProblematicaResource {
         return todoBien ?
                 Response.ok().build() :
                 Response.status(Response.Status.BAD_REQUEST).build();
-    }
+    }*/
 
     @Path("/{idProblematica}/grupos/{idGrupo}")
     @DELETE
@@ -115,6 +119,13 @@ public class ProblematicaResource {
         return seElimino ?
                 Response.ok().build() :
                 Response.status(Response.Status.BAD_REQUEST).build();
+    }
+
+    @GET
+    @Path("/{idProblematica}/reacciones")
+    public Response darReacciones(@PathParam("idProblematica") int idProblematica){
+        List<Grupo> grupos = daoGrupo.darGruposConReacciones(idProblematica);
+        return Response.ok(grupos).build();
     }
 
 }

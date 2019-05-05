@@ -1,7 +1,4 @@
-import dao.DaoInvitacion;
-import dao.DaoNodo;
-import dao.DaoPersona;
-import dao.DaoProblematica;
+import dao.*;
 import entity.Nodo;
 import entity.Persona;
 import filter.AuthFilter;
@@ -50,10 +47,10 @@ public class App extends Application<ConfiguracionApp> {
         final AuthResource authResource = new AuthResource(jdbi.onDemand(DaoPersona.class), jwtUtils);
 
         final PersonaResource personaResource =
-                new PersonaResource(jdbi.onDemand(DaoPersona.class), new DaoProblematica(jdbi), new DaoInvitacion(jdbi));
+                new PersonaResource(jdbi.onDemand(DaoPersona.class), new DaoProblematica(jdbi), new DaoInvitacion(jdbi), new DaoNodo(jdbi));
 
         final ProblematicaResource problematicaResource =
-                new ProblematicaResource(new DaoProblematica(jdbi) , new DaoInvitacion(jdbi), fotoUseCase);
+                new ProblematicaResource(new DaoProblematica(jdbi) , new DaoInvitacion(jdbi), new DaoGrupo(jdbi), fotoUseCase);
 
         final InvitacionResource invitacionResource =
                 new InvitacionResource(new DaoInvitacion(jdbi));

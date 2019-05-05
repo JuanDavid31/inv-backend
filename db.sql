@@ -102,8 +102,20 @@ CREATE TABLE NODO(
 
 ALTER TABLE NODO ADD CONSTRAINT PK_NODO primary key(c_id);
 ALTER TABLE NODO add constraint FK_NODO_PERS_PROB foreign key(a_id_pers_prob) REFERENCES PERSONA_PROBLEMATICA(a_id);
-alter table NODO ADD CONSTRAINT FK_NODO_PADRE foreign key(c_id_padre) REFERENCES NODO(c_id);
-alter table NODO ADD CONSTRAINT FK_NODO_GRUPO foreign key(c_id_padre) REFERENCES GRUPO(c_id);
+ALTER TABLE NODO ADD CONSTRAINT FK_NODO_PADRE foreign key(c_id_padre) REFERENCES NODO(c_id);
+ALTER TABLE NODO ADD CONSTRAINT FK_NODO_GRUPO foreign key(c_id_padre) REFERENCES GRUPO(c_id);
+
+CREATE TABLE REACCION(
+    c_id serial not null,
+    c_valor int not null,
+    c_id_grupo int not null,
+    a_id_pers_prob varchar(40) not null
+);
+
+ALTER TABLE REACCION ADD CONSTRAINT PK_REACCION primary key (c_id);
+ALTER TABLE REACCION ADD CONSTRAINT CK_REACCION CHECK ( -1 <= c_valor AND c_valor <= 1 );
+ALTER TABLE REACCION ADD CONSTRAINT FK_REACCION_GRUPO foreign key(c_id_grupo) REFERENCES GRUPO(c_id);
+ALTER TABLE REACCION ADD CONSTRAINT FK_REACCION_PERS_PROB foreign key(a_id_pers_prob) REFERENCES PERSONA_PROBLEMATICA(a_id);
 
 CREATE TABLE GRUPO(
     c_id serial not null,
@@ -117,6 +129,7 @@ ALTER TABLE GRUPO ADD CONSTRAINT FK_GRUPO_PROBLEMATICA foreign key(c_id_problema
 ALTER TABLE GRUPO ADD CONSTRAINT FK_GRUPO_PADRE foreign key(c_id_padre) REFERENCES GRUPO(c_id);
 
 --declarar la función que va a eliminar todas los registros de todas las tablas
+--Usar la función -> SELECT truncate_tables('postgres');
 CREATE OR REPLACE FUNCTION truncate_tables(username IN VARCHAR) RETURNS void AS $$
 DECLARE
     statements CURSOR FOR
@@ -177,6 +190,29 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
---Usar la función
---SELECT truncate_tables('postgres');
+/*INSERT INTO GRUPO(c_id_problematica, d_nombre) VALUES(1, 'GRUPO 1');
+INSERT INTO GRUPO(c_id_problematica, d_nombre) VALUES(1, 'GRUPO 2');
+INSERT INTO GRUPO(c_id_problematica, d_nombre) VALUES(1, 'GRUPO 3');
+INSERT INTO GRUPO(c_id_problematica, d_nombre) VALUES(1, 'GRUPO 4');
 
+--REACCIONES GRUPO 1
+INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(1, 1, 'juan1@.com1');
+INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(1, 1, 'juan1@.com1');
+INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(1, 1, 'juan1@.com1');
+INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(-1, 1, 'juan1@.com1');
+INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(-1, 1, 'juan1@.com1');
+INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(0, 1, 'juan1@.com1');
+
+--REACCIONES GRUPO 2
+INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(-1, 2, 'juan1@.com1');
+INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(0, 2, 'juan1@.com1');
+INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(0, 2, 'juan1@.com1');
+INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(1, 2, 'juan1@.com1');
+
+--REACCIONES GRUPO 3
+INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(-1, 3, 'juan1@.com1');
+INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(-1, 3, 'juan1@.com1');
+INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(-1, 3, 'juan1@.com1');
+INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(-1, 3, 'juan1@.com1');
+INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(-1, 3, 'juan1@.com1');
+INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(0, 3, 'juan1@.com1');*/

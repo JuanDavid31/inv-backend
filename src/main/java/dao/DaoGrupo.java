@@ -51,6 +51,15 @@ public class DaoGrupo {
                 .execute() > 0);
     }
 
+    public List<Grupo> darGruposConReacciones(int idProblematica){
+        return jdbi.withHandle(handle ->
+                handle.createQuery("SELECT D_NOMBRE, R.c_valor, COUNT(R.C_VALOR) FROM GRUPO G, REACCION R WHERE G.c_id = R.c_id_grupo AND " +
+                "G.c_id_problematica = :idProblematica GROUP BY c_valor, G.c_id ORDER BY count desc")
+                .bind("idProblematica", idProblematica)
+                .mapToBean(Grupo.class)
+                .list());
+    }
+
     public boolean eliminarGrupo(int id, int idProblematica) {
         return jdbi.inTransaction(handle -> {
             desApadrinar(id, idProblematica);

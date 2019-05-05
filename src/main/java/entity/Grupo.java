@@ -8,6 +8,8 @@ public class Grupo {
     public int idPadre;
     public String nombre;
     public int idProblematica;
+    public int reaccion;
+    public int cantidad;
 
     public Grupo() {
     }
@@ -46,5 +48,23 @@ public class Grupo {
 
     public void setIdProblematica(int idProblematica) {
         this.idProblematica = idProblematica;
+    }
+
+    @ColumnName("c_valor")
+    public int getReaccion() {
+        return reaccion;
+    }
+
+    public void setReaccion(int reaccion) {
+        this.reaccion = reaccion;
+    }
+
+    @ColumnName("count")
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
     }
 }
