@@ -18,4 +18,12 @@ public class DaoReaccion {
                 .bind("idPersonaProblematica", idPersonaProblematica)
                 .execute() > 0);
     }
+
+    public boolean eliminarReaccion(int idGrupo, String idPersonaProblematica){
+        return jdbi.withHandle(handle ->
+                handle.createUpdate("DELETE FROM REACCION WHERE c_id_grupo = :idGrupo AND a_id_pers_prob = :idPersonaProblematica")
+                .bind("idGrupo", idGrupo)
+                .bind("idPersonaProblematica", idPersonaProblematica)
+                .execute() > 0);
+    }
 }

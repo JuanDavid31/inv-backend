@@ -9,6 +9,7 @@ import entity.Nodo;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.hibernate.validator.constraints.NotEmpty;
 import usecase.FotoUseCase;
+import usecase.ProblematicaUseCase;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
@@ -16,6 +17,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 @Path("/problematicas")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -26,12 +28,14 @@ public class ProblematicaResource {
     private final DaoInvitacion daoInvitacion;
     private final DaoGrupo daoGrupo;
     private final FotoUseCase fotoUseCase;
+    private final ProblematicaUseCase problematicaUseCase;
 
-    public ProblematicaResource(DaoProblematica daoProblematica, DaoInvitacion daoInvitacion, DaoGrupo daoGrupo, FotoUseCase fotoUseCase){
+    public ProblematicaResource(DaoProblematica daoProblematica, DaoInvitacion daoInvitacion, DaoGrupo daoGrupo, FotoUseCase fotoUseCase, ProblematicaUseCase problematicaUseCase){
         this.daoProblematica = daoProblematica;
         this.daoInvitacion = daoInvitacion;
         this.daoGrupo = daoGrupo;
         this.fotoUseCase = fotoUseCase;
+        this.problematicaUseCase = problematicaUseCase;
     }
 
     @Path("/{idProblematica}/personas/{emailRemitente}/invitaciones")
@@ -44,8 +48,9 @@ public class ProblematicaResource {
     //TODO: A esto le falta un queryParam
     @Path("/{idProblematica}")
     @POST
-    public Response avanzarFase(@PathParam("idProblematica") int idProblematica){
-        boolean seAvanzo = daoProblematica.avanzarFaseProblematica(idProblematica);
+    public Response avanzarFase(@PathParam("idProblematica") int idProblematica,
+                                @QueryParam("avanzar") @NotEmpty Boolean avanzar){
+        boolean seAvanzo = problematicaUseCase.avanzarFase(idProblematica);
         return seAvanzo ?
                 Response.ok().build():
                 Response.status(Response.Status.BAD_REQUEST).build();
@@ -70,7 +75,7 @@ public class ProblematicaResource {
     @Path("/{idProblematica}/grupos")
     @GET
     public Response darGrupos(@PathParam("idProblematica") int idProblematica){
-        List<Grupo> grupos = daoGrupo.darGrupos(idProblematica);
+        List<Map<String, Object>> grupos = daoGrupo.darGrupos(idProblematica);
         return Response.ok(grupos).build();
     }
 
@@ -82,34 +87,6 @@ public class ProblematicaResource {
         Grupo nuevoGrupo = daoGrupo.agregarGrupo(idProblematica, grupo);
         return Response.ok(nuevoGrupo).build();
     }
-
-    /*@Path("/{idProblematica}/grupos/{idGrupo}")
-    @PUT
-    public Response cambiarNombreGrupo(@PathParam("idProblematica") int idProblematica,
-                                       @PathParam("idGrupo") int idGrupo,
-                                       Grupo grupo){
-        boolean seActualizo = daoGrupo.actualizarGrupo(idGrupo, grupo);
-        return seActualizo ?
-                Response.ok(seActualizo).build() :
-                Response.status(Response.Status.BAD_REQUEST).build();
-    }
-
-    @Path("/{idProblematica}/grupos/{idGrupo}")
-    @PUT
-    public Response apadrinarGrupo(@PathParam("idProblematica") int idProblematica,
-                                   @PathParam("idGrupo") int idGrupo,
-                                   @QueryParam("apadrinar") @NotEmpty Boolean apadrinar,
-                                   int idPadre){
-        boolean todoBien;
-        if(apadrinar){
-            todoBien = daoGrupo.apadrinar(idGrupo, idPadre, idProblematica);
-        }else{
-            todoBien = daoGrupo.desApadrinar(idGrupo, idProblematica);
-        }
-        return todoBien ?
-                Response.ok().build() :
-                Response.status(Response.Status.BAD_REQUEST).build();
-    }*/
 
     @Path("/{idProblematica}/grupos/{idGrupo}")
     @DELETE
@@ -128,4 +105,11 @@ public class ProblematicaResource {
         return Response.ok(grupos).build();
     }
 
+    @GET
+    @Path("/{idProblematica}/reacciones/{idPersonaProblematica}")
+    public Response darReaccionPorPersona(@PathParam("idProblematica") int idProblematica,
+                                          @PathParam("idProblematica") String idPersonaProblematica){
+        Grupo grupo = daoGrupo.darGrupoConReaccion(idProblematica, idPersonaProblematica);
+        return Response.ok(grupo).build();
+    }
 }

@@ -4,6 +4,7 @@ import entity.Grupo;
 import org.jdbi.v3.core.Jdbi;
 
 import java.util.List;
+import java.util.Map;
 
 public class DaoGrupo {
     
@@ -13,10 +14,13 @@ public class DaoGrupo {
         this.jdbi = jdbi;
     }
 
-    public List<Grupo> darGrupos(int idProblematica){
-        return jdbi.withHandle(handle -> handle.createQuery("SELECT * FROM GRUPO WHERE c_id_problematica = :idProblematica")
+    public List<Map<String, Object>> darGrupos(int idProblematica){
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select g.c_id as id_grupo, g.c_id_padre as id_padre_grupo, g.d_nombre as nombre_grupo, n.a_url_foto url_foto, n.c_id_padre id_padre_nodo" +
+                "from problematica p, grupo g, nodo n" +
+                "where p.c_id = g.c_id_problematica and p.c_id = :idProblematica and g.c_id = n.c_id_grupo")
                 .bind("idProblematica", idProblematica)
-                .mapToBean(Grupo.class)
+                .mapToMap()
                 .list());
     }
 
@@ -58,6 +62,15 @@ public class DaoGrupo {
                 .bind("idProblematica", idProblematica)
                 .mapToBean(Grupo.class)
                 .list());
+    }
+
+    public Grupo darGrupoConReaccion(int idProblematica, String idPersonaProblematica){
+        return jdbi.withHandle(handle -> handle.createQuery("SELECT G.c_id, G.D_NOMBRE, R.c_valor FROM GRUPO G, REACCION R " +
+                "WHERE G.c_id = R.c_id_grupo AND G.c_id_problematica = :idProblematica AND R.a_id_pers_prob = :idPersonaProblematica")
+                .bind("idProblematica", idProblematica)
+                .bind("idPersonaProblematica", idPersonaProblematica)
+                .mapToBean(Grupo.class)
+                .findOnly());
     }
 
     public boolean eliminarGrupo(int id, int idProblematica) {

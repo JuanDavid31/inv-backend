@@ -11,11 +11,16 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.kotlin.KotlinPlugin;
 import org.jdbi.v3.core.mapper.reflect.BeanMapper;
 import org.jdbi.v3.postgres.PostgresPlugin;
 import rest.*;
 import usecase.FotoUseCase;
+import usecase.ProblematicaUseCase;
 import util.JWTUtils;
+import ws.InteraccionWebsocketServlet;
+
+import javax.servlet.ServletRegistration;
 
 public class App extends Application<ConfiguracionApp> {
 
@@ -34,13 +39,21 @@ public class App extends Application<ConfiguracionApp> {
     }
 
     public void run(ConfiguracionApp configuracionApp, Environment environment) throws Exception {
+        ServletRegistration.Dynamic miServlet =
+                environment.servlets().addServlet("miServlet", new InteraccionWebsocketServlet());
+        miServlet.setAsyncSupported(true);
+        miServlet.addMapping("/ws/*");
+
+
         JWTUtils jwtUtils = new JWTUtils(configuracionApp.jwtKey);
 
         final JdbiFactory factory = new JdbiFactory();
         final Jdbi jdbi = factory.build(environment, configuracionApp.getDataSourceFactory(), "postgres");
         jdbi.installPlugin(new PostgresPlugin());
+        jdbi.installPlugin(new KotlinPlugin());
 
         FotoUseCase fotoUseCase = new FotoUseCase(new DaoNodo(jdbi));
+        ProblematicaUseCase problematicaUseCase = new ProblematicaUseCase(new DaoProblematica(jdbi));
 
         final AuthFilter authFilter = new AuthFilter(jwtUtils);
 
@@ -50,7 +63,7 @@ public class App extends Application<ConfiguracionApp> {
                 new PersonaResource(jdbi.onDemand(DaoPersona.class), new DaoProblematica(jdbi), new DaoInvitacion(jdbi), new DaoNodo(jdbi));
 
         final ProblematicaResource problematicaResource =
-                new ProblematicaResource(new DaoProblematica(jdbi) , new DaoInvitacion(jdbi), new DaoGrupo(jdbi), fotoUseCase);
+                new ProblematicaResource(new DaoProblematica(jdbi) , new DaoInvitacion(jdbi), new DaoGrupo(jdbi), fotoUseCase, problematicaUseCase);
 
         final InvitacionResource invitacionResource =
                 new InvitacionResource(new DaoInvitacion(jdbi));
