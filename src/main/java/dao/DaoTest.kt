@@ -7,12 +7,7 @@ import org.jdbi.v3.core.result.ResultIterable
 class DaoTest(val jdbi : Jdbi){
 
 
-    fun testttt():Boolean{
-        val withHandle = jdbi.withHandle<Boolean, Exception> {
-            /*it.createQuery("").mapToBean(Grupo.class))
+    fun test1() = jdbi.withHandle<Grupo, Exception> { it.createQuery("").mapToBean(Grupo::class.java).findOnly()}
 
-        }*/
-
-        return false
-    }
+    fun test2() = jdbi.withHandle<Boolean, Exception>{it.createUpdate("").execute() > 0}
 }
