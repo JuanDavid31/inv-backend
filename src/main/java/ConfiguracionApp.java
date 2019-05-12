@@ -18,6 +18,12 @@ public class ConfiguracionApp extends Configuration {
     @NotEmpty
     public String jwtKey = "";
 
+    @NotEmpty
+    public String adminEmail = "";
+
+    @NotEmpty
+    public String adminPass = "";
+
     @Valid
     @NotNull
     private DataSourceFactory database = new DataSourceFactory();
@@ -50,5 +56,25 @@ public class ConfiguracionApp extends Configuration {
     @JsonProperty("database")
     public DataSourceFactory getDataSourceFactory() {
         return database;
+    }
+
+    @JsonProperty
+    public String getAdminEmail() {
+        return adminEmail;
+    }
+
+    @JsonProperty
+    public void setAdminEmail(String adminEmail) {
+        this.adminEmail = adminEmail;
+    }
+
+    @JsonProperty
+    public String getAdminPass() {
+        return adminPass;
+    }
+
+    @JsonProperty
+    public void setAdminPass(String adminPass) {
+        this.adminPass = adminPass;
     }
 }
