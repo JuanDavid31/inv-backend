@@ -24,13 +24,11 @@ public class PersonaResource {
 
     private final DaoPersona daoPersona;
     private final DaoProblematica daoProblematica;
-    private final DaoInvitacion daoInvitacion;
     private final DaoNodo daoNodo;
 
-    public PersonaResource(DaoPersona daoPersona, DaoProblematica daoProblematica, DaoInvitacion daoInvitacion, DaoNodo daoNodo) {
+    public PersonaResource(DaoPersona daoPersona, DaoProblematica daoProblematica, DaoNodo daoNodo) {
         this.daoPersona = daoPersona;
         this.daoProblematica = daoProblematica;
-        this.daoInvitacion = daoInvitacion;
         this.daoNodo = daoNodo;
     }
 
@@ -69,12 +67,5 @@ public class PersonaResource {
                              @PathParam("idProblematica") Integer idProblematica){
         List<Nodo> nodos = daoNodo.darNodos(email + idProblematica);
         return Response.ok(nodos).build();
-    }
-
-    @GET
-    @Path("/{email}/invitaciones")
-    public Response darInvitacionesVigentes(@PathParam("email") String email){
-        List<Map<String, Object>> invitaciones = daoInvitacion.darInvitacionesVigentes(email);
-        return Response.ok(invitaciones).build();
     }
 }

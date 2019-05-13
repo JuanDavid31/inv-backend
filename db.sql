@@ -163,11 +163,22 @@ BEGIN
     INSERT INTO PERSONA(a_email, d_nombre, a_pass_hasheado) VALUES('juan3@.com', 'Juan3', '1234');
     INSERT INTO PERSONA(a_email, d_nombre, a_pass_hasheado) VALUES('juan4@.com', 'Juan4', '1234');
     INSERT INTO PERSONA(a_email, d_nombre, a_pass_hasheado) VALUES('juan5@.com', 'Juan5', '1234');
+    INSERT INTO PERSONA(a_email, d_nombre, a_pass_hasheado) VALUES('juan6@.com', 'Juan6', '1234');
+    INSERT INTO PERSONA(a_email, d_nombre, a_pass_hasheado) VALUES('juan7@.com', 'Juan7', '1234');
+    INSERT INTO PERSONA(a_email, d_nombre, a_pass_hasheado) VALUES('juan8@.com', 'Juan8', '1234');
+    INSERT INTO PERSONA(a_email, d_nombre, a_pass_hasheado) VALUES('juan9@.com', 'Juan9', '1234');
+    INSERT INTO PERSONA(a_email, d_nombre, a_pass_hasheado) VALUES('juan10@.com', 'Juan10', '1234');
+
     INSERT INTO PERSONA(a_email, d_nombre, a_pass_hasheado) VALUES('david1@.com', 'David1', '1234');
     INSERT INTO PERSONA(a_email, d_nombre, a_pass_hasheado) VALUES('david2@.com', 'David2', '1234');
     INSERT INTO PERSONA(a_email, d_nombre, a_pass_hasheado) VALUES('david3@.com', 'David3', '1234');
     INSERT INTO PERSONA(a_email, d_nombre, a_pass_hasheado) VALUES('david4@.com', 'David4', '1234');
     INSERT INTO PERSONA(a_email, d_nombre, a_pass_hasheado) VALUES('david5@.com', 'David5', '1234');
+    INSERT INTO PERSONA(a_email, d_nombre, a_pass_hasheado) VALUES('david6@.com', 'David6', '1234');
+    INSERT INTO PERSONA(a_email, d_nombre, a_pass_hasheado) VALUES('david7@.com', 'David7', '1234');
+    INSERT INTO PERSONA(a_email, d_nombre, a_pass_hasheado) VALUES('david8@.com', 'David8', '1234');
+    INSERT INTO PERSONA(a_email, d_nombre, a_pass_hasheado) VALUES('david9@.com', 'David9', '1234');
+    INSERT INTO PERSONA(a_email, d_nombre, a_pass_hasheado) VALUES('david10@.com', 'David10', '1234');
 
     INSERT INTO PROBLEMATICA(a_nombre, a_descripcion, f_fecha_creacion) VALUES('Problematica 1', 'Descripcion1', now());
     INSERT INTO PROBLEMATICA(a_nombre, a_descripcion, f_fecha_creacion) VALUES('Problematica 2', 'Descripcion2', now());
@@ -175,31 +186,106 @@ BEGIN
     INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('juan1@.com1', 'juan1@.com', 1, true);
     INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('juan2@.com1', 'juan2@.com', 1, true);
     INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('juan3@.com1', 'juan3@.com', 1, false);
+    INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('david1@.com1', 'david1@.com', 1, true);
+
+    INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('juan4@.com1', 'juan4@.com', 1, false);
+    INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('juan5@.com1', 'juan5@.com', 1, false);
+    INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('juan6@.com1', 'juan6@.com', 1, false);
+    INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('juan7@.com1', 'juan7@.com', 1, false);
+    INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('juan8@.com1', 'juan8@.com', 1, false);
+    INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('juan9@.com1', 'juan9@.com', 1, false);
+    INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('juan10@.com1', 'juan10@.com', 1, false);
 
     INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('david1@.com2', 'david1@.com', 2, true);
-    INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('juan1@.com2', 'juan1@.com', 2, true);
     INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('david2@.com2', 'david2@.com', 2, true);
     INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('david3@.com2', 'david3@.com', 2, false);
+    INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('juan1@.com2', 'juan1@.com', 2, true);
+
+    INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('david4@.com1', 'david4@.com', 2, false);
+    INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('david5@.com1', 'david5@.com', 2, false);
+    INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('david6@.com1', 'david6@.com', 2, false);
+    INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('david7@.com1', 'david7@.com', 2, false);
+    INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('david8@.com1', 'david8@.com', 2, false);
+    INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('david9@.com1', 'david9@.com', 2, false);
+    INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) VALUES('david10@.com1', 'david10@.com', 2, false);
+
 
     INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
-    VALUES('juan1@.com', 'juan4@.com', 1, '1juan1@.comjuan4@.com', true, false, false);
+        VALUES('juan1@.com', 'david2@.com', 1, '1juan1@.comdavid2@.com', true, false, false);
     INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
-    VALUES('juan1@.com', 'juan5@.com', 1, '1juan1@.comjuan5@.com', true, false, false);
---Invitación a un David
+        VALUES('juan1@.com', 'david3@.com', 1, '1juan1@.comdavid3@.com', true, false, false);
     INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
-    VALUES('juan1@.com', 'david2@.com', 1, '1juan1@.comdavid2@.com', true, false, false);
+        VALUES('juan1@.com', 'david4@.com', 1, '1juan1@.comdavid4@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('juan1@.com', 'david5@.com', 1, '1juan1@.comdavid5@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('juan1@.com', 'david6@.com', 1, '1juan1@.comdavid6@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('juan1@.com', 'david7@.com', 1, '1juan1@.comdavid7@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('juan1@.com', 'david8@.com', 1, '1juan1@.comdavid8@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('juan1@.com', 'david9@.com', 1, '1juan1@.comdavid9@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('juan1@.com', 'david10@.com', 1, '1juan1@.comdavid10@.com', true, false, false);
 
     INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
-    VALUES('david1@.com', 'david4@.com', 2, '2david1@.comdavid4@.com', true, false, false);
+        VALUES('david1@.com', 'david2@.com', 1, '1david1@.comdavid2@.com', true, false, false);
     INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
-    VALUES('david1@.com', 'david5@.com', 2, '2david1@.comdavid5@.com', true, false, false);
---Invitación a un Juan's
+        VALUES('david1@.com', 'david3@.com', 1, '1david1@.comdavid3@.com', true, false, false);
     INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
-    VALUES('david1@.com', 'juan2@.com', 2, '2david1@.comdjuan2@.com', true, false, false);
+        VALUES('david1@.com', 'david4@.com', 1, '1david1@.comdavid4@.com', true, false, false);
     INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
-    VALUES('david1@.com', 'juan4@.com', 1, '1david1@.comjuan4@.com', true, false, false);
+        VALUES('david1@.com', 'david5@.com', 1, '1david1@.comdavid5@.com', true, false, false);
     INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
-    VALUES('david1@.com', 'juan4@.com', 2, '2david1@.comjuan4@.com', true, false, false);
+        VALUES('david1@.com', 'david6@.com', 1, '1david1@.comdavid6@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('david1@.com', 'david7@.com', 1, '1david1@.comdavid7@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('david1@.com', 'david8@.com', 1, '1david1@.comdavid8@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('david1@.com', 'david9@.com', 1, '1david1@.comdavid9@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('david1@.com', 'david10@.com', 1, '1david1@.comdavid10@.com', true, false, false);
+
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('juan1@.com', 'juan2@.com', 2, '2juan1@.comjuan2@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('juan1@.com', 'juan3@.com', 2, '2juan1@.comjuan3@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('juan1@.com', 'juan4@.com', 2, '2juan1@.comjuan4@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('juan1@.com', 'juan5@.com', 2, '2juan1@.comjuan5@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('juan1@.com', 'juan6@.com', 2, '2juan1@.comjuan6@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('juan1@.com', 'juan7@.com', 2, '2juan1@.comjuan7@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('juan1@.com', 'juan8@.com', 2, '2juan1@.comjuan8@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('juan1@.com', 'juan9@.com', 2, '2juan1@.comjuan9@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('juan1@.com', 'juan10@.com', 2, '2juan1@.comjuan10@.com', true, false, false);
+
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('david1@.com', 'juan2@.com', 2, '2david1@.comjuan2@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('david1@.com', 'juan3@.com', 2, '2david1@.comjuan3@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('david1@.com', 'juan4@.com', 2, '2david1@.comjuan4@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('david1@.com', 'juan5@.com', 2, '2david1@.comjuan5@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('david1@.com', 'juan6@.com', 2, '2david1@.comjuan6@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('david1@.com', 'juan7@.com', 2, '2david1@.comjuan7@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('david1@.com', 'juan8@.com', 2, '2david1@.comjuan8@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('david1@.com', 'juan9@.com', 2, '2david1@.comjuan9@.com', true, false, false);
+    INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada)
+        VALUES('david1@.com', 'juan10@.com', 2, '2david1@.comjuan10@.com', true, false, false);
+
 END;
 $$ LANGUAGE plpgsql;
 

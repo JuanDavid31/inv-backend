@@ -14,9 +14,9 @@ class ProblematicaReaccionResource(val daoGrupo: DaoGrupo){
     fun darReacciones(@PathParam("idProblematica") idProblematica: Int) = daoGrupo.darGruposConReacciones(idProblematica)
 
     @GET
-    @Path("/{idProblematica}/reacciones/{idPersonaProblematica}")
+    @Path("/{idProblematica}/personas/{email}/reacciones}")
     fun darReaccionPorPersona(@PathParam("idProblematica") idProblematica: Int,
-                              @PathParam("idProblematica") idPersonaProblematica: String) =
-            daoGrupo.darGrupoConReaccion(idProblematica, idPersonaProblematica)
+                              @PathParam("idProblematica") email: String) =
+            daoGrupo.darGrupoConReaccion(idProblematica, "$email$idProblematica")
 
 }
