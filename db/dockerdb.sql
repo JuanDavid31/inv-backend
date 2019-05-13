@@ -93,15 +93,52 @@ INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematic
     VALUES('david1@.com', 'juan4@.com', 2, '2david1@.comjuan4@.com', true, false, false);
 
 CREATE TABLE NODO(
-    c_id serial not null,
-    a_id_pers_prob varchar(40) not null,
-    a_url_foto varchar(250) not null,
-    c_id_padre int
+    c_id           serial       not null,
+    a_id_pers_prob varchar(40)  not null,
+    a_url_foto     varchar(250) not null,
+    c_id_padre     int,
+    c_id_grupo     int
 );
 
 ALTER TABLE NODO ADD CONSTRAINT PK_NODO primary key(c_id);
 ALTER TABLE NODO add constraint FK_NODO_PERS_PROB foreign key(a_id_pers_prob) REFERENCES PERSONA_PROBLEMATICA(a_id);
-alter table NODO ADD CONSTRAINT FK_NODO_PADRE foreign key(c_id_padre) REFERENCES NODO(c_id);
+ALTER TABLE NODO ADD CONSTRAINT FK_NODO_PADRE foreign key(c_id_padre) REFERENCES NODO(c_id);
+ALTER TABLE NODO ADD CONSTRAINT FK_NODO_GRUPO foreign key(c_id_grupo) REFERENCES GRUPO(c_id);
+
+CREATE TABLE REACCION(
+    c_id           serial      not null,
+    c_valor        int         not null,
+    c_id_grupo     int         not null,
+    a_id_pers_prob varchar(40) not null
+);
+
+ALTER TABLE REACCION ADD CONSTRAINT PK_REACCION primary key (c_id);
+ALTER TABLE REACCION ADD CONSTRAINT CK_REACCION CHECK ( -1 <= c_valor AND c_valor <= 1 );
+ALTER TABLE REACCION ADD CONSTRAINT FK_REACCION_GRUPO foreign key (c_id_grupo) REFERENCES GRUPO (c_id);
+ALTER TABLE REACCION ADD CONSTRAINT FK_REACCION_PERS_PROB foreign key (a_id_pers_prob) REFERENCES PERSONA_PROBLEMATICA (a_id);
+alter table reaccion Add constraint UK_REACCION UNIQUE (a_id_pers_prob);
+
+CREATE TABLE GRUPO(
+    c_id              serial      not null,
+    c_id_problematica int         not null,
+    c_id_padre        int,
+    d_nombre          varchar(30) not null
+);
+
+ALTER TABLE GRUPO ADD CONSTRAINT PK_GRUPO primary key (c_id);
+ALTER TABLE GRUPO ADD CONSTRAINT FK_GRUPO_PROBLEMATICA foreign key (c_id_problematica) REFERENCES PROBLEMATICA (c_id);
+ALTER TABLE GRUPO ADD CONSTRAINT FK_GRUPO_PADRE foreign key (c_id_padre) REFERENCES GRUPO (c_id);
+
+CREATE TABLE ESCRITO(
+    c_id           serial,
+    a_descripcion  varchar(500),
+    c_id_grupo     int,
+    a_id_pers_prob varchar(40)
+);
+
+ALTER TABLE ESCRITO ADD CONSTRAINT PK_ESCRITO primary key (c_id);
+ALTER TABLE ESCRITO ADD CONSTRAINT FK_ESCRITO_GRUPO foreign key (c_id_grupo) REFERENCES GRUPO (c_id);
+ALTER TABLE ESCRITO ADD CONSTRAINT FK_ESCRITO_PERS_PROB foreign key (a_id_pers_prob) REFERENCES PERSONA_PROBLEMATICA (a_id);
 
 
 --declarar la función que va a eliminar todas los registros de todas las tablas

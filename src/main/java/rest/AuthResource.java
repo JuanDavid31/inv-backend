@@ -2,10 +2,10 @@ package rest;
 
 import dao.DaoPersona;
 import entity.Persona;
-import io.jsonwebtoken.Jwt;
+import org.hibernate.validator.constraints.NotEmpty;
+import usecase.CorreoUseCase;
 import util.JWTUtils;
 
-import javax.print.attribute.standard.Media;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -19,9 +19,12 @@ public class AuthResource {
 
     private final JWTUtils jwtUtils;
 
-    public AuthResource(DaoPersona daoPersona, JWTUtils jwtUtils){
+    private final CorreoUseCase correoUseCase;
+
+    public AuthResource(DaoPersona daoPersona, JWTUtils jwtUtils, CorreoUseCase correoUtils){
         this.daoPersona = daoPersona;
         this.jwtUtils = jwtUtils;
+        this.correoUseCase = correoUtils;
     }
 
     @POST
@@ -29,6 +32,15 @@ public class AuthResource {
         Persona personaIdentificada = daoPersona.darPersonaPorCredenciales(persona);
         return personaIdentificada != null?
                 Response.ok(jwtUtils.darToken(personaIdentificada)).build() :
+                Response.status(Response.Status.BAD_REQUEST).build();
+    }
+
+    @POST
+    @Path("/pass")
+    public Response olvideContraseña(@QueryParam("email") @NotEmpty String email){
+        boolean envioExitoso = correoUseCase.enviarCorreo(email);
+        return envioExitoso ?
+                Response.ok().build() :
                 Response.status(Response.Status.BAD_REQUEST).build();
     }
 }

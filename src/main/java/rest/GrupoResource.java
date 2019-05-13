@@ -19,7 +19,9 @@ public class GrupoResource {
 
     @POST
     @Path("/{idGrupo}/reacciones")
-    public Response reaccionar(@PathParam("idGrupo") int idGrupo, int valor, String idPersonaProblematica){
+    public Response reaccionar(@PathParam("idGrupo") int idGrupo,
+                               @QueryParam("valor") int valor,
+                               @QueryParam("id-persona-problematica") String idPersonaProblematica){
         boolean seReacciono = daoReaccion.reaccionar(valor, idGrupo, idPersonaProblematica);
         return seReacciono ?
                 Response.ok().build() :

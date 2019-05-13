@@ -58,4 +58,13 @@ public class Persona {
     public void setPass(String pass) {
         this.pass = pass;
     }
+
+    @Override
+    public String toString() {
+        return "Persona{" +
+                "email='" + email + '\'' +
+                ", nombre='" + nombre + '\'' +
+                ", pass='" + pass + '\'' +
+                '}';
+    }
 }

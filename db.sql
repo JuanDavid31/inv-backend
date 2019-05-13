@@ -129,6 +129,18 @@ ALTER TABLE GRUPO ADD CONSTRAINT PK_GRUPO primary key(c_id);
 ALTER TABLE GRUPO ADD CONSTRAINT FK_GRUPO_PROBLEMATICA foreign key(c_id_problematica) REFERENCES PROBLEMATICA(c_id);
 ALTER TABLE GRUPO ADD CONSTRAINT FK_GRUPO_PADRE foreign key(c_id_padre) REFERENCES GRUPO(c_id);
 
+CREATE TABLE ESCRITO(
+    c_id serial,
+    a_descripcion varchar(500),
+    c_id_grupo int,
+    a_id_pers_prob varchar(40)
+);
+
+ALTER TABLE ESCRITO ADD CONSTRAINT PK_ESCRITO primary key(c_id);
+ALTER TABLE ESCRITO ADD CONSTRAINT FK_ESCRITO_GRUPO foreign key(c_id_grupo) REFERENCES GRUPO(c_id);
+ALTER TABLE ESCRITO ADD CONSTRAINT FK_ESCRITO_PERS_PROB foreign key(a_id_pers_prob) REFERENCES PERSONA_PROBLEMATICA(a_id);
+
+
 --declarar la función que va a eliminar todas los registros de todas las tablas
 --Usar la función -> SELECT truncate_tables('postgres');
 CREATE OR REPLACE FUNCTION truncate_tables(username IN VARCHAR) RETURNS void AS $$

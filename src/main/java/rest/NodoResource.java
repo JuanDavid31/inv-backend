@@ -5,9 +5,12 @@ import org.hibernate.validator.constraints.NotEmpty;
 import usecase.FotoUseCase;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("/nodos")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class NodoResource {
 
     private final FotoUseCase fotoUseCase;
@@ -22,7 +25,7 @@ public class NodoResource {
     @PUT
     public Response editarNodo(@PathParam("idNodo") int idNodo,
                                @QueryParam("apadrinar") @NotEmpty Boolean apadrinar,
-                               @QueryParam("id-padre") int idPadre){
+                               @QueryParam("id-padre") @NotEmpty int idPadre){
         boolean todoBien;
         if(apadrinar){
             todoBien = daoNodo.apadrinar(idNodo, idPadre);

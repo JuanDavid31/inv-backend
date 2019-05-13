@@ -64,17 +64,17 @@ public class PersonaResource {
     }
 
     @GET
-    @Path("/{email}/invitaciones")
-    public Response darInvitacionesVigentes(@PathParam("email") String email){
-        List<Map<String, Object>> invitaciones = daoInvitacion.darInvitacionesVigentes(email);
-        return Response.ok(invitaciones).build();
-    }
-
-    @GET
     @Path("/{email}/problematicas/{idProblematica}/nodos")
     public Response darNodos(@PathParam("email") String email,
                              @PathParam("idProblematica") Integer idProblematica){
         List<Nodo> nodos = daoNodo.darNodos(email + idProblematica);
         return Response.ok(nodos).build();
+    }
+
+    @GET
+    @Path("/{email}/invitaciones")
+    public Response darInvitacionesVigentes(@PathParam("email") String email){
+        List<Map<String, Object>> invitaciones = daoInvitacion.darInvitacionesVigentes(email);
+        return Response.ok(invitaciones).build();
     }
 }

@@ -1,5 +1,6 @@
 package util
 
+import entity.Persona
 import java.util.*
 import javax.mail.*
 import javax.mail.internet.MimeMessage
@@ -20,12 +21,22 @@ class CorreoUtils(val usuario: String, val pass: String){
         })
     }
 
-    fun enviar(destinatario: String){
+    fun enviarA(persona: Persona): Boolean{
+        println(persona) //TODO: Borrar despues
+        return try {
+            Transport.send(darMensaje(persona))
+            true
+        }catch (e: MessagingException){
+            e.printStackTrace()
+            false
+        }
+    }
+
+    private fun darMensaje(persona: Persona): Message{
         val mensaje = MimeMessage(darSesion())
-        mensaje.addRecipients(Message.RecipientType.TO, destinatario)
-        mensaje.setSubject("Asunto de prueba")
-        mensaje.setDescription("Descripción de prueba")
-        mensaje.setText("Texto")
-        Transport.send(mensaje)
+        mensaje.addRecipients(Message.RecipientType.TO, persona.email)
+        mensaje.setSubject("Contraseña olvidada")
+        mensaje.setText("Estimado ${persona.nombre} aquí esta su contraseña: \n $persona.pass")
+        return mensaje
     }
 }

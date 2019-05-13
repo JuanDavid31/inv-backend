@@ -1,10 +1,7 @@
 import dao.*;
-import entity.Nodo;
-import entity.Persona;
 import filter.AuthFilter;
 import health.PlantillaHealthCheck;
 import io.dropwizard.Application;
-import io.dropwizard.configuration.ConfigurationSourceProvider;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.jdbi3.JdbiFactory;
@@ -15,9 +12,9 @@ import io.dropwizard.setup.Environment;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.kotlin.KotlinPlugin;
-import org.jdbi.v3.core.mapper.reflect.BeanMapper;
 import org.jdbi.v3.postgres.PostgresPlugin;
 import rest.*;
+import usecase.CorreoUseCase;
 import usecase.FotoUseCase;
 import usecase.ProblematicaUseCase;
 import util.CorreoUtils;
@@ -25,8 +22,6 @@ import util.JWTUtils;
 import ws.InteraccionWebsocketServlet;
 
 import javax.servlet.ServletRegistration;
-import java.io.IOException;
-import java.io.InputStream;
 
 public class App extends Application<ConfiguracionApp> {
 
@@ -48,18 +43,16 @@ public class App extends Application<ConfiguracionApp> {
     }
 
     public void run(ConfiguracionApp configuracionApp, Environment environment) throws Exception {
-        ServletRegistration.Dynamic miServlet =
-                environment.servlets().addServlet("miServlet", new InteraccionWebsocketServlet());
+        ServletRegistration.Dynamic miServlet = environment.servlets().addServlet("miServlet", new InteraccionWebsocketServlet());
         miServlet.setAsyncSupported(true);
         miServlet.addMapping("/ws/*");
 
-
         System.out.println(configuracionApp.adminEmail);
         System.out.println(configuracionApp.adminPass);
-        /*new CorreoUtils(configuracionApp.adminEmail, configuracionApp.adminPass)
-                .enviar("juandavid0306@hotmail.com");*/
 
+        //Utils
         JWTUtils jwtUtils = new JWTUtils(configuracionApp.jwtKey);
+        CorreoUtils correoUtils = new CorreoUtils(configuracionApp.adminEmail, configuracionApp.adminPass);
 
         //JDBI y plugins
         final JdbiFactory factory = new JdbiFactory();
@@ -67,26 +60,43 @@ public class App extends Application<ConfiguracionApp> {
         jdbi.installPlugin(new PostgresPlugin());
         jdbi.installPlugin(new KotlinPlugin());
 
+        //DAOs
+        DaoPersona daoPersona = new DaoPersona(jdbi);
+        DaoProblematica daoProblematica = new DaoProblematica(jdbi);
+        DaoInvitacion daoInvitacion = new DaoInvitacion(jdbi);
+        DaoNodo daoNodo = new DaoNodo(jdbi);
+        DaoReaccion daoReaccion = new DaoReaccion(jdbi);
+        DaoGrupo daoGrupo = new DaoGrupo(jdbi);
+        DaoEscrito daoEscrito = new DaoEscrito(jdbi);
+
         //Use cases
-        FotoUseCase fotoUseCase = new FotoUseCase(new DaoNodo(jdbi));
-        ProblematicaUseCase problematicaUseCase = new ProblematicaUseCase(new DaoProblematica(jdbi));
+        FotoUseCase fotoUseCase = new FotoUseCase(daoNodo);
+        ProblematicaUseCase problematicaUseCase = new ProblematicaUseCase(daoProblematica);
+        CorreoUseCase correoUseCase = new CorreoUseCase(daoPersona, correoUtils);
 
         //Filtros
         final AuthFilter authFilter = new AuthFilter(jwtUtils);
 
         //Resources
-        final AuthResource authResource = new AuthResource(jdbi.onDemand(DaoPersona.class), jwtUtils);
+        final AuthResource authResource = new AuthResource(daoPersona, jwtUtils, correoUseCase);
 
-        final PersonaResource personaResource =
-                new PersonaResource(jdbi.onDemand(DaoPersona.class), new DaoProblematica(jdbi), new DaoInvitacion(jdbi), new DaoNodo(jdbi));
+        final PersonaResource personaResource = new PersonaResource(daoPersona, daoProblematica, daoInvitacion, daoNodo);
 
-        final ProblematicaResource problematicaResource =
-                new ProblematicaResource(new DaoProblematica(jdbi) , new DaoInvitacion(jdbi), new DaoGrupo(jdbi), fotoUseCase, problematicaUseCase);
+        final ProblematicaResource problematicaResource = new ProblematicaResource(daoInvitacion, problematicaUseCase);
 
-        final InvitacionResource invitacionResource =
-                new InvitacionResource(new DaoInvitacion(jdbi));
+        final InvitacionResource invitacionResource = new InvitacionResource(daoInvitacion);
 
-        final NodoResource nodoResource = new NodoResource(fotoUseCase, new DaoNodo(jdbi));
+        final NodoResource nodoResource = new NodoResource(fotoUseCase, daoNodo);
+
+        final GrupoResource grupoResource = new GrupoResource(daoReaccion);
+
+        final ProblematicaEscritoResource problematicaEscritoResource = new ProblematicaEscritoResource(daoEscrito);
+
+        final ProblematicaReaccionResource problematicaReaccionResource = new ProblematicaReaccionResource(daoGrupo);
+
+        final ProblematicaGrupoResource problematicaGrupoResource = new ProblematicaGrupoResource(daoGrupo);
+
+        final ProblematicaNodoResource problematicaNodoResource = new ProblematicaNodoResource(fotoUseCase);
 
         //Healthchecks
         final PlantillaHealthCheck plantillaCheck = new PlantillaHealthCheck(configuracionApp.getPlantilla());
@@ -101,5 +111,10 @@ public class App extends Application<ConfiguracionApp> {
         environment.jersey().register(problematicaResource);
         environment.jersey().register(invitacionResource);
         environment.jersey().register(nodoResource);
+        environment.jersey().register(grupoResource);
+        environment.jersey().register(problematicaEscritoResource);
+        environment.jersey().register(problematicaReaccionResource);
+        environment.jersey().register(problematicaGrupoResource);
+        environment.jersey().register(problematicaNodoResource);
     }
 }
