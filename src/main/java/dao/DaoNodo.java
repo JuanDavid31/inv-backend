@@ -29,7 +29,7 @@ public class DaoNodo {
     }
 
     public boolean actualizarNodo(Nodo nodo){
-        return jdbi.withHandle(handle -> handle.createUpdate("UPDATE NODO SET a_url_foto = :urlFoto where c_id = :id")
+        return jdbi.withHandle(handle -> handle.createUpdate("UPDATE NODO SET a_url_foto = :urlFoto, a_ruta_foto = :rutaFoto where c_id = :id")
                 .bindBean(nodo)
                 .execute() > 0);
     }

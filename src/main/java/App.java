@@ -80,7 +80,9 @@ public class App extends Application<ConfiguracionApp> {
         //Resources
         final AuthResource authResource = new AuthResource(daoPersona, jwtUtils, correoUseCase);
 
-        final PersonaResource personaResource = new PersonaResource(daoPersona, daoProblematica, daoInvitacion, daoNodo);
+        final PersonaResource personaResource = new PersonaResource(daoPersona, daoProblematica, daoNodo);
+
+        final PersonaInvitacionResource personaInvitacionResource = new PersonaInvitacionResource(daoInvitacion);
 
         final ProblematicaResource problematicaResource = new ProblematicaResource(daoInvitacion, problematicaUseCase);
 
@@ -96,7 +98,7 @@ public class App extends Application<ConfiguracionApp> {
 
         final ProblematicaGrupoResource problematicaGrupoResource = new ProblematicaGrupoResource(daoGrupo);
 
-        final ProblematicaNodoResource problematicaNodoResource = new ProblematicaNodoResource(fotoUseCase);
+        final ProblematicaPersonaResource problematicaPersonaResource = new ProblematicaPersonaResource(daoEscrito, fotoUseCase);
 
         //Healthchecks
         final PlantillaHealthCheck plantillaCheck = new PlantillaHealthCheck(configuracionApp.getPlantilla());
@@ -115,6 +117,7 @@ public class App extends Application<ConfiguracionApp> {
         environment.jersey().register(problematicaEscritoResource);
         environment.jersey().register(problematicaReaccionResource);
         environment.jersey().register(problematicaGrupoResource);
-        environment.jersey().register(problematicaNodoResource);
+        environment.jersey().register(problematicaPersonaResource);
+        environment.jersey().register(personaInvitacionResource);
     }
 }

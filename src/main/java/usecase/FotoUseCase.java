@@ -16,9 +16,11 @@ public class FotoUseCase {
     }
 
     public Nodo guardarFoto(Nodo nodo, InputStream foto, String extensionFoto){
+        if(!FotoUtils.extensionValida(extensionFoto))return null;
         try {
             nodo.id = daoNodo.agregarNodo(nodo);
-            nodo.urlFoto = FotoUtils.guardarFoto(nodo, foto, extensionFoto);
+            nodo.urlFoto = FotoUtils.guardarFotoEnDirectorioYDarUrl(nodo, foto, extensionFoto);
+            nodo.rutaFoto = FotoUtils.darRuta(nodo, extensionFoto);
             daoNodo.actualizarNodo(nodo);
             return nodo;
         } catch (IOException e) {

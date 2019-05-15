@@ -8,6 +8,7 @@ public class Nodo {
     public String email;
     public int idProblematica;
     public String urlFoto;
+    public String rutaFoto;
     public int idPadre;
 
     public Nodo(){
@@ -51,6 +52,15 @@ public class Nodo {
 
     public void setUrlFoto(String urlFoto) {
         this.urlFoto = urlFoto;
+    }
+
+    @ColumnName("a_ruta_foto")
+    public String getRutaFoto() {
+        return rutaFoto;
+    }
+
+    public void setRutaFoto(String rutaFoto) {
+        this.rutaFoto = rutaFoto;
     }
 
     @ColumnName("c_id_padre")

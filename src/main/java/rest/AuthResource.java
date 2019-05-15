@@ -37,7 +37,7 @@ public class AuthResource {
 
     @POST
     @Path("/pass")
-    public Response olvideContraseña(@QueryParam("email") @NotEmpty String email){
+    public Response olvidePass(@QueryParam("email") @NotEmpty String email){
         boolean envioExitoso = correoUseCase.enviarCorreo(email);
         return envioExitoso ?
                 Response.ok().build() :

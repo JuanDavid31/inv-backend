@@ -4,12 +4,25 @@ services:
     build: ./db
     ports:
       - "5432:5432"
+    volumes:
+      - pgdevdata:/var/lib/postgresql/data
   backend:
     build: .
     ports:
       - "8080:8080"
-      - "8000:8000" #Debug port
-      - "49401:49401"
-      - "9999:9999"
+      - "5005:5005"
+    volumes:
+      - imgsnodo:/home
     depends_on:
       - db
+  frontend:
+    build: ./front
+    ports:
+      - "8081:80"
+    volumes:
+      - imgsnodo:/home:ro
+    depends_on:
+      - backend
+volumes:
+  imgsnodo:
+  pgdevdata:
