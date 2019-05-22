@@ -2,8 +2,10 @@ package dao;
 
 import entity.Problematica;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 
 import java.util.List;
+import java.util.Optional;
 
 public class DaoProblematica {
 
@@ -21,12 +23,13 @@ public class DaoProblematica {
                         .executeAndReturnGeneratedKeys()
                         .mapToBean(Problematica.class)
                         .findOnly();
-                handle.createUpdate("INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) " +
+                boolean seAgrego =handle.createUpdate("INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) " +
                         "VALUES(concat(:email, :id), :email, :id, :interventor)")
                         .bind("email", email)
                         .bind("interventor", true)
                         .bindBean(nuevaProblematica)
-                        .execute();
+                        .execute() > 0;
+                if (!seAgrego) handle.rollback();
             return nuevaProblematica;
         });
     }
@@ -39,14 +42,14 @@ public class DaoProblematica {
                 .list());
     }
 
-    public int darFase(int idProblematica){
+    public Optional<Integer> darFase(int idProblematica){
         return jdbi.withHandle(handle -> handle.createQuery("select c_fase from problematica where c_id = :idProblematica")
                 .bind("idProblematica", idProblematica)
                 .mapTo(Integer.class)
-                .findOnly());
+                .findFirst());
     }
 
-    public boolean avanzarFaseProblematica(int idProblematica){
+    public boolean avanzarFaseProblematica(int idProblematica) throws UnableToExecuteStatementException {
         return jdbi.withHandle(handle -> handle.createUpdate("update problematica set c_fase = c_fase + 1 where c_id = :idProblematica")
                 .bind("idProblematica", idProblematica).execute() > 0);
     }

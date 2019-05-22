@@ -26,7 +26,7 @@ class DaoEscrito(private val jdbi: Jdbi){
         }
     }
 
-    fun agregarEscrito(escrito: Escrito, idPersonaProblematica: String): Escrito {
+    fun agregarEscrito(escrito: Escrito, idPersonaProblematica: String): Escrito{
         return jdbi.withHandle<Escrito, Exception>{
             it.createUpdate("INSERT INTO ESCRITO(a_descripcion, c_id_grupo, a_id_pers_prob) VALUES(:descripcion, :idGrupo, :idPersProb)")
                 .bindBean(escrito)
@@ -37,7 +37,7 @@ class DaoEscrito(private val jdbi: Jdbi){
         }
     }
 
-    fun editarEscrito(escrito: Escrito, idPersonaProblematica: String, idEscrito: String): Boolean{
+    fun editarEscrito(escrito: Escrito, idPersonaProblematica: String, idEscrito: String): Boolean{ //TODO: Debe lanzar UnableTo...Exception
         return jdbi.withHandle<Boolean, Exception> {
             it.createUpdate("UPDATE ESCRITO SET d_descripcion = :nuevaDescripcion WHERE c_id = :idEscrito AND a_id_pers_prob = :idPersProb")
                 .bindBean(escrito)

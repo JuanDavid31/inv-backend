@@ -1,22 +1,22 @@
 package rest
 
-import dao.DaoGrupo
+import usecase.GrupoUseCase
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
 @Path("/problematicas")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-class ProblematicaReaccionResource(val daoGrupo: DaoGrupo){
+class ProblematicaReaccionResource(val GrupoUseCase: GrupoUseCase){
 
     @GET
     @Path("/{idProblematica}/reacciones")
-    fun darReacciones(@PathParam("idProblematica") idProblematica: Int) = daoGrupo.darGruposConReacciones(idProblematica)
+    fun darReacciones(@PathParam("idProblematica") idProblematica: Int) = GrupoUseCase.darGruposConReacciones(idProblematica)
 
     @GET
     @Path("/{idProblematica}/personas/{email}/reacciones}")
     fun darReaccionPorPersona(@PathParam("idProblematica") idProblematica: Int,
                               @PathParam("idProblematica") email: String) =
-            daoGrupo.darGrupoConReaccion(idProblematica, "$email$idProblematica")
+            GrupoUseCase.darGrupoConReaccion(idProblematica, "$email$idProblematica")
 
 }

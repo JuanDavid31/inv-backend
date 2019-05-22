@@ -1,9 +1,9 @@
 package rest;
 
-import dao.DaoInvitacion;
 import entity.Invitacion;
 import org.hibernate.validator.constraints.NotEmpty;
 import usecase.ProblematicaUseCase;
+import usecase.InvitacionUseCase;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -15,12 +15,11 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public class ProblematicaResource {
 
-    private final DaoInvitacion daoInvitacion;
+    private final InvitacionUseCase InvitacionUseCase;
     private final ProblematicaUseCase problematicaUseCase;
 
-    public ProblematicaResource(DaoInvitacion daoInvitacion,
-                                ProblematicaUseCase problematicaUseCase){
-        this.daoInvitacion = daoInvitacion;
+    public ProblematicaResource(InvitacionUseCase invitacionUseCase, ProblematicaUseCase problematicaUseCase){
+        this.InvitacionUseCase = invitacionUseCase;
         this.problematicaUseCase = problematicaUseCase;
     }
 
@@ -28,7 +27,7 @@ public class ProblematicaResource {
     @GET
     public Response darPersonasInvitadas(@PathParam("idProblematica") int idProblematica,
                                          @PathParam("emailRemitente") String emailRemitente){
-        List<Invitacion> personas = daoInvitacion.darPersonasInvitadas(emailRemitente, idProblematica);
+        List<Invitacion> personas = InvitacionUseCase.darPersonasInvitadas(emailRemitente, idProblematica);
         return Response.ok(personas).build();
     }
 

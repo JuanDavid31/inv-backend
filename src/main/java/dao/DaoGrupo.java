@@ -2,9 +2,11 @@ package dao;
 
 import entity.Grupo;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class DaoGrupo {
     
@@ -33,14 +35,14 @@ public class DaoGrupo {
                 .findOnly());
     }
 
-    public boolean actualizarGrupo(int idGrupo, Grupo grupo){
+    public boolean actualizarGrupo(int idGrupo, Grupo grupo) throws UnableToExecuteStatementException{
         return jdbi.withHandle(handle -> handle.createUpdate("UPDATE GRUPO SET d_nombre = :nombre where c_id = :idGrupo")
                 .bind("idGrupo", idGrupo)
                 .bindBean(grupo)
                 .execute() > 0);
     }
 
-    public boolean apadrinar(int id, int idPadre, int idProblematica){
+    public boolean apadrinar(int id, int idPadre, int idProblematica) throws UnableToExecuteStatementException{
         return jdbi.withHandle(handle ->handle.createUpdate("UPDATE GRUPO SET c_id_padre = :idPadre WHERE c_id = :id AND c_id_problematica = :idProblematica")
                 .bind("id", id)
                 .bind("idPadre", idPadre)
@@ -48,7 +50,7 @@ public class DaoGrupo {
                 .execute() > 0);
     }
 
-    public boolean desApadrinar(int id, int idProblematica){
+    public boolean desApadrinar(int id, int idProblematica) throws UnableToExecuteStatementException {
         return jdbi.withHandle(handle -> handle.createUpdate("UPDATE GRUPO SET c_id_padre = null WHERE c_id = :id AND c_id_problematica = :idProblematica")
                 .bind("id", id)
                 .bind("idProblematica", idProblematica)
@@ -64,16 +66,16 @@ public class DaoGrupo {
                 .list());
     }
 
-    public Grupo darGrupoConReaccion(int idProblematica, String idPersonaProblematica){
+    public Optional<Grupo> darGrupoConReaccion(int idProblematica, String idPersonaProblematica){
         return jdbi.withHandle(handle -> handle.createQuery("SELECT G.c_id, G.D_NOMBRE, R.c_valor FROM GRUPO G, REACCION R " +
                 "WHERE G.c_id = R.c_id_grupo AND G.c_id_problematica = :idProblematica AND R.a_id_pers_prob = :idPersonaProblematica")
                 .bind("idProblematica", idProblematica)
                 .bind("idPersonaProblematica", idPersonaProblematica)
                 .mapToBean(Grupo.class)
-                .findOnly());
+                .findFirst());
     }
 
-    public boolean eliminarGrupo(int id, int idProblematica) {
+    public boolean eliminarGrupo(int id, int idProblematica) throws UnableToExecuteStatementException {
         return jdbi.inTransaction(handle -> {
             desApadrinar(id, idProblematica);
 

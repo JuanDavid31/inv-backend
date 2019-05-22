@@ -2,6 +2,7 @@ package dao;
 
 import entity.Nodo;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 
 import java.util.List;
 
@@ -28,26 +29,26 @@ public class DaoNodo {
                     .findOnly());
     }
 
-    public boolean actualizarNodo(Nodo nodo){
+    public boolean actualizarNodo(Nodo nodo) throws UnableToExecuteStatementException {
         return jdbi.withHandle(handle -> handle.createUpdate("UPDATE NODO SET a_url_foto = :urlFoto, a_ruta_foto = :rutaFoto where c_id = :id")
                 .bindBean(nodo)
                 .execute() > 0);
     }
 
-    public boolean apadrinar(int id, int idPadre){
+    public boolean apadrinar(int id, int idPadre) throws UnableToExecuteStatementException {
         return jdbi.withHandle(handle ->handle.createUpdate("UPDATE NODO SET c_id_padre = :idPadre WHERE c_id = :id")
                     .bind("id", id)
                     .bind("idPadre", idPadre)
                     .execute() > 0);
     }
 
-    public boolean desApadrinar(int id){
+    public boolean desApadrinar(int id) throws UnableToExecuteStatementException {
         return jdbi.withHandle(handle -> handle.createUpdate("UPDATE NODO SET c_id_padre = null WHERE c_id = :id")
                 .bind("id", id)
                 .execute() > 0);
     }
 
-    public Nodo eliminarNodo(int id) {
+    public Nodo eliminarNodo(int id) throws UnableToExecuteStatementException {
         return jdbi.inTransaction(handle -> {
             desApadrinar(id);
 

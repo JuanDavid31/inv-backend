@@ -14,9 +14,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.kotlin.KotlinPlugin;
 import org.jdbi.v3.postgres.PostgresPlugin;
 import rest.*;
-import usecase.CorreoUseCase;
-import usecase.FotoUseCase;
-import usecase.ProblematicaUseCase;
+import usecase.*;
 import util.CorreoUtils;
 import util.JWTUtils;
 import ws.InteraccionWebsocketServlet;
@@ -73,32 +71,27 @@ public class App extends Application<ConfiguracionApp> {
         FotoUseCase fotoUseCase = new FotoUseCase(daoNodo);
         ProblematicaUseCase problematicaUseCase = new ProblematicaUseCase(daoProblematica);
         CorreoUseCase correoUseCase = new CorreoUseCase(daoPersona, correoUtils);
+        InvitacionUseCase invitacionUseCase = new InvitacionUseCase(daoInvitacion);
+        NodoUseCase nodoUseCase = new NodoUseCase(daoNodo);
+        GrupoUseCase grupoUseCase = new GrupoUseCase(daoGrupo);
+        ReaccionUseCase reaccionUseCase = new ReaccionUseCase(daoReaccion);
+        EscritoUseCase escritoUseCase = new EscritoUseCase(daoEscrito);
 
         //Filtros
         final AuthFilter authFilter = new AuthFilter(jwtUtils);
 
         //Resources
         final AuthResource authResource = new AuthResource(daoPersona, jwtUtils, correoUseCase);
-
-        final PersonaResource personaResource = new PersonaResource(daoPersona, daoProblematica, daoNodo);
-
-        final PersonaInvitacionResource personaInvitacionResource = new PersonaInvitacionResource(daoInvitacion);
-
-        final ProblematicaResource problematicaResource = new ProblematicaResource(daoInvitacion, problematicaUseCase);
-
+        final PersonaResource personaResource = new PersonaResource(daoPersona, problematicaUseCase, daoNodo);
+        final PersonaInvitacionResource personaInvitacionResource = new PersonaInvitacionResource(invitacionUseCase);
+        final ProblematicaResource problematicaResource = new ProblematicaResource(invitacionUseCase, problematicaUseCase);
         final InvitacionResource invitacionResource = new InvitacionResource(daoInvitacion);
-
-        final NodoResource nodoResource = new NodoResource(fotoUseCase, daoNodo);
-
-        final GrupoResource grupoResource = new GrupoResource(daoReaccion);
-
-        final ProblematicaEscritoResource problematicaEscritoResource = new ProblematicaEscritoResource(daoEscrito);
-
-        final ProblematicaReaccionResource problematicaReaccionResource = new ProblematicaReaccionResource(daoGrupo);
-
-        final ProblematicaGrupoResource problematicaGrupoResource = new ProblematicaGrupoResource(daoGrupo);
-
-        final ProblematicaPersonaResource problematicaPersonaResource = new ProblematicaPersonaResource(daoEscrito, fotoUseCase);
+        final NodoResource nodoResource = new NodoResource(fotoUseCase, nodoUseCase);
+        final GrupoResource grupoResource = new GrupoResource(reaccionUseCase);
+        final ProblematicaEscritoResource problematicaEscritoResource = new ProblematicaEscritoResource(escritoUseCase);
+        final ProblematicaReaccionResource problematicaReaccionResource = new ProblematicaReaccionResource(grupoUseCase);
+        final ProblematicaGrupoResource problematicaGrupoResource = new ProblematicaGrupoResource(grupoUseCase);
+        final ProblematicaPersonaResource problematicaPersonaResource = new ProblematicaPersonaResource(escritoUseCase, fotoUseCase);
 
         //Healthchecks
         final PlantillaHealthCheck plantillaCheck = new PlantillaHealthCheck(configuracionApp.getPlantilla());

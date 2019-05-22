@@ -15,15 +15,15 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class InvitacionResource {
 
-    private final DaoInvitacion daoInvitacion;
+    private final DaoInvitacion invitacionUseCase;
 
     public InvitacionResource(DaoInvitacion daoInvitacion){
-        this.daoInvitacion = daoInvitacion;
+        this.invitacionUseCase = daoInvitacion;
     }
 
     @POST
     public Response hacerInvitacion(Invitacion invitacion){
-        Invitacion nuevaInvitacion = daoInvitacion.agregarInvitacion(invitacion);
+        Invitacion nuevaInvitacion = invitacionUseCase.agregarInvitacion(invitacion);
         return nuevaInvitacion != null ?
                 Response.ok(nuevaInvitacion).build() :
                 Response.status(Response.Status.BAD_REQUEST).build();
@@ -36,9 +36,9 @@ public class InvitacionResource {
                                         @QueryParam("aceptar") @NotEmpty Boolean acepto){
         boolean operacionExitosa;
         if(acepto){
-            operacionExitosa = daoInvitacion.aceptarInvitacion(invitacion, idInvitacion);
+            operacionExitosa = invitacionUseCase.aceptarInvitacion(invitacion, idInvitacion);
         }else{
-            operacionExitosa = daoInvitacion.rechazarInvitacion(invitacion, idInvitacion);
+            operacionExitosa = invitacionUseCase.rechazarInvitacion(invitacion, idInvitacion);
         }
         return operacionExitosa ?
                 Response.ok().build() :
@@ -49,7 +49,7 @@ public class InvitacionResource {
     @Path("/{idInvitacion}")
     public Response eliminarInvitacion(@PathParam("idInvitacion") String idInvitacion,
                                         @Valid @NotNull Invitacion invitacion){
-        boolean seElimino = daoInvitacion.eliminarInvitacion(invitacion, idInvitacion);
+        boolean seElimino = invitacionUseCase.eliminarInvitacion(invitacion, idInvitacion);
         return seElimino ?
                 Response.ok().build() :
                 Response.status(Response.Status.BAD_REQUEST).build();

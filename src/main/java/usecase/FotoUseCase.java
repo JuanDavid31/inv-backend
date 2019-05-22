@@ -2,6 +2,7 @@ package usecase;
 
 import dao.DaoNodo;
 import entity.Nodo;
+import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 import util.FotoUtils;
 
 import java.io.IOException;
@@ -31,7 +32,12 @@ public class FotoUseCase {
     }
 
     public boolean eliminarNodoYFoto(int idNodo) {
-        Nodo nodo = daoNodo.eliminarNodo(idNodo);
-        return FotoUtils.eliminarFoto(nodo.urlFoto);
+        try{
+            Nodo nodo = daoNodo.eliminarNodo(idNodo);
+            return FotoUtils.eliminarFoto(nodo.urlFoto);
+        }catch (UnableToExecuteStatementException e){
+            return false;
+        }
+
     }
 }

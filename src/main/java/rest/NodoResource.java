@@ -1,8 +1,8 @@
 package rest;
 
-import dao.DaoNodo;
 import org.hibernate.validator.constraints.NotEmpty;
 import usecase.FotoUseCase;
+import usecase.NodoUseCase;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -14,11 +14,11 @@ import javax.ws.rs.core.Response;
 public class NodoResource {
 
     private final FotoUseCase fotoUseCase;
-    private final DaoNodo daoNodo;
+    private final NodoUseCase nodoUseCase;
 
-    public NodoResource(FotoUseCase fotoUseCase, DaoNodo daoNodo){
+    public NodoResource(FotoUseCase fotoUseCase, NodoUseCase daoNodo){
         this.fotoUseCase = fotoUseCase;
-        this.daoNodo = daoNodo;
+        this.nodoUseCase = daoNodo;
     }
 
     @Path("/{idNodo}")
@@ -28,9 +28,9 @@ public class NodoResource {
                                @QueryParam("id-padre") @NotEmpty int idPadre){
         boolean todoBien;
         if(apadrinar){
-            todoBien = daoNodo.apadrinar(idNodo, idPadre);
+            todoBien = nodoUseCase.apadrinar(idNodo, idPadre);
         }else{
-            todoBien = daoNodo.desApadrinar(idNodo);
+            todoBien = nodoUseCase.desApadrinar(idNodo);
         }
         return todoBien ?
                 Response.ok().build() :

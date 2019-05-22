@@ -1,15 +1,15 @@
 package rest
 
-import dao.DaoEscrito
+import usecase.EscritoUseCase
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
 @Path("/problematicas")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-class ProblematicaEscritoResource(val daoEscrito: DaoEscrito){
+class ProblematicaEscritoResource(val escritoUseCase: EscritoUseCase){
 
     @GET
     @Path("/{idProblematica}/escritos")
-    fun darEscritosPorProblematica(@PathParam("idproblematica") idProblematica: Int) = daoEscrito.darEscritosPorProblematica(idProblematica)
+    fun darEscritosPorProblematica(@PathParam("idproblematica") idProblematica: Int) = escritoUseCase.darEscritosPorProblematica(idProblematica)
 }

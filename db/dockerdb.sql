@@ -54,7 +54,7 @@ CREATE TABLE INVITACION
 );
 
 ALTER TABLE INVITACION
-    add constraint PK_INVICATION primary key (a_id);
+    add constraint PK_INVITACION primary key (a_id);
 ALTER TABLE INVITACION
     add constraint FK_REMITENTE foreign key (a_email_remitente) REFERENCES PERSONA (a_email);
 ALTER TABLE INVITACION
@@ -147,6 +147,8 @@ BEGIN
             EXECUTE 'TRUNCATE TABLE ' || quote_ident(stmt.tablename) || ' CASCADE;';
         END LOOP;
     ALTER SEQUENCE problematica_c_id_seq RESTART WITH 1;
+    ALTER SEQUENCE grupo_c_id_seq RESTART WITH 1;
+    ALTER SEQUENCE nodo_c_id_seq RESTART WITH 1;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -214,19 +216,19 @@ BEGIN
     VALUES ('juan1@.com2', 'juan1@.com', 2, true);
 
     INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor)
-    VALUES ('david4@.com1', 'david4@.com', 2, false);
+    VALUES ('david4@.com2', 'david4@.com', 2, false);
     INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor)
-    VALUES ('david5@.com1', 'david5@.com', 2, false);
+    VALUES ('david5@.com2', 'david5@.com', 2, false);
     INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor)
-    VALUES ('david6@.com1', 'david6@.com', 2, false);
+    VALUES ('david6@.com2', 'david6@.com', 2, false);
     INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor)
-    VALUES ('david7@.com1', 'david7@.com', 2, false);
+    VALUES ('david7@.com2', 'david7@.com', 2, false);
     INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor)
-    VALUES ('david8@.com1', 'david8@.com', 2, false);
+    VALUES ('david8@.com2', 'david8@.com', 2, false);
     INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor)
-    VALUES ('david9@.com1', 'david9@.com', 2, false);
+    VALUES ('david9@.com2', 'david9@.com', 2, false);
     INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor)
-    VALUES ('david10@.com1', 'david10@.com', 2, false);
+    VALUES ('david10@.com2', 'david10@.com', 2, false);
 
 
     INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente,
@@ -340,6 +342,83 @@ BEGIN
     INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente,
                            b_para_interventor, b_rechazada)
     VALUES ('david1@.com', 'juan10@.com', 2, '2david1@.comjuan10@.com', true, false, false);
+
+
+    INSERT INTO GRUPO(c_id_problematica, c_id_padre, d_nombre) VALUES(1, null, 'Grupo 1-1');
+    INSERT INTO GRUPO(c_id_problematica, c_id_padre, d_nombre) VALUES(1, 1, 'Grupo 1-2');
+    INSERT INTO GRUPO(c_id_problematica, c_id_padre, d_nombre) VALUES(1, 2, 'Grupo 1-3');
+    INSERT INTO GRUPO(c_id_problematica, c_id_padre, d_nombre) VALUES(1, 3, 'Grupo 1-4');
+    INSERT INTO GRUPO(c_id_problematica, c_id_padre, d_nombre) VALUES(1, 4, 'Grupo 1-5');
+
+    INSERT INTO GRUPO(c_id_problematica, c_id_padre, d_nombre) VALUES(2, null, 'Grupo 2-1');
+    INSERT INTO GRUPO(c_id_problematica, c_id_padre, d_nombre) VALUES(2, 6, 'Grupo 2-2');
+    INSERT INTO GRUPO(c_id_problematica, c_id_padre, d_nombre) VALUES(2, 7, 'Grupo 2-3');
+    INSERT INTO GRUPO(c_id_problematica, c_id_padre, d_nombre) VALUES(2, 8, 'Grupo 2-4');
+
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan1@.com1', '', '', null, 1);
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan1@.com1', '', '', 1, 1);
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan1@.com1', '', '', 2, 1);
+
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan1@.com1', '', '', 3, 2);
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan1@.com1', '', '', 4, 2);
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan1@.com1', '', '', 5, 2);
+
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan2@.com1', '', '', null, 3);
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan3@.com1', '', '', null, 3);
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan4@.com1', '', '', null, 3);
+
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan5@.com1', '', '', null, 4);
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan6@.com1', '', '', null, 4);
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan7@.com1', '', '', null, 4);
+
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan8@.com1', '', '', null, 5);
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan9@.com1', '', '', null, 5);
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan10@.com1', '', '', null, 5);
+
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david1@.com2', '', '', null, 6); --16
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david1@.com2', '', '', 16, 6);
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david1@.com2', '', '', 17, 6);
+
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david2@.com2', '', '', null, 7); --19
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david2@.com2', '', '', 19, 7);
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david2@.com2', '', '', 20, 7);
+
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david3@.com2', '', '', null, 8); --22
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david3@.com2', '', '', 22, 8);
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david3@.com2', '', '', 23, 8);
+
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david4@.com2', '', '', null, 9); --25
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david4@.com2', '', '', 25, 9);
+    INSERT INTO NODO(a_id_pers_prob, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david4@.com2', '', '', 26, 9);
+
+    INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(1, 1, 'juan1@.com1');
+    INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(0, 3, 'juan2@.com1');
+    INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(1, 2, 'juan3@.com1');
+    INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(-1, 1, 'juan4@.com1');
+    INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(1, 5, 'juan5@.com1');
+    INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(0, 1, 'juan6@.com1');
+    INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(1, 4, 'juan7@.com1');
+    INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(-1, 3, 'juan8@.com1');
+    INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(0, 4, 'juan9@.com1');
+    INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(-1, 1, 'juan10@.com1'); --Gano el 1
+
+    INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(1, 6, 'david1@.com2');--
+    INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(1, 7, 'david2@.com2');
+    INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(1, 8, 'david3@.com2');
+    INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(0, 9, 'david4@.com2');
+    INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(0, 9, 'david5@.com2');
+    INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(0, 8, 'david6@.com2');
+    INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(-1, 7, 'david7@.com2');
+    INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(-1, 6, 'david8@.com2');
+    INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(-1, 7, 'david9@.com2');
+    INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(-1, 6, 'david10@.com2');
+
+    --Grupo 1-1 tiene la mayor puntuación con una reacción negativa
+    --10 Escritos
+    --insert into ESCRITO() VALUES();
+
+    --Grupo 2-4 tiene la mayor puntuación con una reacción neutra
+    --10 Escritos
 
 END;
 $$ LANGUAGE plpgsql;

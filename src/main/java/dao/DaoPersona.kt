@@ -4,7 +4,7 @@ import entity.Persona
 import org.jdbi.v3.core.Jdbi
 import java.util.*
 
-class DaoPersona(val jdbi: Jdbi){
+class DaoPersona(val jdbi: Jdbi){ //Por ahora no necesita useCase
 
     fun agregarPersona(persona: Persona): Persona{
         return jdbi.withHandle<Persona, Exception>{
@@ -16,12 +16,12 @@ class DaoPersona(val jdbi: Jdbi){
         }
     }
 
-    fun darPersonaPorCredenciales(persona: Persona): Persona{
-        return jdbi.withHandle<Persona, Exception>{
+    fun darPersonaPorCredenciales(persona: Persona): Optional<Persona> {
+        return jdbi.withHandle<Optional<Persona>, Exception>{
             it.createQuery("Select d_nombre, a_email FROM PERSONA WHERE a_email = :email AND a_pass_hasheado = :pass")
                     .bindBean(persona)
                     .mapToBean(Persona::class.java)
-                    .findOnly()
+                    .findFirst()
         }
     }
 

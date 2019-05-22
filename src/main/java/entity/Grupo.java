@@ -67,4 +67,16 @@ public class Grupo {
     public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
     }
+
+    @Override
+    public String toString() {
+        return "Grupo{" +
+                "id=" + id +
+                ", idPadre=" + idPadre +
+                ", nombre='" + nombre + '\'' +
+                ", idProblematica=" + idProblematica +
+                ", reaccion=" + reaccion +
+                ", cantidad=" + cantidad +
+                '}';
+    }
 }

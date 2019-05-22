@@ -1,13 +1,12 @@
 package rest;
 
-import dao.DaoInvitacion;
 import dao.DaoNodo;
 import dao.DaoPersona;
-import dao.DaoProblematica;
 import entity.Nodo;
 import entity.Persona;
 import entity.Problematica;
 import filter.VerificadorAuth;
+import usecase.ProblematicaUseCase;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -15,7 +14,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.Map;
 
 @Path("/personas")
 @Produces(MediaType.APPLICATION_JSON)
@@ -23,12 +21,12 @@ import java.util.Map;
 public class PersonaResource {
 
     private final DaoPersona daoPersona;
-    private final DaoProblematica daoProblematica;
+    private final ProblematicaUseCase problematicaUseCase;
     private final DaoNodo daoNodo;
 
-    public PersonaResource(DaoPersona daoPersona, DaoProblematica daoProblematica, DaoNodo daoNodo) {
+    public PersonaResource(DaoPersona daoPersona, ProblematicaUseCase problematicaUseCase, DaoNodo daoNodo) {
         this.daoPersona = daoPersona;
-        this.daoProblematica = daoProblematica;
+        this.problematicaUseCase = problematicaUseCase;
         this.daoNodo = daoNodo;
     }
 
@@ -42,7 +40,7 @@ public class PersonaResource {
     @Path("/{email}/problematicas")
     @VerificadorAuth
     public Response darProblematicasPorPersona(@PathParam("email") String email){
-        List<Problematica> problematicas = daoProblematica.darProblematicasPorPersona(email);
+        List<Problematica> problematicas = problematicaUseCase.darProblematicasPorPersona(email);
         return Response.ok(problematicas).build();
     }
 
@@ -53,7 +51,7 @@ public class PersonaResource {
                                                   Problematica problematica){
         Problematica nuevaProblematica;
         try{
-            nuevaProblematica = daoProblematica.agregarProblematicaPorPersona(email, problematica);
+            nuevaProblematica = problematicaUseCase.agregarProblematicaPorPersona(email, problematica);
         }catch (Exception e){
             e.printStackTrace();
             return Response.status(Response.Status.BAD_REQUEST).build();

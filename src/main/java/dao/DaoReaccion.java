@@ -1,6 +1,7 @@
 package dao;
 
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 
 public class DaoReaccion {
 
@@ -19,7 +20,7 @@ public class DaoReaccion {
                 .execute() > 0);
     }
 
-    public boolean eliminarReaccion(int idGrupo, String idPersonaProblematica){
+    public boolean eliminarReaccion(int idGrupo, String idPersonaProblematica) throws UnableToExecuteStatementException {
         return jdbi.withHandle(handle ->
                 handle.createUpdate("DELETE FROM REACCION WHERE c_id_grupo = :idGrupo AND a_id_pers_prob = :idPersonaProblematica")
                 .bind("idGrupo", idGrupo)

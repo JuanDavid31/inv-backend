@@ -1,6 +1,6 @@
 package rest;
 
-import dao.DaoReaccion;
+import usecase.ReaccionUseCase;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -11,10 +11,10 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class GrupoResource {
 
-    private final DaoReaccion daoReaccion;
+    private final ReaccionUseCase daoReaccion;
 
-    public GrupoResource(DaoReaccion daoReaccion){
-        this.daoReaccion = daoReaccion;
+    public GrupoResource(ReaccionUseCase ReaccionUseCase){
+        this.daoReaccion = ReaccionUseCase;
     }
 
     @POST
