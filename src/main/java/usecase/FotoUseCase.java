@@ -34,8 +34,9 @@ public class FotoUseCase {
     public boolean eliminarNodoYFoto(int idNodo) {
         try{
             Nodo nodo = daoNodo.eliminarNodo(idNodo);
-            return FotoUtils.eliminarFoto(nodo.urlFoto);
+            return FotoUtils.eliminarFoto(nodo.rutaFoto);
         }catch (UnableToExecuteStatementException e){
+            e.printStackTrace();
             return false;
         }
 

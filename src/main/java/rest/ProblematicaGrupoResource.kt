@@ -11,7 +11,7 @@ import javax.ws.rs.core.Response
 @Consumes(MediaType.APPLICATION_JSON)
 class ProblematicaGrupoResource(val grupoUseCase: GrupoUseCase){
 
-    @Path("/{idProblematica}/grupos")
+    @Path("/{idProblematica}/gruposActivos")
     @GET
     fun darGrupos(@PathParam("idProblematica") idProblematica: Int) =
             grupoUseCase.darGrupos(idProblematica)
@@ -19,10 +19,10 @@ class ProblematicaGrupoResource(val grupoUseCase: GrupoUseCase){
     //TODO: Probablemente esto sea reemplazado por los Websockets
 
     @POST
-    @Path("/{idProblematica}/grupos")
+    @Path("/{idProblematica}/gruposActivos")
     fun agregarGrupo(@PathParam("idProblematica") idProblematica: Int, grupo: Grupo) = grupoUseCase.agregarGrupo(idProblematica, grupo)
 
-    @Path("/{idProblematica}/grupos/{idGrupo}")
+    @Path("/{idProblematica}/gruposActivos/{idGrupo}")
     @DELETE
     fun eliminarGrupo(@PathParam("idProblematica") idProblematica: Int,
                       @PathParam("idGrupo") idGrupo: Int): Response {

@@ -30,7 +30,7 @@ class NodoUseCase(val daoNodo: DaoNodo) {
 
     fun desApadrinar(id: Int): Boolean {
         return try {
-            daoNodo.desApadrinar(id)
+            daoNodo.eliminarHijos(id)
         } catch (e: UnableToExecuteStatementException) {
             e.printStackTrace()
             return false

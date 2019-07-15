@@ -22,7 +22,7 @@ public class DaoNodo {
     }
 
     public int agregarNodo(Nodo nodo){
-        return jdbi.withHandle(handle ->handle.createUpdate("INSERT INTO NODO(a_id_pers_prob) VALUES(concat(:email, :idProblematica))")
+        return jdbi.withHandle(handle ->handle.createUpdate("INSERT INTO NODO(a_id_pers_prob, a_nombre) VALUES(concat(:email, :idProblematica), :nombre)")
                     .bindBean(nodo)
                     .executeAndReturnGeneratedKeys()
                     .mapTo(Integer.class)
@@ -42,15 +42,22 @@ public class DaoNodo {
                     .execute() > 0);
     }
 
-    public boolean desApadrinar(int id) throws UnableToExecuteStatementException {
-        return jdbi.withHandle(handle -> handle.createUpdate("UPDATE NODO SET c_id_padre = null WHERE c_id = :id")
-                .bind("id", id)
+    /**
+     * Dado el id del nodo padre, se buscara todo nodo hijo y se eliminara la relación entre ellos.
+     * Los nodos hijos perderan a su padre.
+     * @param idPadre
+     * @return
+     * @throws UnableToExecuteStatementException
+     */
+    public boolean eliminarHijos(int idPadre) throws UnableToExecuteStatementException {
+        return jdbi.withHandle(handle -> handle.createUpdate("UPDATE NODO SET c_id_padre = null WHERE c_id_padre = :id")
+                .bind("id", idPadre)
                 .execute() > 0);
     }
 
     public Nodo eliminarNodo(int id) throws UnableToExecuteStatementException {
         return jdbi.inTransaction(handle -> {
-            desApadrinar(id);
+            eliminarHijos(id);
 
             return handle.createUpdate("DELETE FROM NODO WHERE c_id = :id")
                     .bind("id", id)

@@ -6,16 +6,13 @@ public class PlantillaHealthCheck extends HealthCheck {
 
     private String plantilla;
 
-    public PlantillaHealthCheck(String plantilla){
-        this.plantilla = plantilla;
+    public PlantillaHealthCheck(){
+
     }
 
     @Override
     protected Result check() throws Exception {
-        final String saying = String.format(plantilla, "TEST");
-        if (!saying.contains("TEST")) {
-            return Result.unhealthy("La plantilla no agregar nombres");
-        }
+        /*return Result.unhealthy("La plantilla no agregar nombres");*/
         return Result.healthy();
     }
 }

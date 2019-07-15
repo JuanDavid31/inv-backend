@@ -4,6 +4,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import usecase.FotoUseCase;
 import usecase.NodoUseCase;
 
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -24,8 +25,8 @@ public class NodoResource {
     @Path("/{idNodo}")
     @PUT
     public Response editarNodo(@PathParam("idNodo") int idNodo,
-                               @QueryParam("apadrinar") @NotEmpty Boolean apadrinar,
-                               @QueryParam("id-padre") @NotEmpty int idPadre){
+                               @QueryParam("apadrinar") @NotNull Boolean apadrinar,
+                               @QueryParam("id-padre") @NotNull int idPadre){
         boolean todoBien;
         if(apadrinar){
             todoBien = nodoUseCase.apadrinar(idNodo, idPadre);

@@ -80,6 +80,7 @@ ALTER TABLE GRUPO
 CREATE TABLE NODO
 (
     c_id           serial       not null,
+    a_nombre       varchar(20) not null,
     a_id_pers_prob varchar(40)  not null,
     a_url_foto     varchar(250),
     a_ruta_foto varchar(250),

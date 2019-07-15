@@ -42,7 +42,7 @@ public class GrupoUseCaseTest {
     @Test
     public void darGruposConReacciones(){
         List<Grupo> grupos = grupoUseCase.darGruposConReacciones(2);
-        System.out.println("Tamaño grupos - " + grupos.size());
+        System.out.println("Tamaño gruposActivos - " + grupos.size());
         grupos.forEach(grupo -> System.out.println(grupo));
     }
 }

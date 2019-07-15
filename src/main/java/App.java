@@ -9,6 +9,7 @@ import io.dropwizard.jdbi3.bundles.JdbiExceptionsBundle;
 import io.dropwizard.jersey.jackson.JsonProcessingExceptionMapper;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.kotlin.KotlinPlugin;
@@ -17,9 +18,13 @@ import rest.*;
 import usecase.*;
 import util.CorreoUtils;
 import util.JWTUtils;
+import util.SingletonUtils;
 import ws.InteraccionWebsocketServlet;
 
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
 import javax.servlet.ServletRegistration;
+import java.util.EnumSet;
 
 public class App extends Application<ConfiguracionApp> {
 
@@ -41,12 +46,24 @@ public class App extends Application<ConfiguracionApp> {
     }
 
     public void run(ConfiguracionApp configuracionApp, Environment environment) throws Exception {
+
+        // Enable CORS headers
+        final FilterRegistration.Dynamic cors = environment.servlets().addFilter("CORS", CrossOriginFilter.class);
+
+        // Configure CORS parameters
+        cors.setInitParameter(CrossOriginFilter.ACCESS_CONTROL_ALLOW_ORIGIN_HEADER, "*");
+        cors.setInitParameter(CrossOriginFilter.ACCESS_CONTROL_ALLOW_HEADERS_HEADER, "X-Requested-With,Content-Type,Accept,Origin,extension");
+        cors.setInitParameter(CrossOriginFilter.ACCESS_CONTROL_ALLOW_METHODS_HEADER, "GET,PUT,POST,DELETE,OPTIONS,HEAD");
+
+        // Add URL mapping
+        cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+
+        //-------------------------------------------------------------------------------------------------------
+
+        //ws://localhost:8080/colaboracion
         ServletRegistration.Dynamic miServlet = environment.servlets().addServlet("miServlet", new InteraccionWebsocketServlet());
         miServlet.setAsyncSupported(true);
-        miServlet.addMapping("/ws/*");
-
-        System.out.println(configuracionApp.adminEmail);
-        System.out.println(configuracionApp.adminPass);
+        miServlet.addMapping("/colaboracion/*");
 
         //Utils
         JWTUtils jwtUtils = new JWTUtils(configuracionApp.jwtKey);
@@ -89,12 +106,12 @@ public class App extends Application<ConfiguracionApp> {
         final NodoResource nodoResource = new NodoResource(fotoUseCase, nodoUseCase);
         final GrupoResource grupoResource = new GrupoResource(reaccionUseCase);
         final ProblematicaEscritoResource problematicaEscritoResource = new ProblematicaEscritoResource(escritoUseCase);
-        final ProblematicaReaccionResource problematicaReaccionResource = new ProblematicaReaccionResource(grupoUseCase);
+        final ProblematicaReaccionResource problematicaReaccionResource = new ProblematicaReaccionResource(SingletonUtils.guardarGrupoUseCase(grupoUseCase));
         final ProblematicaGrupoResource problematicaGrupoResource = new ProblematicaGrupoResource(grupoUseCase);
         final ProblematicaPersonaResource problematicaPersonaResource = new ProblematicaPersonaResource(escritoUseCase, fotoUseCase);
 
         //Healthchecks
-        final PlantillaHealthCheck plantillaCheck = new PlantillaHealthCheck(configuracionApp.getPlantilla());
+        final PlantillaHealthCheck plantillaCheck = new PlantillaHealthCheck();
 
         //Registro de resouces y otras cosas
         environment.jersey().register(MultiPartFeature.class);

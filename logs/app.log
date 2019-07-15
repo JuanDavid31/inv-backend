@@ -1,0 +1,88 @@
+INFO  [2019-05-29 02:47:43,982] io.dropwizard.server.DefaultServerFactory: Registering jersey handler with root path prefix: /
+INFO  [2019-05-29 02:47:43,991] io.dropwizard.server.DefaultServerFactory: Registering admin handler with root path prefix: /
+INFO  [2019-05-29 02:47:45,226] io.dropwizard.server.ServerFactory: Starting App investigación
+INFO  [2019-05-29 02:47:45,591] org.eclipse.jetty.setuid.SetUIDListener: Opened application@3c66b7d8{HTTP/1.1,[http/1.1]}{0.0.0.0:8080}
+INFO  [2019-05-29 02:47:45,594] org.eclipse.jetty.setuid.SetUIDListener: Opened admin@37e69c43{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2019-05-29 02:47:45,598] org.eclipse.jetty.server.Server: jetty-9.4.14.v20181114; built: 2018-11-14T21:20:31.478Z; git: c4550056e785fb5665914545889f21dc136ad9e6; jvm 1.8.0_212-b10
+INFO  [2019-05-29 02:47:48,476] io.dropwizard.jersey.DropwizardResourceConfig: The following paths were found for the configured resources:
+
+    POST    /auth (rest.AuthResource)
+    POST    /auth/pass (rest.AuthResource)
+    POST    /grupos/{idGrupo}/reacciones (rest.GrupoResource)
+    POST    /invitaciones (rest.InvitacionResource)
+    DELETE  /invitaciones/{idInvitacion} (rest.InvitacionResource)
+    PUT     /invitaciones/{idInvitacion} (rest.InvitacionResource)
+    DELETE  /nodos/{idNodo} (rest.NodoResource)
+    PUT     /nodos/{idNodo} (rest.NodoResource)
+    POST    /personas (rest.PersonaResource)
+    GET     /personas/{email}/invitaciones (rest.PersonaInvitacionResource)
+    GET     /personas/{email}/problematicas (rest.PersonaResource)
+    POST    /personas/{email}/problematicas (rest.PersonaResource)
+    GET     /personas/{email}/problematicas/{idProblematica}/nodos (rest.PersonaResource)
+    POST    /problematicas/{idProblematica} (rest.ProblematicaResource)
+    GET     /problematicas/{idProblematica}/escritos (rest.ProblematicaEscritoResource)
+    GET     /problematicas/{idProblematica}/grupos (rest.ProblematicaGrupoResource)
+    POST    /problematicas/{idProblematica}/grupos (rest.ProblematicaGrupoResource)
+    DELETE  /problematicas/{idProblematica}/grupos/{idGrupo} (rest.ProblematicaGrupoResource)
+    GET     /problematicas/{idProblematica}/personas/{emailRemitente}/invitaciones (rest.ProblematicaResource)
+    GET     /problematicas/{idProblematica}/personas/{email}/escritos (rest.ProblematicaPersonaResource)
+    POST    /problematicas/{idProblematica}/personas/{email}/escritos (rest.ProblematicaPersonaResource)
+    PUT     /problematicas/{idProblematica}/personas/{email}/escritos/{idEscrito} (rest.ProblematicaPersonaResource)
+    POST    /problematicas/{idProblematica}/personas/{email}/nodos (rest.ProblematicaPersonaResource)
+    GET     /problematicas/{idProblematica}/personas/{email}/reacciones} (rest.ProblematicaReaccionResource)
+    GET     /problematicas/{idProblematica}/reacciones (rest.ProblematicaReaccionResource)
+
+INFO  [2019-05-29 02:47:48,581] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@53a301f3{/,null,AVAILABLE}
+INFO  [2019-05-29 02:47:48,594] io.dropwizard.setup.AdminEnvironment: tasks = 
+
+    POST    /tasks/log-level (io.dropwizard.servlets.tasks.LogConfigurationTask)
+    POST    /tasks/gc (io.dropwizard.servlets.tasks.GarbageCollectionTask)
+
+INFO  [2019-05-29 02:47:48,616] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@626c569b{/,null,AVAILABLE}
+INFO  [2019-05-29 02:47:48,670] org.eclipse.jetty.server.AbstractConnector: Started application@3c66b7d8{HTTP/1.1,[http/1.1]}{0.0.0.0:8080}
+INFO  [2019-05-29 02:47:48,681] org.eclipse.jetty.server.AbstractConnector: Started admin@37e69c43{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2019-05-29 02:47:48,681] org.eclipse.jetty.server.Server: Started @9308ms
+INFO  [2019-05-29 02:57:46,920] io.dropwizard.server.DefaultServerFactory: Registering jersey handler with root path prefix: /
+INFO  [2019-05-29 02:57:46,925] io.dropwizard.server.DefaultServerFactory: Registering admin handler with root path prefix: /
+INFO  [2019-05-29 02:57:47,879] io.dropwizard.server.ServerFactory: Starting App investigación
+INFO  [2019-05-29 02:57:48,494] org.eclipse.jetty.setuid.SetUIDListener: Opened application@3e8b3b79{HTTP/1.1,[http/1.1]}{0.0.0.0:8080}
+INFO  [2019-05-29 02:57:48,496] org.eclipse.jetty.setuid.SetUIDListener: Opened admin@d257579{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2019-05-29 02:57:48,500] org.eclipse.jetty.server.Server: jetty-9.4.14.v20181114; built: 2018-11-14T21:20:31.478Z; git: c4550056e785fb5665914545889f21dc136ad9e6; jvm 1.8.0_212-b10
+INFO  [2019-05-29 02:57:51,972] io.dropwizard.jersey.DropwizardResourceConfig: The following paths were found for the configured resources:
+
+    POST    /auth (rest.AuthResource)
+    POST    /auth/pass (rest.AuthResource)
+    POST    /grupos/{idGrupo}/reacciones (rest.GrupoResource)
+    POST    /invitaciones (rest.InvitacionResource)
+    DELETE  /invitaciones/{idInvitacion} (rest.InvitacionResource)
+    PUT     /invitaciones/{idInvitacion} (rest.InvitacionResource)
+    DELETE  /nodos/{idNodo} (rest.NodoResource)
+    PUT     /nodos/{idNodo} (rest.NodoResource)
+    POST    /personas (rest.PersonaResource)
+    GET     /personas/{email}/invitaciones (rest.PersonaInvitacionResource)
+    GET     /personas/{email}/problematicas (rest.PersonaResource)
+    POST    /personas/{email}/problematicas (rest.PersonaResource)
+    GET     /personas/{email}/problematicas/{idProblematica}/nodos (rest.PersonaResource)
+    POST    /problematicas/{idProblematica} (rest.ProblematicaResource)
+    GET     /problematicas/{idProblematica}/escritos (rest.ProblematicaEscritoResource)
+    GET     /problematicas/{idProblematica}/grupos (rest.ProblematicaGrupoResource)
+    POST    /problematicas/{idProblematica}/grupos (rest.ProblematicaGrupoResource)
+    DELETE  /problematicas/{idProblematica}/grupos/{idGrupo} (rest.ProblematicaGrupoResource)
+    GET     /problematicas/{idProblematica}/personas/{emailRemitente}/invitaciones (rest.ProblematicaResource)
+    GET     /problematicas/{idProblematica}/personas/{email}/escritos (rest.ProblematicaPersonaResource)
+    POST    /problematicas/{idProblematica}/personas/{email}/escritos (rest.ProblematicaPersonaResource)
+    PUT     /problematicas/{idProblematica}/personas/{email}/escritos/{idEscrito} (rest.ProblematicaPersonaResource)
+    POST    /problematicas/{idProblematica}/personas/{email}/nodos (rest.ProblematicaPersonaResource)
+    GET     /problematicas/{idProblematica}/personas/{email}/reacciones} (rest.ProblematicaReaccionResource)
+    GET     /problematicas/{idProblematica}/reacciones (rest.ProblematicaReaccionResource)
+
+INFO  [2019-05-29 02:57:52,041] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@3404e5c4{/,null,AVAILABLE}
+INFO  [2019-05-29 02:57:52,053] io.dropwizard.setup.AdminEnvironment: tasks = 
+
+    POST    /tasks/log-level (io.dropwizard.servlets.tasks.LogConfigurationTask)
+    POST    /tasks/gc (io.dropwizard.servlets.tasks.GarbageCollectionTask)
+
+INFO  [2019-05-29 02:57:52,067] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@437281c5{/,null,AVAILABLE}
+INFO  [2019-05-29 02:57:52,097] org.eclipse.jetty.server.AbstractConnector: Started application@3e8b3b79{HTTP/1.1,[http/1.1]}{0.0.0.0:8080}
+INFO  [2019-05-29 02:57:52,103] org.eclipse.jetty.server.AbstractConnector: Started admin@d257579{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2019-05-29 02:57:52,103] org.eclipse.jetty.server.Server: Started @11249ms

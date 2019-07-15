@@ -9,7 +9,6 @@ public class InteraccionWebsocketServlet extends WebSocketServlet {
     @Override
     public void configure(WebSocketServletFactory factory) {
         factory.getPolicy().setIdleTimeout(1000 * 60 * 10);
-
         factory.register(EndPoint.class);
     }
 }

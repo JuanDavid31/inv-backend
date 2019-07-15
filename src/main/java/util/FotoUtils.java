@@ -9,9 +9,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class FotoUtils {
-    //TODO: Las imagenes se estan guardando con .. antes de la extensión
+
     private final static String DIRECTORIO = "/home/nodos";
-    private final static String DOMINIO = "localhost:8081/nodos";
+    private final static String DOMINIO = "http://localhost:8081/nodos";
 
     public static String guardarFotoEnDirectorioYDarUrl(Nodo nuevoNodo, InputStream foto, String extensionFoto) throws IOException {
         String rutaArchivo = FotoUtils.crearDirectorioYDarRutaArchivo(nuevoNodo, extensionFoto);

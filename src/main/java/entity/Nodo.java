@@ -6,6 +6,7 @@ public class Nodo {
 
     public int id;
     public String email;
+    public String nombre;
     public int idProblematica;
     public String urlFoto;
     public String rutaFoto;
@@ -15,7 +16,8 @@ public class Nodo {
 
     }
 
-    public Nodo(String email, int idProblematica) {
+    public Nodo(String nombre, String email, int idProblematica) {
+        this.nombre = nombre;
         this.email = email;
         this.idProblematica = idProblematica;
     }
@@ -27,6 +29,15 @@ public class Nodo {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @ColumnName("a_nombre")
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public String getEmail() {

@@ -14,6 +14,10 @@ public class Grupo {
     public Grupo() {
     }
 
+    public Grupo(String nombre){
+        this.nombre = nombre;
+    }
+
     @ColumnName("c_id")
     public int getId() {
         return id;

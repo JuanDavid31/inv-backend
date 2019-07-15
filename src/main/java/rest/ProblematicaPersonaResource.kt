@@ -18,12 +18,14 @@ class ProblematicaPersonaResource(val escritoUseCase: EscritoUseCase, val fotoUs
 
     @Path("/{idProblematica}/personas/{email}/nodos")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
     @POST
     fun subirNodo(@NotNull @HeaderParam("extension") extensionFoto: String,
                   @NotNull @FormDataParam("foto") foto: InputStream,
+                  @NotNull @FormDataParam("nombre") nombre: String,
                   @PathParam("email") email: String,
                   @PathParam("idProblematica") idProblematica: Int): Response {
-        val nodo = fotoUseCase.guardarFoto(Nodo(email, idProblematica), foto, extensionFoto)
+        val nodo = fotoUseCase.guardarFoto(Nodo(nombre, email, idProblematica), foto, extensionFoto)
         return if (nodo != null) Response.ok(nodo).build() else Response.status(Response.Status.BAD_REQUEST).build()
     }
 
@@ -34,7 +36,6 @@ class ProblematicaPersonaResource(val escritoUseCase: EscritoUseCase, val fotoUs
         val optionalEscrito = escritoUseCase.darEscritoPorPersona("$email$idProblematica")
         return if(optionalEscrito.isPresent)return Response.ok(optionalEscrito.get()).build() else Response.ok().build()
     }
-
 
     @POST
     @Path("/{idProblematica}/personas/{email}/escritos")
