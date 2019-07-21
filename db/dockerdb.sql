@@ -5,8 +5,9 @@ GRANT ALL ON SCHEMA public TO public;
 
 CREATE TABLE PERSONA
 (
-    a_email         varchar(30)  not null,
-    d_nombre        varchar(30)  not null,
+    a_email         varchar(45)  not null,
+    d_nombres       varchar(30)  not null,
+    d_apellidos     varchar(30)  not null,
     a_pass_hasheado varchar(150) not null
 );
 
@@ -30,7 +31,7 @@ alter table PROBLEMATICA
 CREATE TABLE PERSONA_PROBLEMATICA
 (
     a_id              varchar(40) not null,
-    a_email           varchar(30) not null,
+    a_email           varchar(45) not null,
     c_id_problematica int         not null,
     b_interventor     boolean     not null
 );
@@ -44,8 +45,8 @@ ALTER TABLE PERSONA_PROBLEMATICA
 
 CREATE TABLE INVITACION
 (
-    a_email_remitente    varchar(30)  not null,
-    a_email_destinatario varchar(30)  not null,
+    a_email_remitente    varchar(45)  not null,
+    a_email_destinatario varchar(45)  not null,
     c_id_problematica    int          not null,
     a_id                 varchar(100) not null,
     b_vigente            boolean      not null,

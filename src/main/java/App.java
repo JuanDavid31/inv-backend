@@ -71,9 +71,9 @@ public class App extends Application<ConfiguracionApp> {
 
         //JDBI y plugins
         final JdbiFactory factory = new JdbiFactory();
-        final Jdbi jdbi = factory.build(environment, configuracionApp.getDataSourceFactory(), "postgres");
-        jdbi.installPlugin(new PostgresPlugin());
-        jdbi.installPlugin(new KotlinPlugin());
+        final Jdbi jdbi = factory.build(environment, configuracionApp.getDataSourceFactory(), "postgres")
+                .installPlugin(new PostgresPlugin())
+                .installPlugin(new KotlinPlugin());
 
         //DAOs
         DaoPersona daoPersona = new DaoPersona(jdbi);
@@ -93,13 +93,14 @@ public class App extends Application<ConfiguracionApp> {
         GrupoUseCase grupoUseCase = new GrupoUseCase(daoGrupo);
         ReaccionUseCase reaccionUseCase = new ReaccionUseCase(daoReaccion);
         EscritoUseCase escritoUseCase = new EscritoUseCase(daoEscrito);
+        PersonaUseCase personaUseCase = new PersonaUseCase(correoUtils, jwtUtils, daoPersona);
 
         //Filtros
         final AuthFilter authFilter = new AuthFilter(jwtUtils);
 
         //Resources
-        final AuthResource authResource = new AuthResource(daoPersona, jwtUtils, correoUseCase);
-        final PersonaResource personaResource = new PersonaResource(daoPersona, problematicaUseCase, daoNodo);
+        final AuthResource authResource = new AuthResource(personaUseCase, correoUseCase);
+        final PersonaResource personaResource = new PersonaResource(problematicaUseCase, personaUseCase, daoNodo);
         final PersonaInvitacionResource personaInvitacionResource = new PersonaInvitacionResource(invitacionUseCase);
         final ProblematicaResource problematicaResource = new ProblematicaResource(invitacionUseCase, problematicaUseCase);
         final InvitacionResource invitacionResource = new InvitacionResource(daoInvitacion);

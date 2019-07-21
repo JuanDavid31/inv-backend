@@ -17,7 +17,7 @@ public class JWTUtils {
         this.key = jwtKey;
     }
 
-    public String darToken(Persona personaIdentificada) {
+    public String darToken(Persona personaIdentificada) { //TODO: Revisar la caducidad
         return Jwts.builder()
                 .setSubject(personaIdentificada.nombre)
                 .claim(EMAIL_CLAIM, personaIdentificada.email)

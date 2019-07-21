@@ -21,9 +21,9 @@ class CorreoUtils(val usuario: String, val pass: String){
         })
     }
 
-    fun enviarA(persona: Persona): Boolean{
+    fun enviarPassA(persona: Persona): Boolean{
         return try {
-            Transport.send(darMensaje(persona))
+            Transport.send(darMensajeOlvidoPass(persona))
             true
         }catch (e: MessagingException){
             e.printStackTrace()
@@ -31,11 +31,29 @@ class CorreoUtils(val usuario: String, val pass: String){
         }
     }
 
-    private fun darMensaje(persona: Persona): Message{
+    private fun darMensajeOlvidoPass(persona: Persona): Message{
         val mensaje = MimeMessage(darSesion())
         mensaje.addRecipients(Message.RecipientType.TO, persona.email)
         mensaje.setSubject("Contraseña olvidada")
         mensaje.setText("Estimado ${persona.nombre} aquí esta su contraseña: \n ${persona.pass}")
+        return mensaje
+    }
+
+    fun existe(correo: String): Boolean {
+        return try {
+            Transport.send(darMensajeVerificacionCorreo(correo))
+            true
+        }catch (e: Exception){
+            e.printStackTrace()
+            false
+        }
+    }
+
+    private fun darMensajeVerificacionCorreo(correo: String): Message{
+        val mensaje = MimeMessage(darSesion())
+        mensaje.addRecipients(Message.RecipientType.TO, correo)
+        mensaje.setSubject("Verificación de existencia")
+        mensaje.setText("Estimado usuario, si puede leer este mensaje entonces la verificación de correo ha sido exitosa")
         return mensaje
     }
 }

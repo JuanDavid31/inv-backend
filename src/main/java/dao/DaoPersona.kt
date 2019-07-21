@@ -4,7 +4,7 @@ import entity.Persona
 import org.jdbi.v3.core.Jdbi
 import java.util.*
 
-class DaoPersona(val jdbi: Jdbi){ //Por ahora no necesita useCase
+class DaoPersona(val jdbi: Jdbi){
 
     fun agregarPersona(persona: Persona): Persona{
         return jdbi.withHandle<Persona, Exception>{
@@ -31,6 +31,15 @@ class DaoPersona(val jdbi: Jdbi){ //Por ahora no necesita useCase
                     .bind("email", email)
                     .mapToBean(Persona::class.java)
                     .findFirst()
+        }
+    }
+
+    fun verificarExistencia(email: String): Boolean {
+        return jdbi.withHandle<Boolean, Exception> {
+            it.createQuery("SELECT * FROM PERSONA WHERE upper(a_email) = upper(:email)")
+                    .bind("email", email)
+                    .mapToBean(Persona::class.java)
+                    .findFirst().isPresent()
         }
     }
 }
