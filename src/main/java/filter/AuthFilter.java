@@ -23,6 +23,7 @@ public class AuthFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         String token = requestContext.getHeaderString(AUTHORIZATION_HEADER);
+        if(token == null) throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         Claims contenido = jwtUtils.darContenido(token);
         if(contenido == null)throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         //TODO: Ir modificando de acuerdo a las necesidades. Necesito conocer todas las posibles consultas.

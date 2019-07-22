@@ -17,8 +17,8 @@ public class DaoProblematica {
 
     public Problematica agregarProblematicaPorPersona(String email, Problematica problematica) {
         return jdbi.inTransaction(handle ->{
-                Problematica nuevaProblematica =
-                        handle.createUpdate("INSERT INTO PROBLEMATICA(a_nombre, a_descripcion, f_fecha_creacion) VALUES(:nombre, :descripcion, now())")
+                Problematica nuevaProblematica = handle
+                        .createUpdate("INSERT INTO PROBLEMATICA(a_nombre, a_descripcion, f_fecha_creacion, c_fase) VALUES(:nombre, :descripcion, now(), 0)")
                         .bindBean(problematica)
                         .executeAndReturnGeneratedKeys()
                         .mapToBean(Problematica.class)

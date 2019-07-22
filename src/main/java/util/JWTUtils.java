@@ -6,6 +6,9 @@ import io.jsonwebtoken.security.Keys;
 
 import java.io.UnsupportedEncodingException;
 import java.security.Key;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 public class JWTUtils {
 
@@ -18,8 +21,13 @@ public class JWTUtils {
     }
 
     public String darToken(Persona personaIdentificada) { //TODO: Revisar la caducidad
+        LocalDate seisMesesDespues = LocalDate.now().plusMonths(6);
+        java.util.Date fecha = Date.from(seisMesesDespues.atStartOfDay()
+                .atZone(ZoneId.systemDefault())
+                .toInstant());
         return Jwts.builder()
-                .setSubject(personaIdentificada.nombre)
+                .setSubject(personaIdentificada.nombres)
+                .setExpiration(fecha)
                 .claim(EMAIL_CLAIM, personaIdentificada.email)
                 .signWith(darJwtKey())
                 .compact();

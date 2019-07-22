@@ -11,7 +11,7 @@ class CorreoUseCase(val daoPersona: DaoPersona, val correoUtils: CorreoUtils){
         return if(optionalPersona.isPresent){
             correoUtils.enviarPassA(optionalPersona.get())
         }else{
-            Error(arrayOf("Este correo no existe"))
+            Error(arrayOf("Este correo no esta registrado"))
         }
     }
 }

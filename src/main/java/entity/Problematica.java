@@ -2,13 +2,12 @@ package entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.jdbi.v3.core.mapper.reflect.ColumnName;
-import org.joda.time.DateTime;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 public class Problematica {
 
@@ -16,9 +15,13 @@ public class Problematica {
     private int id;
 
     @JsonProperty
+    @NotNull(message = "no puede ser vacio")
+    @Size(min = 10, max = 60, message = "debe tener entre 10 y 60 caracteres y ser descriptivo")
     private String nombre;
 
     @JsonProperty
+    @NotNull(message = "no puede ser vacio")
+    @Size(min = 20, max = 500, message = "debe tener entre 20 y 500 caracteres")
     private String descripcion;
 
     @JsonProperty

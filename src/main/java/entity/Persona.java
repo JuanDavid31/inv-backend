@@ -13,7 +13,7 @@ public class Persona {
     @JsonProperty
     @NotNull(message = "no puede ser vacio")
     @Size(max = 45, message = "no puede tener más de 45 caracteres")
-    @Email(message = "invalido")
+    @Email(message = "invalido", regexp = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$")
     public String email;
 
     @JsonProperty
@@ -23,12 +23,12 @@ public class Persona {
 
     @JsonProperty
     @NotNull(message = "no puede estar vacio")
-    @Size(min=3, max=10, message = "debe tener minimo 3 y maximo 45 caracteres")
+    @Size(min=3, max=30, message = "debe tener minimo 3 y maximo 45 caracteres")
     public String apellidos;
 
     @JsonProperty
     @NotNull(message = "no puede estar vacia")
-    @Size(min=8, max=25, message = "debe tener minimo 3 y maximo 25 caracteres")
+    @Size(min=8, max=25, message = "debe tener minimo 8 y maximo 25 caracteres")
     public String pass;
 
     public Persona(){
@@ -40,14 +40,15 @@ public class Persona {
         this.nombres = nombres;
     }
 
-    public Persona(String email, String nombres, String pass) {
+    public Persona(String email, String nombres, String apellidos, String pass) {
         this.email = email;
         this.nombres = nombres;
+        this.apellidos = apellidos;
         this.pass = pass;
     }
 
-    public Persona(String nombre){
-        this.nombres = nombre;
+    public Persona(String nombres){
+        this.nombres = nombres;
     }
 
     @ColumnName("a_email")
@@ -60,12 +61,12 @@ public class Persona {
     }
 
     @ColumnName("d_nombres")
-    public String getNombre() {
+    public String getNombres() {
         return nombres;
     }
 
-    public void setNombre(String nombre) {
-        this.nombres = nombre;
+    public void setNombres(String nombres) {
+        this.nombres = nombres;
     }
 
     @ColumnName("d_apellidos")

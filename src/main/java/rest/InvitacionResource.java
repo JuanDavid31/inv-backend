@@ -22,7 +22,7 @@ public class InvitacionResource {
     }
 
     @POST
-    public Response hacerInvitacion(Invitacion invitacion){
+    public Response hacerInvitacion(@Valid @NotNull Invitacion invitacion){
         Invitacion nuevaInvitacion = invitacionUseCase.agregarInvitacion(invitacion);
         return nuevaInvitacion != null ?
                 Response.ok(nuevaInvitacion).build() :

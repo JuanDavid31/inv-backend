@@ -1,16 +1,32 @@
 package entity;
 
+import org.hibernate.validator.constraints.Email;
 import org.jdbi.v3.core.mapper.reflect.ColumnName;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 public class Invitacion {
 
     public String id;
+
+    @NotNull(message = "no puede ser vacio")
+    @Size(min = 1, message = "debe ser valido")
     public int idProblematica;
+
+    @NotNull(message = "no puede ser vacio")
+    @Email(message = "debe ser valido")
     public String emailRemitente;
+
+    @NotNull(message = "no puede ser vacio")
+    @Email(message = "debe ser valido")
     public String emailDestinatario;
+
+    @NotNull(message = "no puede ser vacio")
+    public boolean paraInterventor;
+
     public String nombreDestinatario;
     public boolean estaVigente;
-    public boolean paraInterventor;
     public boolean rechazada;
 
     public Invitacion() {

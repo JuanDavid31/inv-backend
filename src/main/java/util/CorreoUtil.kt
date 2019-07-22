@@ -35,7 +35,7 @@ class CorreoUtils(val usuario: String, val pass: String){
         val mensaje = MimeMessage(darSesion())
         mensaje.addRecipients(Message.RecipientType.TO, persona.email)
         mensaje.setSubject("Contraseña olvidada")
-        mensaje.setText("Estimado ${persona.nombre} aquí esta su contraseña: \n ${persona.pass}")
+        mensaje.setText("Estimado ${persona.nombres} aquí esta su contraseña: \n ${persona.pass}")
         return mensaje
     }
 

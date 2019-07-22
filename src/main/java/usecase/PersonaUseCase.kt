@@ -17,6 +17,7 @@ class PersonaUseCase(val correoUtils: CorreoUtils, val jwtUtils: JWTUtils, val d
         }else if(correoRegistrado){
             Error(arrayOf("Este Correo ya esta en uso"))
         }else{
+            daoPersona.agregarPersona(persona)
             object {
                 val data = Data(persona.nombres, persona.apellidos, persona.email)
                 val token = jwtUtils.darToken(persona)
@@ -30,7 +31,17 @@ class PersonaUseCase(val correoUtils: CorreoUtils, val jwtUtils: JWTUtils, val d
 
     fun darPersonaPorCredenciales(persona: Persona): Any{
         val optionalPersona = daoPersona.darPersonaPorCredenciales(persona)
-        return if(optionalPersona.isPresent) jwtUtils.darToken(optionalPersona.get()) else Error(arrayOf("Email o contraseña invalido"))
+        return if(optionalPersona.isPresent)
+            object {
+                val data = Data(optionalPersona.get().nombres, optionalPersona.get().apellidos, optionalPersona.get().email)
+                val token = jwtUtils.darToken(persona)
+            }
+        else
+            Error(arrayOf("Email o contraseña invalido"))
+    }
+
+    fun darPersonasPorCorreo(email: String): List<Persona> {
+        return daoPersona.darPersonas(email)
     }
 }
 
