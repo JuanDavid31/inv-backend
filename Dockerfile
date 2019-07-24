@@ -1,6 +1,7 @@
 FROM openjdk:8
-COPY . /usr/src/invapp
+
 WORKDIR /usr/src/invapp
+COPY . /usr/src/invapp
 
 ARG ADMIN_EMAIL_ENV
 ARG ADMIN_PASS_ENV
