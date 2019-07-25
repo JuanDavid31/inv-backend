@@ -1,5 +1,5 @@
 #Volverlo una variable del entorno
-jwtKey: -75, -1, 38, 13, -46, -2, 116, -128, 93, -109, 80, 55, 32, -41, 89, 65, 39, -11, -85, 53, 2, -81, 18, -101, -4, 9, -1, -99, -115, -63, -27, -32
+jwtKey: ${JWT_KEY}
 
 adminEmail: ${ADMIN_EMAIL}
 
