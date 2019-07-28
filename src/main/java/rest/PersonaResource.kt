@@ -5,10 +5,12 @@ import entity.Persona
 import entity.Problematica
 import entity.Error
 import filter.VerificadorAuth
+import org.hibernate.validator.constraints.NotEmpty
 import usecase.PersonaUseCase
 import usecase.ProblematicaUseCase
 
 import javax.validation.Valid
+import javax.validation.constraints.Min
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 import javax.ws.rs.*
@@ -22,10 +24,12 @@ class PersonaResource(private val problematicaUseCase: ProblematicaUseCase, priv
 
     @GET
     @Path("/{email}")
-    fun darPersonasPorEmail(@PathParam("email")
-                            @Size(min = 5, message = "debe tener al menos 5 caracteres")
-                            email: String): Response{
-        val personas = personaUseCase.darPersonasPorCorreo(email)
+    fun darPersonasPorCorreoNoInvitadas(@Size(min = 5, message = "debe tener al menos 5 caracteres")
+                                        @PathParam("email") email: String,
+                                        @NotNull(message = "no puede ser nulo")
+                                        @Min(value = 1, message = "debe ser mayor a 1")
+                                        @QueryParam("idProblematica") idProblematica: Int): Response{
+        val personas = personaUseCase.darPersonasPorCorreoNoInvitadas(email, idProblematica)
         return Response.ok(personas).build()
     }
 

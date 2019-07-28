@@ -44,13 +44,19 @@ class DaoPersona(val jdbi: Jdbi){
         }
     }
 
-    fun darPersonas(email: String): List<Persona> {
-        return jdbi.withHandle<List<Persona>, java.lang.Exception>{
-            it.createQuery("SELECT a_email, d_nombres, d_apellidos FROM persona WHERE a_email like :correo")
-                    .bind("correo", "%$email%")
-                    .setMaxRows(5)
-                    .mapToBean(Persona::class.java)
-                    .list()
+    /**
+     * Busca personas por email que no han sido invitadas a la problematica
+     */
+    fun darPersonasNoInvitadas(email: String, idProblematica: Int): List<Persona> {
+            return jdbi.withHandle<List<Persona>, java.lang.Exception>{
+                it.createQuery("SELECT a_email, d_nombres, d_apellidos FROM persona LEFT JOIN INVITACION ON a_email = a_email_destinatario " +
+                        "WHERE  a_email like :email and (c_id_problematica  != :idProblematica or c_id_problematica is null)")
+                        .bind("correo", "%$email%")
+                        .bind("idProblematica", idProblematica)
+                        .setMaxRows(5)
+                        .mapToBean(Persona::class.java)
+                        .list()
+
         }
     }
 }
