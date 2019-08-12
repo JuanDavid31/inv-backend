@@ -31,7 +31,7 @@ class AuthResource(private val personaUseCase: PersonaUseCase, private val corre
         val resultado = correoUseCase.enviarCorreo(email)
         return when(resultado){
             is Error -> Response.status(Response.Status.BAD_REQUEST).entity(resultado).build()
-            else -> Response.ok().build()
+            else -> Response.ok(resultado).build()
         }
     }
 }
