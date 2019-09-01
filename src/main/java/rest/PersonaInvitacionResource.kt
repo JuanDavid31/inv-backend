@@ -1,7 +1,6 @@
 package rest
 
 import usecase.InvitacionUseCase
-import java.util.concurrent.CompletableFuture
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -10,8 +9,11 @@ import javax.ws.rs.core.MediaType
 @Consumes(MediaType.APPLICATION_JSON)
 class PersonaInvitacionResource(val invitacionUseCase: InvitacionUseCase){
 
+    /**
+     * Devuelve las invitaciones recibidas a otros usuarios que aun no han sido rechazadas
+     */
     @GET
     @Path("/{email}/invitaciones")
-    fun darInvitacionesVigentes(@PathParam("email") email: String) =
+    fun darInvitacionesVigentesRecibidas(@PathParam("email") email: String) =
             invitacionUseCase.darInvitacionesVigentes(email)
 }

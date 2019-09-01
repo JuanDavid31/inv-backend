@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.testcontainers.containers.GenericContainer;
 
 import java.util.List;
 
@@ -55,4 +56,6 @@ public class DaoProblematicaTest {
         boolean seAvanzo = daoProblematica.avanzarFaseProblematica(1);
         assertTrue(seAvanzo);
     }
+
+    GenericContainer a;
 }

@@ -37,5 +37,5 @@ class InvitacionUseCase(val daoInvitacion : DaoInvitacion){
 
     fun agregarInvitacion(invitacion: Invitacion) = daoInvitacion.agregarInvitacion(invitacion)
 
-    fun darInvitacionesVigentes(emailDestinatario: String) = daoInvitacion.darInvitacionesVigentes(emailDestinatario)
+    fun darInvitacionesVigentes(emailDestinatario: String) = daoInvitacion.darInvitacionesVigentesRecibidas(emailDestinatario)
 }

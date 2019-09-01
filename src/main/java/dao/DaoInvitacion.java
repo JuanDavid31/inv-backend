@@ -63,13 +63,14 @@ public class DaoInvitacion {
      * @return List que contiene Map(s) con los atributos id_problematica, nombre_remitente, email_remitente, para_interventor,
      * nombre_problematica, descripcion_problematica y fecha_creacion_problematica.
      */
-    public List<Map<String, Object>> darInvitacionesVigentes(String emailDestinatario){
+    public List<Map<String, Object>> darInvitacionesVigentesRecibidas(String emailDestinatario){
         return jdbi.withHandle(handle ->
-                handle.createQuery("SELECT PRO.c_id as id_problematica, P.d_nombre as nombre_remitente, I.a_email_remitente as email_remitente, I.b_para_interventor " +
-                "as para_interventor, PRO.a_nombre as nombre_problematica, PRO.a_descripcion as descripcion_problematica, PRO.f_fecha_creacion as fecha_creacion_problematica " +
+                handle.createQuery("SELECT PRO.c_id as \"idProblematica\", P.d_nombre as \"nombreRemitente\", I.a_email_remitente as \"emailRemitente\", " +
+                "I.b_para_interventor as \"paraInterventor\", PRO.a_nombre as \"nombreProblematica\", PRO.a_descripcion as \"descripcionProblematica\", " +
+                "PRO.f_fecha_creacion as fecha_creacion_problematica " +
                 "FROM PERSONA P, INVITACION I, PROBLEMATICA PRO " +
-                "WHERE P.a_email = I.a_email_remitente AND I.a_email_destinatario = :emailDestinatario AND I.b_vigente = true AND I.c_id_problematica = PRO.c_id AND " +
-                "I.b_rechazada = false")
+                "WHERE P.a_email = I.a_email_remitente AND I.a_email_destinatario = :emailDestinatario AND I.b_vigente = true AND " +
+                "I.c_id_problematica = PRO.c_id AND I.b_rechazada = false")
                 .bind("emailDestinatario", emailDestinatario)
                 .mapToMap()
                 .list());
