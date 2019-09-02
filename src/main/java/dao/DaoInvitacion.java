@@ -2,7 +2,9 @@ package dao;
 
 import entity.Invitacion;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.statement.SqlStatement;
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
+import org.postgresql.util.PSQLException;
 
 import java.util.List;
 import java.util.Map;
@@ -33,13 +35,21 @@ public class DaoInvitacion {
      * @return La nueva invitacion agregada
      */
     public Invitacion agregarInvitacion(Invitacion invitacion){
-        return jdbi.withHandle(handle ->
-                handle.createUpdate("INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, b_para_interventor, b_rechazada) " +
-                "VALUES(:emailRemitente, :emailDestinatario, :idProblematica, concat(:idProblematica, :emailRemitente, :emailDestinatario), true, :paraInterventor, false)")
-                .bindBean(invitacion)
-                .executeAndReturnGeneratedKeys()
-                .mapToBean(Invitacion.class)
-                .findOnly());
+        return jdbi.withHandle(handle -> {
+            try {
+                return handle.createUpdate("INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, " +
+                        "b_para_interventor, b_rechazada) VALUES(:emailRemitente, :emailDestinatario, :idProblematica, concat(:idProblematica, :emailRemitente, " +
+                        ":emailDestinatario), true, :paraInterventor, false)")
+                        .bindBean(invitacion)
+                        .executeAndReturnGeneratedKeys()
+                        .mapToBean(Invitacion.class)
+                        .findOnly();
+            } catch (UnableToExecuteStatementException e) {
+                e.printStackTrace();
+                System.out.println("Jelou");
+                return null;
+            }
+        });
     }
 
     /**

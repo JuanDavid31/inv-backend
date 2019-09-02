@@ -1,6 +1,7 @@
 package usecase
 
 import dao.DaoInvitacion
+import entity.Error
 import entity.Invitacion
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException
 
@@ -35,7 +36,10 @@ class InvitacionUseCase(val daoInvitacion : DaoInvitacion){
 
     fun darPersonasInvitadas(emailRemitente: String, idProblematica: Int) = daoInvitacion.darPersonasInvitadas(emailRemitente, idProblematica)
 
-    fun agregarInvitacion(invitacion: Invitacion) = daoInvitacion.agregarInvitacion(invitacion)
+    fun hacerInvitacion(invitacion: Invitacion): Any {
+        val invitacion = daoInvitacion.agregarInvitacion(invitacion)
+        return invitacion ?: Error(arrayOf("Verifique los parametros ingresados"))
+    }
 
     fun darInvitacionesVigentes(emailDestinatario: String) = daoInvitacion.darInvitacionesVigentesRecibidas(emailDestinatario)
 }

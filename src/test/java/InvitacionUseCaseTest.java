@@ -132,7 +132,7 @@ public class InvitacionUseCaseTest {
 
     @Test
     public void agregarInvitacion(){
-        Invitacion invitacion = invitacionUseCase.agregarInvitacion(new Invitacion("",
+        Invitacion invitacion = invitacionUseCase.hacerInvitacion(new Invitacion("",
                 2,
                 "juan1@.com",
                 "david5@.com",

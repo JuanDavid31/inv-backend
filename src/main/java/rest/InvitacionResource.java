@@ -3,6 +3,7 @@ package rest;
 import dao.DaoInvitacion;
 import entity.Invitacion;
 import org.hibernate.validator.constraints.NotEmpty;
+import usecase.InvitacionUseCase;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -15,15 +16,17 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class InvitacionResource {
 
-    private final DaoInvitacion invitacionUseCase;
+    private final DaoInvitacion daoInvitacion;
+    private final InvitacionUseCase invitacionUseCase;
 
-    public InvitacionResource(DaoInvitacion daoInvitacion){
-        this.invitacionUseCase = daoInvitacion;
+    public InvitacionResource(DaoInvitacion daoInvitacion, InvitacionUseCase invitacionUseCase){
+        this.daoInvitacion = daoInvitacion;
+        this.invitacionUseCase = invitacionUseCase;
     }
 
     @POST
     public Response hacerInvitacion(@Valid @NotNull Invitacion invitacion){
-        Invitacion nuevaInvitacion = invitacionUseCase.agregarInvitacion(invitacion);
+        Object nuevaInvitacion = invitacionUseCase.hacerInvitacion(invitacion);
         return nuevaInvitacion != null ?
                 Response.ok(nuevaInvitacion).build() :
                 Response.status(Response.Status.BAD_REQUEST).build();
@@ -39,9 +42,9 @@ public class InvitacionResource {
                                         @NotNull Boolean acepto){
         boolean operacionExitosa;
         if(acepto){
-            operacionExitosa = invitacionUseCase.aceptarInvitacion(invitacion, idInvitacion);
+            operacionExitosa = daoInvitacion.aceptarInvitacion(invitacion, idInvitacion);
         }else{
-            operacionExitosa = invitacionUseCase.rechazarInvitacion(invitacion, idInvitacion);
+            operacionExitosa = daoInvitacion.rechazarInvitacion(invitacion, idInvitacion);
         }
         return operacionExitosa ?
                 Response.ok().build() :
@@ -52,7 +55,7 @@ public class InvitacionResource {
     @Path("/{idInvitacion}")
     public Response eliminarInvitacion(@PathParam("idInvitacion") String idInvitacion,
                                         @Valid @NotNull Invitacion invitacion){
-        boolean seElimino = invitacionUseCase.eliminarInvitacion(invitacion, idInvitacion);
+        boolean seElimino = daoInvitacion.eliminarInvitacion(invitacion, idInvitacion);
         return seElimino ?
                 Response.ok().build() :
                 Response.status(Response.Status.BAD_REQUEST).build();
