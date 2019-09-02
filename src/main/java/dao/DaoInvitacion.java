@@ -67,7 +67,7 @@ public class DaoInvitacion {
         return jdbi.withHandle(handle ->
                 handle.createQuery("SELECT PRO.c_id as \"idProblematica\", P.d_nombres as \"nombreRemitente\", I.a_email_remitente as \"emailRemitente\", " +
                 "I.b_para_interventor as \"paraInterventor\", PRO.a_nombre as \"nombreProblematica\", PRO.a_descripcion as \"descripcionProblematica\", " +
-                "PRO.f_fecha_creacion as fecha_creacion_problematica " +
+                "PRO.f_fecha_creacion as \"fechaCreacionProblematica\" " +
                 "FROM PERSONA P, INVITACION I, PROBLEMATICA PRO " +
                 "WHERE P.a_email = I.a_email_remitente AND I.a_email_destinatario = :emailDestinatario AND I.b_vigente = true AND " +
                 "I.c_id_problematica = PRO.c_id AND I.b_rechazada = false")
