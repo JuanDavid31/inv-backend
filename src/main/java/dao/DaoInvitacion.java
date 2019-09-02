@@ -17,7 +17,7 @@ public class DaoInvitacion {
 
     public List<Invitacion> darPersonasInvitadas(String emailRemitente, int idProblematica){
         return jdbi.withHandle(handle ->
-                handle.createQuery("SELECT P.d_nombre, I.a_email_remitente, I.a_email_destinatario, I.c_id_problematica, I.a_id, I.b_para_interventor, I.b_rechazada " +
+                handle.createQuery("SELECT P.d_nombres, I.a_email_remitente, I.a_email_destinatario, I.c_id_problematica, I.a_id, I.b_para_interventor, I.b_rechazada " +
                 "FROM PERSONA P, INVITACION I " +
                 "WHERE P.a_email = I.a_email_destinatario AND I.a_email_remitente = :emailRemitente AND I.c_id_problematica = :idProblematica AND " +
                 "I.b_vigente = true")
@@ -65,7 +65,7 @@ public class DaoInvitacion {
      */
     public List<Map<String, Object>> darInvitacionesVigentesRecibidas(String emailDestinatario){
         return jdbi.withHandle(handle ->
-                handle.createQuery("SELECT PRO.c_id as \"idProblematica\", P.d_nombre as \"nombreRemitente\", I.a_email_remitente as \"emailRemitente\", " +
+                handle.createQuery("SELECT PRO.c_id as \"idProblematica\", P.d_nombres as \"nombreRemitente\", I.a_email_remitente as \"emailRemitente\", " +
                 "I.b_para_interventor as \"paraInterventor\", PRO.a_nombre as \"nombreProblematica\", PRO.a_descripcion as \"descripcionProblematica\", " +
                 "PRO.f_fecha_creacion as fecha_creacion_problematica " +
                 "FROM PERSONA P, INVITACION I, PROBLEMATICA PRO " +
