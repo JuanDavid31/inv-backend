@@ -104,7 +104,7 @@ public class App extends Application<ConfiguracionApp> {
         final PersonaResource personaResource = new PersonaResource(problematicaUseCase, personaUseCase, daoNodo);
         final PersonaInvitacionResource personaInvitacionResource = new PersonaInvitacionResource(invitacionUseCase);
         final ProblematicaResource problematicaResource = new ProblematicaResource(invitacionUseCase, problematicaUseCase);
-        final InvitacionResource invitacionResource = new InvitacionResource(daoInvitacion);
+        final InvitacionResource invitacionResource = new InvitacionResource(invitacionUseCase);
         final NodoResource nodoResource = new NodoResource(fotoUseCase, nodoUseCase);
         final GrupoResource grupoResource = new GrupoResource(reaccionUseCase);
         final ProblematicaEscritoResource problematicaEscritoResource = new ProblematicaEscritoResource(escritoUseCase);
