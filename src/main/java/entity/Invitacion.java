@@ -3,15 +3,15 @@ package entity;
 import org.hibernate.validator.constraints.Email;
 import org.jdbi.v3.core.mapper.reflect.ColumnName;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 public class Invitacion {
 
     public String id;
 
     @NotNull(message = "no puede ser vacio")
-    @Size(min = 1, message = "debe ser valido")
+    @Min(value = 1, message = "debe ser valido")
     public int idProblematica;
 
     @NotNull(message = "no puede ser vacio")

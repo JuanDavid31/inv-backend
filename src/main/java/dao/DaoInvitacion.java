@@ -84,19 +84,23 @@ public class DaoInvitacion {
      */
     public boolean aceptarInvitacion(Invitacion invitacion, String idInvitacion) throws UnableToExecuteStatementException {
         return jdbi.inTransaction(handle -> {
-            boolean seAgrego = handle.createUpdate("INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) " +
+            boolean seAgregoPersonaProblematica = handle.createUpdate("INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) " +
                     "VALUES(concat(:emailDestinatario, :idProblematica), :emailDestinatario, :idProblematica, :paraInterventor)")
                     .bindBean(invitacion)
                     .execute() > 0;
 
-            boolean seElimino = handle.createUpdate("UPDATE INVITACION SET b_vigente = false WHERE a_email_destinatario = :emailDestinatario AND " +
+            boolean seEliminoInvitacion = handle.createUpdate("UPDATE INVITACION SET b_vigente = false WHERE a_email_destinatario = :emailDestinatario AND " +
                     "c_id_problematica = :idProblematica AND a_id = :idInvitacion")
                     .bind("idInvitacion", idInvitacion)
                     .bindBean(invitacion)
                     .execute() > 0;
 
-            if(!(seAgrego && seElimino))handle.rollback();
-            return true;
+            if(!(seAgregoPersonaProblematica || seEliminoInvitacion)){
+                handle.rollback();
+                return false;
+            }else{
+                return true;
+            }
         });
     }
 

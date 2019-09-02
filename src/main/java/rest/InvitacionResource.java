@@ -32,8 +32,11 @@ public class InvitacionResource {
     @PUT
     @Path("/{idInvitacion}")
     public Response responderInvitacion(@PathParam("idInvitacion") String idInvitacion,
-                                        @Valid @NotNull Invitacion invitacion,
-                                        @QueryParam("aceptar") @NotEmpty Boolean acepto){
+                                        @Valid
+                                        @NotNull Invitacion invitacion,
+                                        @QueryParam("aceptar")
+                                        @NotEmpty
+                                        @NotNull Boolean acepto){
         boolean operacionExitosa;
         if(acepto){
             operacionExitosa = invitacionUseCase.aceptarInvitacion(invitacion, idInvitacion);
