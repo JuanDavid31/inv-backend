@@ -35,8 +35,10 @@ public class DaoProblematica {
     }
 
     public List<Problematica> darProblematicasPorPersona(String email){
-        return jdbi.withHandle(h -> h.createQuery("SELECT DISTINCT P.c_id, P.a_nombre, P.a_descripcion, P.f_fecha_creacion, PP.b_interventor " +
-                "FROM PROBLEMATICA P, PERSONA_PROBLEMATICA PP WHERE PP.a_email = :email ORDER BY P.c_id;")
+        return jdbi.withHandle(h -> h.createQuery("SELECT DISTINCT P.c_id, P.a_nombre, P.a_descripcion, P.f_fecha_creacion, PP.b_interventor , PP.a_email " +
+                "FROM PROBLEMATICA P, PERSONA_PROBLEMATICA PP, PERSONA " +
+                "WHERE PERSONA.a_email = :email AND PERSONA.a_email = PP.a_email AND P.c_id = PP.c_id_problematica " +
+                "ORDER BY P.c_id")
                 .bind("email",  email)
                 .mapToBean(Problematica.class)
                 .list());

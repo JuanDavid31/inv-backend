@@ -3,17 +3,24 @@ package dao
 import entity.Persona
 import org.hibernate.validator.internal.metadata.core.AnnotationProcessingOptionsImpl
 import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.core.statement.UnableToExecuteStatementException
 import java.util.*
 
 class DaoPersona(val jdbi: Jdbi){
 
     fun agregarPersona(persona: Persona): Persona{
         return jdbi.withHandle<Persona, Exception>{
-            it.createUpdate("INSERT INTO PERSONA(a_email, d_nombres, d_apellidos, a_pass_hasheado) VALUES(:email, :nombres, :apellidos, :pass)")
-                    .bindBean(persona)
-                    .executeAndReturnGeneratedKeys()
-                    .mapToBean(Persona::class.java)
-                    .findOnly()
+            try{
+                it.createUpdate("INSERT INTO PERSONA(a_email, d_nombres, d_apellidos, a_pass_hasheado) VALUES(:email, :nombres, :apellidos, :pass)")
+                        .bindBean(persona)
+                        .executeAndReturnGeneratedKeys()
+                        .mapToBean(Persona::class.java)
+                        .findOnly()
+            }catch(e : UnableToExecuteStatementException){
+
+                null
+            }
+
         }
     }
 
