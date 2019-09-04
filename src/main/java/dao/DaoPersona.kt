@@ -10,17 +10,11 @@ class DaoPersona(val jdbi: Jdbi){
 
     fun agregarPersona(persona: Persona): Persona{
         return jdbi.withHandle<Persona, Exception>{
-            try{
                 it.createUpdate("INSERT INTO PERSONA(a_email, d_nombres, d_apellidos, a_pass_hasheado) VALUES(:email, :nombres, :apellidos, :pass)")
-                        .bindBean(persona)
-                        .executeAndReturnGeneratedKeys()
-                        .mapToBean(Persona::class.java)
-                        .findOnly()
-            }catch(e : UnableToExecuteStatementException){
-
-                null
-            }
-
+                    .bindBean(persona)
+                    .executeAndReturnGeneratedKeys()
+                    .mapToBean(Persona::class.java)
+                    .findOnly()
         }
     }
 

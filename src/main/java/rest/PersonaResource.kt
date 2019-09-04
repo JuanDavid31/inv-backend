@@ -5,7 +5,6 @@ import entity.Persona
 import entity.Problematica
 import entity.Error
 import filter.VerificadorAuth
-import org.hibernate.validator.constraints.NotEmpty
 import usecase.PersonaUseCase
 import usecase.ProblematicaUseCase
 
@@ -55,14 +54,11 @@ class PersonaResource(private val problematicaUseCase: ProblematicaUseCase, priv
     @VerificadorAuth
     fun agregarProblematicaPorPersona(@PathParam("email") email: String,
                                       @Valid @NotNull problematica: Problematica): Response {
-        val nuevaProblematica: Problematica
-            try {
-            nuevaProblematica = problematicaUseCase.agregarProblematicaPorPersona(email, problematica)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return Response.status(Response.Status.BAD_REQUEST).build()
+        val resultado = problematicaUseCase.agregarProblematicaPorPersona(email, problematica)
+        return when(resultado){
+            is Error -> Response.status(Response.Status.BAD_REQUEST).entity(resultado).build()
+            else -> Response.ok(resultado).build()
         }
-        return Response.ok(nuevaProblematica).build()
     }
 
     @GET

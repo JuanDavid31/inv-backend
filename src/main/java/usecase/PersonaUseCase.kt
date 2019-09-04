@@ -36,8 +36,7 @@ class PersonaUseCase(val correoUtils: CorreoUtils, val jwtUtils: JWTUtils, val d
                 val data = Data(optionalPersona.get().nombres, optionalPersona.get().apellidos, optionalPersona.get().email)
                 val token = jwtUtils.darToken(persona)
             }
-        else
-            Error(arrayOf("Email o contraseña invalido"))
+        else Error(arrayOf("Email o contraseña invalido"))
     }
 
     fun darPersonasPorCorreoNoInvitadas(email: String, idProblematica: Int): List<Persona> {
