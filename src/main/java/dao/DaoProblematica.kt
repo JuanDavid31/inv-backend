@@ -37,7 +37,7 @@ class DaoProblematica(internal val jdbi: Jdbi) {
 
     fun darProblematicasPorPersona(email: String): List<Problematica> {
         return jdbi.withHandle<List<Problematica>, RuntimeException> {
-            it.createQuery("SELECT DISTINCT P.c_id, P.a_nombre, P.a_descripcion, P.f_fecha_creacion, PP.b_interventor , PP.a_email P.c_fase" +
+            it.createQuery("SELECT DISTINCT P.c_id, P.a_nombre, P.a_descripcion, P.f_fecha_creacion, PP.b_interventor , PP.a_email P.c_fase " +
                     "FROM PROBLEMATICA P, PERSONA_PROBLEMATICA PP, PERSONA " +
                     "WHERE PERSONA.a_email = :email AND PERSONA.a_email = PP.a_email AND P.c_id = PP.c_id_problematica " +
                     "ORDER BY P.c_id")
