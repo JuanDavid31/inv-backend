@@ -11,5 +11,5 @@ class ProblematicaEscritoResource(val escritoUseCase: EscritoUseCase){
 
     @GET
     @Path("/{idProblematica}/escritos")
-    fun darEscritosPorProblematica(@PathParam("idproblematica") idProblematica: Int) = escritoUseCase.darEscritosPorProblematica(idProblematica)
+    fun darEscritosPorProblematica(@PathParam("idProblematica") idProblematica: Int) = escritoUseCase.darEscritosPorProblematica(idProblematica)
 }

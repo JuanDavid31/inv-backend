@@ -64,8 +64,8 @@ class PersonaResource(private val problematicaUseCase: ProblematicaUseCase, priv
     @GET
     @Path("/{email}/problematicas/{idProblematica}/nodos")
     fun darNodos(@PathParam("email") email: String,
-                 @PathParam("idProblematica") idProblematica: Int?): Response {
-        val nodos = daoNodo.darNodos(email + idProblematica!!)
+                 @PathParam("idProblematica") idProblematica: Int): Response {
+        val nodos = daoNodo.darNodos(email + idProblematica)
         return Response.ok(nodos).build()
     }
 }

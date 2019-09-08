@@ -95,7 +95,7 @@ public class Invitacion {
         this.paraInterventor = paraInterventor;
     }
 
-    @ColumnName("d_nombre")
+    @ColumnName("d_nombres")
     public String getNombreDestinatario() {
         return nombreDestinatario;
     }

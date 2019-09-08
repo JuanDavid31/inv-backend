@@ -5,6 +5,9 @@ import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException
 import java.util.Optional
 
+/**
+ * Manejo de excepciones al día.
+ */
 class DaoProblematica(internal val jdbi: Jdbi) {
 
     fun agregarProblematicaPorPersona(email: String, problematica: Problematica): Problematica {

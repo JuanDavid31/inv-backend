@@ -18,7 +18,8 @@ public class DaoGrupo {
 
     public List<Map<String, Object>> darGrupos(int idProblematica){
         return jdbi.withHandle(handle ->
-                handle.createQuery("select g.c_id as id_grupo, g.c_id_padre as id_padre_grupo, g.d_nombre as nombre_grupo, n.a_url_foto url_foto, n.c_id_padre id_padre_nodo" +
+                handle.createQuery("select g.c_id as id_grupo, g.c_id_padre as id_padre_grupo, g.d_nombre as nombre_grupo, n.a_url_foto url_foto, " +
+                "n.c_id_padre id_padre_nodo" +
                 "from problematica p, grupo g, nodo n" +
                 "where p.c_id = g.c_id_problematica and p.c_id = :idProblematica and g.c_id = n.c_id_grupo")
                 .bind("idProblematica", idProblematica)

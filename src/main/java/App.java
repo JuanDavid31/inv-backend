@@ -13,6 +13,10 @@ import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.kotlin.KotlinPlugin;
+import org.jdbi.v3.core.mapper.CaseStrategy;
+import org.jdbi.v3.core.mapper.MapMappers;
+import org.jdbi.v3.core.statement.SqlLogger;
+import org.jdbi.v3.core.statement.StatementContext;
 import org.jdbi.v3.postgres.PostgresPlugin;
 import rest.*;
 import usecase.*;
@@ -24,6 +28,7 @@ import ws.InteraccionWebsocketServlet;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
 import javax.servlet.ServletRegistration;
+import java.sql.SQLException;
 import java.util.EnumSet;
 
 public class App extends Application<ConfiguracionApp> {
@@ -75,6 +80,8 @@ public class App extends Application<ConfiguracionApp> {
         final Jdbi jdbi = factory.build(environment, configuracionApp.getDataSourceFactory(), "postgres")
                 .installPlugin(new PostgresPlugin())
                 .installPlugin(new KotlinPlugin());
+        jdbi.getConfig(MapMappers.class).setCaseChange(CaseStrategy.NOP);
+        //----------------------
 
         //DAOs
         DaoPersona daoPersona = new DaoPersona(jdbi);

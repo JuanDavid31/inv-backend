@@ -2,10 +2,11 @@ package dao
 
 import entity.Invitacion
 import org.jdbi.v3.core.Jdbi
-import org.jdbi.v3.core.statement.SqlStatement
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException
-import org.postgresql.util.PSQLException
 
+/**
+ * Manejo de excepciones añadido.
+ */
 class DaoInvitacion(private val jdbi: Jdbi) {
 
     fun darPersonasInvitadas(emailRemitente: String, idProblematica: Int): List<Invitacion> {
@@ -65,9 +66,9 @@ class DaoInvitacion(private val jdbi: Jdbi) {
      * @return List que contiene Map(s) con los atributos id_problematica, nombre_remitente, email_remitente, para_interventor,
      * nombre_problematica, descripcion_problematica y fecha_creacion_problematica.
      */
-    fun darInvitacionesVigentesRecibidas(emailDestinatario: String): List<Map<String, Any>> {
-        return jdbi.withHandle<List<Map<String, Any>>, RuntimeException> { handle ->
-            handle.createQuery("SELECT PRO.c_id as \"idProblematica\", P.d_nombres as \"nombreRemitente\", I.a_email_remitente as \"emailRemitente\", " +
+    fun darInvitacionesVigentesRecibidas(emailDestinatario: String): List<Any> {
+        return jdbi.withHandle<List<Any>, RuntimeException> {
+            it.createQuery("SELECT PRO.c_id as \"idProblematica\", P.d_nombres as \"nombreRemitente\", I.a_email_remitente as \"emailRemitente\", " +
                     "I.b_para_interventor as \"paraInterventor\", PRO.a_nombre as \"nombreProblematica\", PRO.a_descripcion as \"descripcionProblematica\", " +
                     "PRO.f_fecha_creacion as \"fechaCreacionProblematica\" " +
                     "FROM PERSONA P, INVITACION I, PROBLEMATICA PRO " +

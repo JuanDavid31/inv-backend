@@ -1,48 +1,18 @@
 package usecase
 
 import dao.DaoNodo
-import entity.Nodo
-import org.jdbi.v3.core.statement.UnableToExecuteStatementException
+import entity.Mensaje
+import entity.Error
 
 class NodoUseCase(val daoNodo: DaoNodo) {
 
-    fun darNodos(idPersonaProblematica: String) = daoNodo.darNodos(idPersonaProblematica)
-
-    fun agregarNodo(nodo: Nodo) = daoNodo.agregarNodo(nodo)
-
-    fun actualizarNodo(nodo: Nodo): Boolean {
-        return try {
-            daoNodo.actualizarNodo(nodo)
-        } catch (e: UnableToExecuteStatementException) {
-            e.printStackTrace()
-            return false
-        }
+    fun apadrinar(id: Int, idPadre: Int): Any {
+        val apadrinado = daoNodo.apadrinar(id, idPadre)
+        return if (apadrinado) Mensaje("Conexión exitosa") else Error(arrayOf("El nodo no existe."))
     }
 
-    fun apadrinar(id: Int, idPadre: Int): Boolean {
-        return try {
-            daoNodo.apadrinar(id, idPadre)
-        } catch (e: UnableToExecuteStatementException) {
-            e.printStackTrace()
-            return false
-        }
-    }
-
-    fun desApadrinar(id: Int): Boolean {
-        return try {
-            daoNodo.eliminarHijos(id)
-        } catch (e: UnableToExecuteStatementException) {
-            e.printStackTrace()
-            return false
-        }
-    }
-
-    fun eliminarNodo(id: Int): Nodo? {
-        return try {
-            daoNodo.eliminarNodo(id)
-        } catch (e: UnableToExecuteStatementException) {
-            e.printStackTrace()
-            return null
-        }
+    fun desApadrinar(id: Int): Any {
+        val conexionesEliminadas = daoNodo.eliminarConexionesPadreEHijo(id)
+        return if(conexionesEliminadas) Mensaje("Conexiones eliminadas exitosamente") else Error(arrayOf("El nodo no existe o no tiene conexiones."))
     }
 }

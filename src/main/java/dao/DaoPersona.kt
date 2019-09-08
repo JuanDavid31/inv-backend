@@ -6,6 +6,9 @@ import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException
 import java.util.*
 
+/**
+ * Manejo de excepciones añadido.
+ */
 class DaoPersona(val jdbi: Jdbi){
 
     fun agregarPersona(persona: Persona): Persona{
@@ -41,7 +44,8 @@ class DaoPersona(val jdbi: Jdbi){
             it.createQuery("SELECT * FROM PERSONA WHERE upper(a_email) = upper(:email)")
                     .bind("email", email)
                     .mapToBean(Persona::class.java)
-                    .findFirst().isPresent()
+                    .findFirst()
+                    .isPresent()
         }
     }
 
