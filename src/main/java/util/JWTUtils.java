@@ -14,13 +14,13 @@ public class JWTUtils {
 
     private String key;
 
-    public final static String EMAIL_CLAIM = "email";
+    private final static String EMAIL_CLAIM = "email";
 
     public JWTUtils(String jwtKey){
         this.key = jwtKey;
     }
 
-    public String darToken(Persona personaIdentificada) { //TODO: Revisar la caducidad
+    public String darToken(Persona personaIdentificada) {
         LocalDate seisMesesDespues = LocalDate.now().plusMonths(6);
         java.util.Date fecha = Date.from(seisMesesDespues.atStartOfDay()
                 .atZone(ZoneId.systemDefault())
@@ -35,7 +35,10 @@ public class JWTUtils {
 
     public Claims darContenido(String token){
         try{
-            return Jwts.parser().setSigningKey(darJwtKey()).parseClaimsJws(token).getBody();
+            return Jwts.parser()
+                    .setSigningKey(darJwtKey())
+                    .parseClaimsJws(token)
+                    .getBody();
         }catch (JwtException e){
             e.printStackTrace();
             return null;
