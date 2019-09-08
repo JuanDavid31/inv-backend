@@ -14,13 +14,14 @@ class FotoUseCase(private val daoNodo: DaoNodo) {
         if (!FotoUtils.extensionValida(extensionFoto)) return null
         try {
             nodo.id = daoNodo.agregarNodo(nodo)
-            nodo.urlFoto = FotoUtils.guardarFotoEnDirectorioYDarUrl(nodo, foto, extensionFoto)
+            if(nodo.id == 0) return null
+            nodo.urlFoto = FotoUtils.guardarFotoEnDirectorioYDarUrl(nodo, foto, extensionFoto) //Lanza la excepción
             nodo.rutaFoto = FotoUtils.darRuta(nodo, extensionFoto)
             daoNodo.actualizarNodo(nodo)
             return nodo
         } catch (e: IOException) {
             e.printStackTrace()
-            if (nodo.id == 0) daoNodo.eliminarNodo(nodo.id)
+            daoNodo.eliminarNodo(nodo.id)
             return null
         }
     }
