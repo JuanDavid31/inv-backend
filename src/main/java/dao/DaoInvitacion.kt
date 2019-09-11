@@ -51,7 +51,7 @@ class DaoInvitacion(private val jdbi: Jdbi) {
      * @return True si se elimino, False en caso contrario
      */
     @Throws(UnableToExecuteStatementException::class)
-    fun eliminarInvitacion(invitacion: Invitacion, idInvitacion: String): Boolean {
+    fun eliminarInvitacion(idInvitacion: String): Boolean {
         return jdbi.withHandle<Boolean, RuntimeException> { handle ->
             handle.createUpdate("DELETE FROM INVITACION I WHERE a_id = :idInvitacion")
                 .bind("idInvitacion", idInvitacion)
