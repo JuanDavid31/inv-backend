@@ -41,7 +41,7 @@ class DaoPersona(val jdbi: Jdbi){
         return jdbi.withHandle<Boolean, Exception> {
             it.createQuery("SELECT * FROM PERSONA WHERE upper(a_email) = upper(:email)")
                 .bind("email", email)
-                .mapToBean(Persona::class.java)/inviz
+                .mapToBean(Persona::class.java)
                 .findFirst()
                 .isPresent()
         }

@@ -55,7 +55,6 @@ class DaoInvitacion(private val jdbi: Jdbi) {
         return jdbi.withHandle<Boolean, RuntimeException> { handle ->
             handle.createUpdate("DELETE FROM INVITACION I WHERE a_id = :idInvitacion")
                 .bind("idInvitacion", idInvitacion)
-                .bindBean(invitacion)
                 .execute() > 0
         }
     }
