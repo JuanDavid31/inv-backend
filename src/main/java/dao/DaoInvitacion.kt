@@ -53,10 +53,10 @@ class DaoInvitacion(private val jdbi: Jdbi) {
     @Throws(UnableToExecuteStatementException::class)
     fun eliminarInvitacion(invitacion: Invitacion, idInvitacion: String): Boolean {
         return jdbi.withHandle<Boolean, RuntimeException> { handle ->
-            handle.createUpdate("DELETE FROM INVITACION I WHERE I.a_email_destinatario = :emailDestinatario AND " + "I.a_email_remitente = :emailRemitente AND I.c_id_problematica = :idProblematica AND a_id = :idInvitacion")
-                    .bind("idInvitacion", idInvitacion)
-                    .bindBean(invitacion)
-                    .execute() > 0
+            handle.createUpdate("DELETE FROM INVITACION I WHERE a_id = :idInvitacion")
+                .bind("idInvitacion", idInvitacion)
+                .bindBean(invitacion)
+                .execute() > 0
         }
     }
 

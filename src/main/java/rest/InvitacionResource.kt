@@ -48,9 +48,8 @@ class InvitacionResource(private val invitacionUseCase: InvitacionUseCase) {
 
     @DELETE
     @Path("/{idInvitacion}")
-    fun eliminarInvitacion(@PathParam("idInvitacion") idInvitacion: String,
-                           @Valid @NotNull invitacion: Invitacion): Response {
-        val resultado = invitacionUseCase.eliminarInvitacion(invitacion, idInvitacion)
+    fun eliminarInvitacion(@PathParam("idInvitacion") idInvitacion: String): Response {
+        val resultado = invitacionUseCase.eliminarInvitacion(idInvitacion)
         return when(resultado){
             is Error -> Response.status(Response.Status.BAD_REQUEST).entity(resultado).build()
             else -> Response.ok(resultado).build()

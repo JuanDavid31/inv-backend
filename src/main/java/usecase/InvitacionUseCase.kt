@@ -22,8 +22,8 @@ class InvitacionUseCase(val daoInvitacion : DaoInvitacion){
         return if (seRechazo) Unit else Error(arrayOf("Verifique los parametros ingresados"))
     }
 
-    fun eliminarInvitacion(invitacion: Invitacion, idInvitacion: String): Any {
-        val seElimino = daoInvitacion.eliminarInvitacion(invitacion, idInvitacion)
+    fun eliminarInvitacion(idInvitacion: String): Any {
+        val seElimino = daoInvitacion.eliminarInvitacion(idInvitacion)
         return if (seElimino) Unit else Error(arrayOf("Verifique los parametros ingresados"))
     }
 
