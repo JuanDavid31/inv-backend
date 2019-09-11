@@ -27,7 +27,7 @@ class PersonaResource(private val problematicaUseCase: ProblematicaUseCase, priv
                                         @PathParam("email") email: String,
                                         @NotNull(message = "no puede ser nulo")
                                         @Min(value = 1, message = "debe ser mayor a 1")
-                                        @QueryParam("idProblematica") idProblematica: Int): Response{
+                                        @QueryParam("id-problematica") idProblematica: Int): Response{
         val personas = personaUseCase.darPersonasPorCorreoNoInvitadas(email, idProblematica)
         return Response.ok(personas).build()
     }
