@@ -67,7 +67,7 @@ class DaoInvitacion(private val jdbi: Jdbi) {
      */
     fun darInvitacionesVigentesRecibidas(emailDestinatario: String): List<Any> {
         return jdbi.withHandle<List<Any>, RuntimeException> {
-            it.createQuery("SELECT PRO.c_id as \"idProblematica\", P.d_nombres as \"nombreRemitente\", I.a_email_remitente as \"emailRemitente\", " +
+            it.createQuery("SELECT I.a_id as \"idInvitacion\", PRO.c_id as \"idProblematica\", P.d_nombres as \"nombreRemitente\", I.a_email_remitente as \"emailRemitente\", " +
                     "I.b_para_interventor as \"paraInterventor\", PRO.a_nombre as \"nombreProblematica\", PRO.a_descripcion as \"descripcionProblematica\", " +
                     "PRO.f_fecha_creacion as \"fechaCreacionProblematica\" " +
                     "FROM PERSONA P, INVITACION I, PROBLEMATICA PRO " +
