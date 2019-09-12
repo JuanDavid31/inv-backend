@@ -27,13 +27,8 @@ class InvitacionResource(private val invitacionUseCase: InvitacionUseCase) {
     @PUT
     @Path("/{idInvitacion}")
     fun responderInvitacion(@PathParam("idInvitacion") idInvitacion: String,
-                            @Valid
-                            @NotNull
-                            invitacion: Invitacion,
-                            @QueryParam("aceptar")
-                            @NotEmpty
-                            @NotNull
-                            aceptar: Boolean): Response {
+                            @Valid @NotNull invitacion: Invitacion,
+                            @QueryParam("aceptar") @NotNull aceptar: Boolean): Response {
         val resultado: Any
         if (aceptar) {
             resultado = invitacionUseCase.aceptarInvitacion(invitacion, idInvitacion)
