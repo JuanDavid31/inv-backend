@@ -53,9 +53,11 @@ class DaoPersona(val jdbi: Jdbi){
     fun darPersonasNoInvitadas(email: String, emailRemitente: String, idProblematica: Int): List<Persona> {
             return jdbi.withHandle<List<Persona>, java.lang.Exception>{
                 it.createQuery("SELECT a_email, d_nombres, d_apellidos FROM persona LEFT JOIN INVITACION ON a_email = a_email_destinatario " +
-                    "WHERE a_email like :email and (c_id_problematica  != :idProblematica or c_id_problematica is null)")
+                    "WHERE a_email like :email and (c_id_problematica  != :idProblematica or c_id_problematica is null) " +
+                    "and a_email != :emailRemitente")
                     .bind("email", "%$email%" )
                     .bind("idProblematica", idProblematica)
+                    .bind("emailRemitente", emailRemitente)
                     .setMaxRows(5)
                     .mapToBean(Persona::class.java)
                     .list()
