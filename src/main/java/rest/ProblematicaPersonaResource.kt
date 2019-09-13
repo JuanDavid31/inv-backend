@@ -5,8 +5,11 @@ import entity.Nodo
 import org.glassfish.jersey.media.multipart.FormDataParam
 import usecase.EscritoUseCase
 import usecase.FotoUseCase
+import usecase.PersonaUseCase
 import java.io.InputStream
+import javax.validation.constraints.Min
 import javax.validation.constraints.NotNull
+import javax.validation.constraints.Size
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
@@ -14,7 +17,7 @@ import javax.ws.rs.core.Response
 @Path("/problematicas")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-class ProblematicaPersonaResource(val escritoUseCase: EscritoUseCase, val fotoUseCase: FotoUseCase){
+class ProblematicaPersonaResource(val escritoUseCase: EscritoUseCase, val fotoUseCase: FotoUseCase, val personaUseCase: PersonaUseCase){
 
     @Path("/{idProblematica}/personas/{email}/nodos")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -35,6 +38,20 @@ class ProblematicaPersonaResource(val escritoUseCase: EscritoUseCase, val fotoUs
                               @PathParam("email") email: String): Response{
         val optionalEscrito = escritoUseCase.darEscritoPorPersona("$email$idProblematica")
         return if(optionalEscrito.isPresent)return Response.ok(optionalEscrito.get()).build() else Response.ok().build()
+    }
+
+    @GET
+    @Path("/{idProblematica}/personas")
+    fun darPersonasPorCorreoNoInvitadas(@NotNull(message = "no puede ser nulo")
+                                        @Min(value = 1, message = "debe ser mayor a 1")
+                                        @PathParam("idProblematica") idProblematica: Int,
+                                        @Size(min = 5, message = "debe tener al menos 5 caracteres")
+                                        @QueryParam("email") email: String,
+                                        @NotNull(message = "no puede ser nulo")
+                                        @QueryParam("email-remitente")
+                                        emailRemitente: String): Response{
+        val personas = personaUseCase.darPersonasPorCorreoNoInvitadas(email, emailRemitente, idProblematica)
+        return Response.ok(personas).build()
     }
 
     @POST

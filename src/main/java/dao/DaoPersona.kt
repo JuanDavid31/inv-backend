@@ -50,7 +50,7 @@ class DaoPersona(val jdbi: Jdbi){
     /**
      * Busca personas por email que no han sido invitadas a la problematica
      */
-    fun darPersonasNoInvitadas(email: String, idProblematica: Int): List<Persona> {
+    fun darPersonasNoInvitadas(email: String, emailRemitente: String, idProblematica: Int): List<Persona> {
             return jdbi.withHandle<List<Persona>, java.lang.Exception>{
                 it.createQuery("SELECT a_email, d_nombres, d_apellidos FROM persona LEFT JOIN INVITACION ON a_email = a_email_destinatario " +
                     "WHERE a_email like :email and (c_id_problematica  != :idProblematica or c_id_problematica is null)")

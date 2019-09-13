@@ -39,8 +39,8 @@ class PersonaUseCase(val correoUtils: CorreoUtils, val jwtUtils: JWTUtils, val d
         else Error(arrayOf("Email o contraseña invalido"))
     }
 
-    fun darPersonasPorCorreoNoInvitadas(email: String, idProblematica: Int): List<Persona> {
-        return daoPersona.darPersonasNoInvitadas(email, idProblematica)
+    fun darPersonasPorCorreoNoInvitadas(email: String, emailRemitente: String, idProblematica: Int): List<Persona> {
+        return daoPersona.darPersonasNoInvitadas(email, emailRemitente, idProblematica)
     }
 }
 
