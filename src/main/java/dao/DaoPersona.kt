@@ -52,9 +52,12 @@ class DaoPersona(val jdbi: Jdbi){
      */
     fun darPersonasNoInvitadas(email: String, emailRemitente: String, idProblematica: Int): List<Persona> {
             return jdbi.withHandle<List<Persona>, java.lang.Exception>{
-                it.createQuery("SELECT a_email, d_nombres, d_apellidos FROM persona LEFT JOIN INVITACION ON a_email = a_email_destinatario " +
-                    "WHERE a_email like :email and (c_id_problematica  != :idProblematica or c_id_problematica is null) " +
-                    "and a_email != :emailRemitente")
+                it.createQuery("SELECT DISTINCT a_email, d_nombres, d_apellidos " +
+                        "FROM persona " +
+                        "WHERE a_email like :email " +
+                        "and a_email != :emailRemitente " +
+                        "and a_email not in (select a_email_remitente from invitacion where invitacion.c_id_problematica = :idProblematica " +
+                        "union all select a_email_destinatario from invitacion where invitacion.c_id_problematica = :idProblematica)")
                     .bind("email", "%$email%" )
                     .bind("idProblematica", idProblematica)
                     .bind("emailRemitente", emailRemitente)
