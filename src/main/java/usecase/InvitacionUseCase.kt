@@ -3,7 +3,6 @@ package usecase
 import dao.DaoInvitacion
 import entity.Error
 import entity.Invitacion
-import org.jdbi.v3.core.statement.UnableToExecuteStatementException
 
 class InvitacionUseCase(val daoInvitacion : DaoInvitacion){
 
@@ -13,13 +12,13 @@ class InvitacionUseCase(val daoInvitacion : DaoInvitacion){
     }
 
     fun aceptarInvitacion(invitacion: Invitacion, idInvitacion: String): Any {
-        val seAcepto = daoInvitacion.aceptarInvitacion(invitacion, idInvitacion)
-        return if (seAcepto) Unit else Error(arrayOf("Verifique los parametros ingresados"))
+        val invitacion = daoInvitacion.aceptarInvitacion(invitacion, idInvitacion)
+        return invitacion ?: Error(arrayOf("Verifique los parametros ingresados"))
     }
 
     fun rechazarInvitacion(invitacion: Invitacion, idInvitacion: String): Any {
-        val seRechazo = daoInvitacion.rechazarInvitacion(invitacion, idInvitacion)
-        return if (seRechazo) Unit else Error(arrayOf("Verifique los parametros ingresados"))
+        val invitacion = daoInvitacion.rechazarInvitacion(invitacion, idInvitacion)
+        return invitacion ?: Error(arrayOf("Verifique los parametros ingresados"))
     }
 
     fun eliminarInvitacion(idInvitacion: String): Any {

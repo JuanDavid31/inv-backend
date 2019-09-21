@@ -49,15 +49,16 @@ class DaoPersona(val jdbi: Jdbi){
 
     /**
      * Busca personas por email que no han sido invitadas a la problematica
+     * Consulta SQL por Saul Aponte
      */
     fun darPersonasNoInvitadas(email: String, emailRemitente: String, idProblematica: Int): List<Persona> {
             return jdbi.withHandle<List<Persona>, java.lang.Exception>{
                 it.createQuery("SELECT DISTINCT a_email, d_nombres, d_apellidos " +
-                        "FROM persona " +
-                        "WHERE a_email like :email " +
-                        "and a_email != :emailRemitente " +
-                        "and a_email not in (select a_email_remitente from invitacion where invitacion.c_id_problematica = :idProblematica " +
-                        "union all select a_email_destinatario from invitacion where invitacion.c_id_problematica = :idProblematica)")
+                    "FROM persona " +
+                    "WHERE a_email like :email " +
+                    "and a_email != :emailRemitente " +
+                    "and a_email not in (select a_email_remitente from invitacion where invitacion.c_id_problematica = :idProblematica " +
+                    "union all select a_email_destinatario from invitacion where invitacion.c_id_problematica = :idProblematica)")
                     .bind("email", "%$email%" )
                     .bind("idProblematica", idProblematica)
                     .bind("emailRemitente", emailRemitente)
