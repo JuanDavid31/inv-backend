@@ -4,6 +4,7 @@ import entity.Invitacion
 import org.hibernate.validator.constraints.NotEmpty
 import usecase.ProblematicaUseCase
 import usecase.InvitacionUseCase
+import javax.validation.constraints.NotNull
 
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
@@ -25,9 +26,9 @@ class ProblematicaResource(private val InvitacionUseCase: InvitacionUseCase, pri
     @Path("/{idProblematica}")
     @POST
     fun avanzarFase(@PathParam("idProblematica") idProblematica: Int,
-                    @QueryParam("avanzar") @NotEmpty avanzar: Boolean?): Response {
+                    @QueryParam("avanzar") @NotNull avanzar: Boolean?): Response {
 
-        val resultado = problematicaUseCase.avanzarFase(idProblematica);
+        val resultado = problematicaUseCase.avanzarFase(idProblematica)
         return when(resultado){
             is Error -> Response.status(Response.Status.BAD_REQUEST).entity(resultado).build()
             else -> Response.ok(resultado).build()

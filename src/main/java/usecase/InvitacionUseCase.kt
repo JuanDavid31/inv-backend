@@ -17,7 +17,7 @@ class InvitacionUseCase(val daoInvitacion : DaoInvitacion){
     }
 
     fun rechazarInvitacion(invitacion: Invitacion, idInvitacion: String): Any {
-        val invitacion = daoInvitacion.rechazarInvitacion(invitacion, idInvitacion)
+        val invitacion = daoInvitacion.rechazarInvitacion(invitacion)
         return invitacion ?: Error(arrayOf("Verifique los parametros ingresados"))
     }
 
