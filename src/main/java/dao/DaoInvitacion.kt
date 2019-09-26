@@ -11,10 +11,10 @@ class DaoInvitacion(private val jdbi: Jdbi) {
 
     fun darPersonasInvitadas(emailRemitente: String, idProblematica: Int): List<Invitacion> {
         return jdbi.withHandle<List<Invitacion>, RuntimeException> { handle ->
-            handle.createQuery("SELECT P.d_nombres, I.a_email_remitente, I.a_email_destinatario, I.c_id_problematica, I.a_id, I.b_para_interventor, I.b_rechazada " +
+            handle.createQuery("SELECT P.d_nombres, I.a_email_remitente, I.a_email_destinatario, I.c_id_problematica, I.a_id, I.b_para_interventor, I.b_rechazada, " +
+                    "I.b_vigente " +
                     "FROM PERSONA P, INVITACION I " +
-                    "WHERE P.a_email = I.a_email_destinatario AND I.a_email_remitente = :emailRemitente AND I.c_id_problematica = :idProblematica AND " +
-                    "I.b_vigente = true")
+                    "WHERE P.a_email = I.a_email_destinatario AND I.a_email_remitente = :emailRemitente AND I.c_id_problematica = :idProblematica")
                     .bind("emailRemitente", emailRemitente)
                     .bind("idProblematica", idProblematica)
                     .mapToBean(Invitacion::class.java)

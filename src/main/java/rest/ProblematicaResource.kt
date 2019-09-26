@@ -1,11 +1,8 @@
 package rest
 
-import entity.Invitacion
-import org.hibernate.validator.constraints.NotEmpty
-import usecase.ProblematicaUseCase
 import usecase.InvitacionUseCase
+import usecase.ProblematicaUseCase
 import javax.validation.constraints.NotNull
-
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
@@ -34,6 +31,4 @@ class ProblematicaResource(private val InvitacionUseCase: InvitacionUseCase, pri
             else -> Response.ok(resultado).build()
         }
     }
-
-
 }
