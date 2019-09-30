@@ -12,10 +12,15 @@ class DaoNodo(private val jdbi: Jdbi) {
 
     fun darNodos(idPersonaProblematica: String): List<Nodo> {
         return jdbi.withHandle<List<Nodo>, Exception> {
-            it.createQuery("SELECT * FROM NODO WHERE a_id_pers_prob = :idPersProb")
-                .bind("idPersProb", idPersonaProblematica)
-                .mapToBean(Nodo::class.java)
-                .list()
+            try {
+                it.createQuery("SELECT * FROM NODO WHERE a_id_pers_prob = :idPersProb")
+                    .bind("idPersProb", idPersonaProblematica)
+                    .mapToBean(Nodo::class.java)
+                    .list()
+            }catch (e: Exception){
+                e.printStackTrace()
+                null
+            }
         }
     }
 

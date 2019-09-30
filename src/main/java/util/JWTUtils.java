@@ -26,9 +26,9 @@ public class JWTUtils {
                 .atZone(ZoneId.systemDefault())
                 .toInstant());
         return Jwts.builder()
-                .setSubject(personaIdentificada.nombres)
+                .setSubject(personaIdentificada.getNombres())
                 .setExpiration(fecha)
-                .claim(EMAIL_CLAIM, personaIdentificada.email)
+                .claim(EMAIL_CLAIM, personaIdentificada.getEmail())
                 .signWith(darJwtKey())
                 .compact();
     }

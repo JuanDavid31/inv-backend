@@ -8,10 +8,10 @@ import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Paths
 
-object FotoUtils {
+class FotoUtils(val ip:String) {
 
     private val DIRECTORIO = "/home/nodos"
-    private val DOMINIO = "http://localhost:8081/nodos"
+    private val DOMINIO = "http://${ip}/nodos"
 
     @Throws(IOException::class)
     fun guardarFotoEnDirectorioYDarUrl(nuevoNodo: Nodo, foto: InputStream, extensionFoto: String): String {
@@ -31,7 +31,7 @@ object FotoUtils {
     }
 
     fun darRuta(nodo: Nodo, extension: String): String {
-        return "/" + nodo.idProblematica + "/" + nodo.email + "/" + nodo.id + "." + extension
+        return "/${nodo.idProblematica}/${nodo.email}/${nodo.id}.$extension"
     }
 
     fun eliminarFoto(rutaFoto: String): Boolean {

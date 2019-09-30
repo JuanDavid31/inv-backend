@@ -15,20 +15,15 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.kotlin.KotlinPlugin;
 import org.jdbi.v3.core.mapper.CaseStrategy;
 import org.jdbi.v3.core.mapper.MapMappers;
-import org.jdbi.v3.core.statement.SqlLogger;
-import org.jdbi.v3.core.statement.StatementContext;
 import org.jdbi.v3.postgres.PostgresPlugin;
 import rest.*;
 import usecase.*;
-import util.CorreoUtils;
-import util.JWTUtils;
-import util.SingletonUtils;
+import util.*;
 import ws.InteraccionWebsocketServlet;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
 import javax.servlet.ServletRegistration;
-import java.sql.SQLException;
 import java.util.EnumSet;
 
 public class App extends Application<ConfiguracionApp> {
@@ -74,6 +69,7 @@ public class App extends Application<ConfiguracionApp> {
         //Utils
         JWTUtils jwtUtils = new JWTUtils(configuracionApp.jwtKey);
         CorreoUtils correoUtils = new CorreoUtils(configuracionApp.adminEmail, configuracionApp.adminPass);
+        FotoUtils fotoUtils = new FotoUtils(configuracionApp.ip);
 
         //JDBI y plugins
         final JdbiFactory factory = new JdbiFactory();
@@ -93,7 +89,7 @@ public class App extends Application<ConfiguracionApp> {
         DaoEscrito daoEscrito = new DaoEscrito(jdbi);
 
         //Use cases
-        FotoUseCase fotoUseCase = new FotoUseCase(daoNodo);
+        FotoUseCase fotoUseCase = new FotoUseCase(daoNodo, fotoUtils);
         ProblematicaUseCase problematicaUseCase = new ProblematicaUseCase(daoProblematica);
         CorreoUseCase correoUseCase = new CorreoUseCase(daoPersona, correoUtils);
         InvitacionUseCase invitacionUseCase = new InvitacionUseCase(daoInvitacion);
@@ -138,5 +134,7 @@ public class App extends Application<ConfiguracionApp> {
         environment.jersey().register(problematicaGrupoResource);
         environment.jersey().register(problematicaPersonaResource);
         environment.jersey().register(personaInvitacionResource);
+
+        environment.lifecycle().manage(new S3Utils());
     }
 }

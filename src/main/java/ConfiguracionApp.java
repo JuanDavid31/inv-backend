@@ -18,6 +18,8 @@ public class ConfiguracionApp extends Configuration {
     @NotEmpty
     public String adminPass = "";
 
+    public String ip = "localhost";
+
     @Valid
     @NotNull
     private DataSourceFactory database = new DataSourceFactory();
@@ -50,5 +52,15 @@ public class ConfiguracionApp extends Configuration {
     @JsonProperty
     public void setAdminPass(String adminPass) {
         this.adminPass = adminPass;
+    }
+
+    @JsonProperty
+    public String getIp() {
+        return ip;
+    }
+
+    @JsonProperty
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 }

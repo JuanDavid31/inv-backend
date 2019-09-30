@@ -5,6 +5,8 @@ adminEmail: ${ADMIN_EMAIL}
 
 adminPass: ${ADMIN_PASS}
 
+ip: ${IP}
+
 # Database settings.
 database:
 

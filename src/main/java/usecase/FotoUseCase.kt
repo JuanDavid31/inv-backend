@@ -8,15 +8,15 @@ import util.FotoUtils
 import java.io.IOException
 import java.io.InputStream
 
-class FotoUseCase(private val daoNodo: DaoNodo) {
+class FotoUseCase(private val daoNodo: DaoNodo, private val fotoUtils: FotoUtils) {
 
     fun guardarFoto(nodo: Nodo, foto: InputStream, extensionFoto: String): Nodo? {
-        if (!FotoUtils.extensionValida(extensionFoto)) return null
+        if (!fotoUtils.extensionValida(extensionFoto)) return null
         try {
             nodo.id = daoNodo.agregarNodo(nodo)
             if(nodo.id == 0) return null
-            nodo.urlFoto = FotoUtils.guardarFotoEnDirectorioYDarUrl(nodo, foto, extensionFoto) //Lanza la excepción
-            nodo.rutaFoto = FotoUtils.darRuta(nodo, extensionFoto)
+            nodo.urlFoto = fotoUtils.guardarFotoEnDirectorioYDarUrl(nodo, foto, extensionFoto) //Lanza la excepción
+            nodo.rutaFoto = fotoUtils.darRuta(nodo, extensionFoto)
             daoNodo.actualizarNodo(nodo)
             return nodo
         } catch (e: IOException) {
@@ -28,6 +28,6 @@ class FotoUseCase(private val daoNodo: DaoNodo) {
 
     fun eliminarNodoYFoto(idNodo: Int): Any {
         val nodo = daoNodo.eliminarNodo(idNodo)
-        return if(nodo != null) FotoUtils.eliminarFoto(nodo.rutaFoto) else Error(arrayOf("No existe el nodo"))
+        return if(nodo != null) fotoUtils.eliminarFoto(nodo.rutaFoto) else Error(arrayOf("No existe el nodo"))
     }
 }
