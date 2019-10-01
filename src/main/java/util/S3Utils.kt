@@ -13,7 +13,6 @@ class S3Utils : Managed {
     @Throws(Exception::class)
     override fun start() {
 
-
         s3Client = S3Client.builder()
                 .region(Region.US_EAST_1)
                 .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
