@@ -70,6 +70,7 @@ public class App extends Application<ConfiguracionApp> {
         JWTUtils jwtUtils = new JWTUtils(configuracionApp.jwtKey);
         CorreoUtils correoUtils = new CorreoUtils(configuracionApp.adminEmail, configuracionApp.adminPass);
         FotoUtils fotoUtils = new FotoUtils(configuracionApp.ip);
+        S3Utils s3Utils = new S3Utils();
 
         //JDBI y plugins
         final JdbiFactory factory = new JdbiFactory();
@@ -89,7 +90,7 @@ public class App extends Application<ConfiguracionApp> {
         DaoEscrito daoEscrito = new DaoEscrito(jdbi);
 
         //Use cases
-        FotoUseCase fotoUseCase = new FotoUseCase(daoNodo, fotoUtils);
+        FotoUseCase fotoUseCase = new FotoUseCase(daoNodo, fotoUtils, s3Utils);
         ProblematicaUseCase problematicaUseCase = new ProblematicaUseCase(daoProblematica);
         CorreoUseCase correoUseCase = new CorreoUseCase(daoPersona, correoUtils);
         InvitacionUseCase invitacionUseCase = new InvitacionUseCase(daoInvitacion);
@@ -135,6 +136,6 @@ public class App extends Application<ConfiguracionApp> {
         environment.jersey().register(problematicaPersonaResource);
         environment.jersey().register(personaInvitacionResource);
 
-        environment.lifecycle().manage(new S3Utils());
+        environment.lifecycle().manage(s3Utils);
     }
 }

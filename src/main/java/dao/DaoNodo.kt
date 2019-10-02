@@ -42,7 +42,7 @@ class DaoNodo(private val jdbi: Jdbi) {
 
     fun actualizarNodo(nodo: Nodo): Boolean {
         return jdbi.withHandle<Boolean, Exception> {
-            it.createUpdate("UPDATE NODO SET a_url_foto = :urlFoto, a_ruta_foto = :rutaFoto where c_id = :id")
+            it.createUpdate("UPDATE NODO SET a_url_foto = :urlFoto where c_id = :id")
                 .bindBean(nodo)
                 .execute() > 0
         }
@@ -64,10 +64,10 @@ class DaoNodo(private val jdbi: Jdbi) {
      * @return
      * @throws UnableToExecuteStatementException
      */
-    fun eliminarConexionesPadreEHijo(idPadre: Int): Boolean {
+    fun eliminarConexionesPadreEHijo(idNodo: Int): Boolean {
         return jdbi.withHandle<Boolean, RuntimeException> {
-            it.createUpdate("UPDATE NODO SET c_id_padre = null WHERE c_id_padre = :id")
-                .bind("id", idPadre)
+            it.createUpdate("UPDATE NODO SET c_id_padre = null WHERE c_id = :id")
+                .bind("id", idNodo)
                 .execute() > 0
         }
     }
@@ -75,11 +75,19 @@ class DaoNodo(private val jdbi: Jdbi) {
     fun eliminarNodo(id: Int): Nodo {
         return jdbi.withHandle<Nodo, RuntimeException> {
             try{
-                it.createUpdate("DELETE FROM NODO WHERE c_id = :id")
+                val idProblematica = it.createQuery(""" SELECT PERSONA_PROBLEMATICA.c_id_problematica FROM NODO, PERSONA_PROBLEMATICA
+                        WHERE a_id_pers_prob = PERSONA_PROBLEMATICA.a_id and NODO.c_id = :id""")
+                        .bind("id", id)
+                        .mapTo(Int::class.java)
+                        .findOnly()
+
+                val nodo = it.createUpdate("DELETE FROM NODO WHERE c_id = :id")
                     .bind("id", id)
                     .executeAndReturnGeneratedKeys()
                     .mapToBean(Nodo::class.java)
                     .findOnly()
+                nodo.idProblematica = idProblematica
+                nodo
             }catch (e: Exception){
                 e.printStackTrace()
                 null

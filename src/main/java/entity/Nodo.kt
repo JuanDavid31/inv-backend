@@ -10,8 +10,6 @@ class Nodo {
     var nombre: String = ""
     @get:ColumnName("a_url_foto")
     var urlFoto: String = ""
-    @get:ColumnName("a_ruta_foto")
-    var rutaFoto: String = ""
     @get:ColumnName("c_id_padre")
     var idPadre: Int = 0
     var email: String = ""
