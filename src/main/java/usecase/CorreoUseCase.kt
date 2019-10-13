@@ -13,7 +13,7 @@ class CorreoUseCase(val daoPersona: DaoPersona, val correoUtils: CorreoUtils){
             correoUtils.enviarPassA(optionalPersona.get())
             Mensaje("Correo enviado con exito.")
         }else{
-            Error(arrayOf("Este correo no esta registrado"))
+            Error(arrayOf("Este correo no existe."))
         }
     }
 }
