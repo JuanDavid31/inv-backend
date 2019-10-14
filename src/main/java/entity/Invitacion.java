@@ -86,7 +86,7 @@ public class Invitacion {
         this.estaVigente = estaVigente;
     }
 
-    @ColumnName("b_para_invertentor")
+    @ColumnName("b_para_interventor")
     public boolean getParaInterventor() {
         return paraInterventor;
     }
