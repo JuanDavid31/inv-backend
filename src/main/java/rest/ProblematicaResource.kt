@@ -21,6 +21,17 @@ class ProblematicaResource(private val InvitacionUseCase: InvitacionUseCase, pri
     }
 
     @Path("/{idProblematica}")
+    @GET
+    fun darEstadoProblematica(@PathParam("idProblematica") idProblematica: Int,
+                              @QueryParam("estado") @NotNull avanzar: Boolean?): Response{
+        val resultado = problematicaUseCase.darEstadoProblematica(idProblematica)
+        return when(resultado){
+            is Error -> Response.status(Response.Status.BAD_REQUEST).entity(resultado).build()
+            else -> Response.ok(resultado).build()
+        }
+    }
+
+    @Path("/{idProblematica}")
     @POST
     fun avanzarFase(@PathParam("idProblematica") idProblematica: Int,
                     @QueryParam("avanzar") @NotNull avanzar: Boolean?): Response {

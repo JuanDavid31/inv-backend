@@ -51,20 +51,76 @@ class DaoProblematica(internal val jdbi: Jdbi) {
     }
 
     fun darFase(idProblematica: Int): Optional<Int> {
-        return jdbi.withHandle<Optional<Int>, RuntimeException> { handle ->
-            handle.createQuery("SELECT c_fase FROM PROBLEMATICA where c_id = :idProblematica")
+        return jdbi.withHandle<Optional<Int>, RuntimeException> {
+            it.createQuery("SELECT c_fase FROM PROBLEMATICA where c_id = :idProblematica")
                     .bind("idProblematica", idProblematica)
                     .mapTo(Int::class.java)
                     .findFirst()
         }
     }
 
-    @Throws(UnableToExecuteStatementException::class)
     fun avanzarFaseProblematica(idProblematica: Int): Boolean {
-        return jdbi.withHandle<Boolean, RuntimeException> { handle ->
-            handle.createUpdate("UPDATE PROBLEMATICA SET c_fase = c_fase + 1 where c_id = :idProblematica")
+        return jdbi.withHandle<Boolean, RuntimeException> {
+            try{
+                it.createUpdate("UPDATE PROBLEMATICA SET c_fase = c_fase + 1 where c_id = :idProblematica")
                     .bind("idProblematica", idProblematica)
                     .execute() > 0
+            }catch (e: Exception){
+                e.printStackTrace()
+                false
+            }
+
         }
     }
+
+    fun darCantidadParticipantes(idProblematica: Int): Int {
+        return jdbi.withHandle<Int, RuntimeException> {
+            it.createQuery("SELECT COUNT(a_email) FROM PERSONA_PROBLEMATICA WHERE c_id_problematica = :idProblematica")
+                    .bind("idProblematica", idProblematica)
+                    .mapTo(Int::class.java)
+                    .findOnly()
+        }
+    }
+
+    fun darCantidadNodos(idProblematica: Int): Int {
+        return jdbi.withHandle<Int, Exception> {
+            it.createQuery("SELECT COUNT(c_id) FROM persona_problematica, NODO " +
+                    "WHERE PERSONA_PROBLEMATICA.a_id = NODO.a_id_pers_prob " +
+                    "AND PERSONA_PROBLEMATICA.c_id_problematica = :idProblematica")
+                    .bind("idProblematica", idProblematica)
+                    .mapTo(Int::class.java)
+                    .findOnly()
+        }
+    }
+
+    fun darCantidadGrupos(idProblematica: Int): Int {
+        return jdbi.withHandle<Int, Exception> {
+            it.createQuery("SELECT COUNT(c_id) FROM GRUPO WHERE c_id_problematica = :c_id_problematica")
+                    .bind("idProblematica", idProblematica)
+                    .mapTo(Int::class.java)
+                    .findOnly()
+        }
+    }
+
+    fun darCantidadReacciones(idProblematica: Int): Int {
+        return jdbi.withHandle<Int, Exception> {
+            it.createQuery("SELECT COUNT(REACCION.c_id) FROM GRUPO, REACCION WHERE GRUPO.c_id = REACCION.c_id_grupo " +
+                    "AND GRUPO.c_id_problematica = :idProblematica")
+                    .bind("idProblematica", idProblematica)
+                    .mapTo(Int::class.java)
+                    .findOnly()
+        }
+    }
+
+    fun darCantidadEscritos(idProblematica: Int): Int {
+        return jdbi.withHandle<Int, Exception> {
+            it.createQuery("SELECT COUNT(ESCRITO.c_id) FROM GRUPO, ESCRITO WHERE GRUPO.c_id = ESCRITO.c_id_grupo " +
+                    "AND GRUPO.c_id_problematica = :idProblematica")
+                    .bind("idProblematica", idProblematica)
+                    .mapTo(Int::class.java)
+                    .findOnly()
+        }
+    }
+
+
 }
