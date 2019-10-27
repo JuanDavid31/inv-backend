@@ -1,6 +1,7 @@
 package dao
 
 import entity.Nodo
+import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException
 import java.lang.Exception
@@ -73,19 +74,11 @@ class DaoNodo(private val jdbi: Jdbi) {
     }
 
     fun eliminarNodo(id: Int): Nodo {
-        return jdbi.withHandle<Nodo, RuntimeException> {
+        return jdbi.inTransaction<Nodo, RuntimeException> {
             try{
-                val idProblematica = it.createQuery(""" SELECT PERSONA_PROBLEMATICA.c_id_problematica FROM NODO, PERSONA_PROBLEMATICA
-                        WHERE a_id_pers_prob = PERSONA_PROBLEMATICA.a_id and NODO.c_id = :id""")
-                        .bind("id", id)
-                        .mapTo(Int::class.java)
-                        .findOnly()
-
-                val nodo = it.createUpdate("DELETE FROM NODO WHERE c_id = :id")
-                    .bind("id", id)
-                    .executeAndReturnGeneratedKeys()
-                    .mapToBean(Nodo::class.java)
-                    .findOnly()
+                val idProblematica = darIdProblematica(it, id)
+                eliminarConexionConHijo(it, id)
+                val nodo = eliminarElementoNodo(it, id)
                 nodo.idProblematica = idProblematica
                 nodo
             }catch (e: Exception){
@@ -94,4 +87,25 @@ class DaoNodo(private val jdbi: Jdbi) {
             }
         }
     }
+
+    private fun darIdProblematica(handle: Handle, idNodo: Int) =
+        handle.createQuery(""" SELECT PERSONA_PROBLEMATICA.c_id_problematica FROM NODO, PERSONA_PROBLEMATICA
+            WHERE a_id_pers_prob = PERSONA_PROBLEMATICA.a_id and NODO.c_id = :idNodo""")
+            .bind("idNodo", idNodo)
+            .mapTo(Int::class.java)
+            .findOnly()
+
+    private fun eliminarConexionConHijo(handle: Handle, idNodo: Int){
+        handle.createUpdate("UPDATE NODO SET c_id_padre = null WHERE c_id_padre = :id")
+            .bind("id", idNodo)
+            .execute()
+    }
+
+    private fun eliminarElementoNodo(handle: Handle, idNodo: Int) =
+        handle.createUpdate("DELETE FROM NODO WHERE c_id = :id")
+            .bind("id", idNodo)
+            .executeAndReturnGeneratedKeys()
+            .mapToBean(Nodo::class.java)
+            .findOnly()
+
 }
