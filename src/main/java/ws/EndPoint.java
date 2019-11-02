@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import entity.Grupo;
+import entity.SesionCliente;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
@@ -13,6 +14,7 @@ import util.SingletonUtils;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 @WebSocket
 public class EndPoint {
@@ -20,14 +22,13 @@ public class EndPoint {
     private GrupoUseCase grupoUseCase;
 
     public EndPoint(){
-        System.out.println("Instnaciando clase EndPoint");
+        System.out.println("Instanciando clase EndPoint");
         grupoUseCase = SingletonUtils.darGrupoUseCase();
     }
 
     @OnWebSocketConnect
     public void onOpen(Session sesion){
-        System.out.println("Abriendo sesión...");
-        System.out.println(sesion);
+        System.out.println("Abriendo sesión - " + String.valueOf(sesion.hashCode()));
         agregarCliente(sesion);
         System.out.println("Sesión abierta!");
     }
@@ -38,15 +39,17 @@ public class EndPoint {
 
     @OnWebSocketMessage
     public void onMessage(Session sesion, String mensajeRecibido) throws IOException {
-        System.out.println("Llego un mensaje de " + sesion.getRemoteAddress().getHostName() + " : " +mensajeRecibido);
+        System.out.println("Llego un mensaje de " + String.valueOf(sesion.hashCode()) + " : " +mensajeRecibido);
         JsonNode jsonNode = new ObjectMapper().readTree(mensajeRecibido);
         String mensajeADifundir = leerAccion(jsonNode, sesion);
         difundir(sesion, mensajeADifundir);
     }
 
     @OnWebSocketClose
-    public void onClose(Session session, int statusCode, String reason){
-        System.out.println("Cerrando sesion");
+    public void onClose(Session session, int statusCode, String reason) throws IOException {
+        System.out.println("Cerrando sesion - " + String.valueOf(session.hashCode()));
+        String mensajeADifundir = leerAccion(new ObjectMapper().readTree("{ \"accion\":\"Desconectarse\" }"), session);
+        difundir(session, mensajeADifundir);
         EndPointHandler.eliminarCliente(session);
     }
 
@@ -54,15 +57,24 @@ public class EndPoint {
     public void onError(Session sesion, Throwable throwable){
         System.out.println("Hubo un error con la sesión :" + String.valueOf(sesion.hashCode()));
         throwable.printStackTrace();
+        if(throwable instanceof TimeoutException){
+            System.out.println("Fue timeout");
+        }
     }
 
     private String leerAccion(JsonNode json, Session session) throws JsonProcessingException {
         switch (json.get("accion").asText()){
+            case "Conectarse":
+                return agregarDatos(json, session);
+            case "Desconectarse":
+                return eliminarDatos(json, session);
             case "Agregar":
                 agregarGrupo(json);
                 break;
             case "Eliminar":
                 break;
+            case "Juntar nodos":
+                return juntarNodos(json);
             case "Apadrinar":
                 break;
             case "Desapadrinar":
@@ -76,7 +88,35 @@ public class EndPoint {
             default:
                 return null;
         }
-        return null;
+        return "No hay nada";
+    }
+
+    private String eliminarDatos(JsonNode json, Session session) throws JsonProcessingException {
+        Map<String, SesionCliente> sesionesCliente = EndPointHandler.darSesionesPorGrupo(session);
+        SesionCliente sesionCliente = sesionesCliente.get(String.valueOf(session.hashCode()));
+
+        Map nuevoJson = new HashMap<String, Object>();
+        nuevoJson.put("accion", "Desconectarse");
+        nuevoJson.put("nombre", sesionCliente.getNombre());
+        nuevoJson.put("email", sesionCliente.getEmail());
+        return new ObjectMapper().writeValueAsString(nuevoJson);
+    }
+
+    private String agregarDatos(JsonNode json, Session session) throws JsonProcessingException {
+        String nombre = json.get("nombre").asText();
+        String email = json.get("email").asText();
+
+        Map<String, SesionCliente> sesionesCliente = EndPointHandler.darSesionesPorGrupo(session);
+        SesionCliente sesionCliente = sesionesCliente.get(String.valueOf(session.hashCode()));
+        sesionCliente.setNombre(nombre);
+        sesionCliente.setEmail(email);
+        sesionesCliente.put(String.valueOf(session.hashCode()), sesionCliente);
+
+        Map nuevoJson = new HashMap<String, Object>();
+        nuevoJson.put("accion", "Conectarse");
+        nuevoJson.put("nombre", nombre);
+        nuevoJson.put("email", email);
+        return new ObjectMapper().writeValueAsString(nuevoJson);
     }
 
     private void agregarGrupo(JsonNode json){
@@ -88,35 +128,32 @@ public class EndPoint {
 
     }
 
+    private String juntarNodos(JsonNode json) {
+        return json.toString();
+    }
+
     private String bloquearNodo(JsonNode json) throws JsonProcessingException {
-        Map nuevoJson = new HashMap<String, Object>();
-        nuevoJson.put("mensaje", "Bloquear");
-        nuevoJson.put("idNodo", json.path("idNodo").asLong());
-        return new ObjectMapper().writeValueAsString(nuevoJson);
+        return json.toString();
     }
 
     private String moverNodo(JsonNode json) throws JsonProcessingException {
-        Map nuevoJson = new HashMap<String, Object>();
-        nuevoJson.put("mensaje", "Mover");
-        nuevoJson.put("idNodo", json.path("idNodo").asLong());
-        return new ObjectMapper().writeValueAsString(nuevoJson);
+        return json.toString();
     }
 
     private String desbloquearNodo(JsonNode json) throws JsonProcessingException {
-        Map nuevoJson = new HashMap<String, Object>();
-        nuevoJson.put("mensaje", "Desbloquear");
-        nuevoJson.put("idNodo", json.path("idNodo").asLong());
-        return new ObjectMapper().writeValueAsString(nuevoJson);
+        return json.toString();
     }
 
     private void difundir(Session sesion, String mensaje) {
-        Map<String, Session> endPoints = EndPointHandler.darSesionesPorGrupo(sesion);
-        for (Map.Entry<String, Session> session : endPoints.entrySet()) {
-            if (!String.valueOf(session.getValue().hashCode()).equals(String.valueOf(sesion.hashCode()))) {
+        Map<String, SesionCliente> endPoints = EndPointHandler.darSesionesPorGrupo(sesion);
+        for (Map.Entry<String, SesionCliente> entry : endPoints.entrySet()) {
+            String hashActual = String.valueOf(entry.getValue().getSesion().hashCode());
+            String hashSesion = String.valueOf(sesion.hashCode());
+            if (!hashActual.equals(hashSesion)) {
                 try {
-                    Session value = session.getValue();
+                    SesionCliente value = entry.getValue();
                     if (value != null) {
-                        RemoteEndpoint remote = value.getRemote();
+                        RemoteEndpoint remote = value.getSesion().getRemote();
                         if(remote != null){
                             remote.sendString(mensaje);
                         }else{
