@@ -1,6 +1,7 @@
 package util;
 
 import usecase.GrupoUseCase;
+import usecase.NodoUseCase;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +12,7 @@ import java.util.Map;
  */
 public class SingletonUtils {
 
-    static Map<String, GrupoUseCase> singletons = new HashMap<>();
+    static Map<String, Object> singletons = new HashMap<>();
 
     public static GrupoUseCase guardarGrupoUseCase(GrupoUseCase grupoUseCase){
         singletons.put("grupoUseCase", grupoUseCase);
@@ -19,6 +20,15 @@ public class SingletonUtils {
     }
 
     public static GrupoUseCase darGrupoUseCase(){
-        return singletons.get("grupoUseCase");
+        return (GrupoUseCase) singletons.get("grupoUseCase");
+    }
+
+    public static NodoUseCase guardarNodoUseCase(NodoUseCase nodoUseCase){
+        singletons.put("nodoUseCase", nodoUseCase);
+        return nodoUseCase;
+    }
+
+    public static NodoUseCase darNodoUseCase(){
+        return (NodoUseCase) singletons.get("nodoUseCase");
     }
 }

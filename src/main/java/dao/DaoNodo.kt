@@ -25,6 +25,22 @@ class DaoNodo(private val jdbi: Jdbi) {
         }
     }
 
+    fun darNodos(idProblematica: Long): List<Nodo>{
+        return jdbi.withHandle<List<Nodo>, Exception> {
+            try {
+                it.createQuery("""SELECT N.c_id, N.a_nombre, N.a_url_foto, N.c_id_grupo, G.d_nombre FROM PERSONA_PROBLEMATICA pp, NODO n
+                LEFT JOIN GRUPO G on G.c_id = N.c_id_grupo where PP.a_id = N.a_id_pers_prob 
+                and PP.c_id_problematica = :idProblematica""")
+                .bind("idProblematica", idProblematica)
+                .mapToBean(Nodo::class.java)
+                .list()
+            }catch (e: Exception){
+                e.printStackTrace()
+                null
+            }
+        }
+    }
+
     fun agregarNodo(nodo: Nodo): Int {
         return jdbi.withHandle<Int, Exception> {
             try {
@@ -41,7 +57,7 @@ class DaoNodo(private val jdbi: Jdbi) {
         }
     }
 
-    fun actualizarNodo(nodo: Nodo): Boolean {
+    fun actualizarUrlNodo(nodo: Nodo): Boolean {
         return jdbi.withHandle<Boolean, Exception> {
             it.createUpdate("UPDATE NODO SET a_url_foto = :urlFoto where c_id = :id")
                 .bindBean(nodo)
@@ -107,5 +123,18 @@ class DaoNodo(private val jdbi: Jdbi) {
             .executeAndReturnGeneratedKeys()
             .mapToBean(Nodo::class.java)
             .findOnly()
+
+    fun actualizarGrupoNodo(nodo: Nodo): Boolean {
+        return jdbi.withHandle<Boolean, Exception>{
+            try{
+                it.createUpdate("UPDATE NODO SET c_id_grupo = :idGrupo WHERE c_id = :id")
+                .bindBean(nodo)
+                .execute() > 0
+            }catch (e: Exception){
+                e.printStackTrace()
+                false
+            }
+        }
+    }
 
 }

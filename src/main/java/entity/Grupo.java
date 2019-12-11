@@ -5,7 +5,7 @@ import org.jdbi.v3.core.mapper.reflect.ColumnName;
 public class Grupo {
 
     public int id;
-    public int idPadre;
+    public Integer idPadre;
     public String nombre;
     public int idProblematica;
     public int reaccion;
@@ -18,6 +18,11 @@ public class Grupo {
         this.nombre = nombre;
     }
 
+    public Grupo(String nombre, int idPadre){
+        this.nombre = nombre;
+        this.idPadre = idPadre;
+    }
+
     @ColumnName("c_id")
     public int getId() {
         return id;
@@ -28,11 +33,11 @@ public class Grupo {
     }
 
     @ColumnName("c_id_padre")
-    public int getIdPadre() {
+    public Integer getIdPadre() {
         return idPadre;
     }
 
-    public void setIdPadre(int idPadre) {
+    public void setIdPadre(Integer idPadre) {
         this.idPadre = idPadre;
     }
 

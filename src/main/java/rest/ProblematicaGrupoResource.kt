@@ -11,11 +11,6 @@ import javax.ws.rs.core.Response
 @Consumes(MediaType.APPLICATION_JSON)
 class ProblematicaGrupoResource(val grupoUseCase: GrupoUseCase){
 
-    @Path("/{idProblematica}/gruposActivos")
-    @GET
-    fun darGrupos(@PathParam("idProblematica") idProblematica: Int) =
-            grupoUseCase.darGrupos(idProblematica)
-
     //TODO: Probablemente esto sea reemplazado por los Websockets
 
     @POST

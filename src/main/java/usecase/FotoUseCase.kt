@@ -17,7 +17,7 @@ class FotoUseCase(private val daoNodo: DaoNodo, private val fotoUtils: FotoUtils
             nodo.id = daoNodo.agregarNodo(nodo)
             if(nodo.id == 0) return null
             nodo.urlFoto = s3Utils.cargarImagen(nodo, foto, extensionFoto)
-            daoNodo.actualizarNodo(nodo)
+            daoNodo.actualizarUrlNodo(nodo)
             return nodo
         } catch (e: IOException) {
             daoNodo.eliminarNodo(nodo.id)

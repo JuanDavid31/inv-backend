@@ -94,7 +94,7 @@ public class App extends Application<ConfiguracionApp> {
         ProblematicaUseCase problematicaUseCase = new ProblematicaUseCase(daoProblematica);
         CorreoUseCase correoUseCase = new CorreoUseCase(daoPersona, correoUtils);
         InvitacionUseCase invitacionUseCase = new InvitacionUseCase(daoInvitacion);
-        NodoUseCase nodoUseCase = new NodoUseCase(daoNodo);
+        NodoUseCase nodoUseCase = SingletonUtils.guardarNodoUseCase(new NodoUseCase(daoNodo));
         GrupoUseCase grupoUseCase = new GrupoUseCase(daoGrupo);
         ReaccionUseCase reaccionUseCase = new ReaccionUseCase(daoReaccion);
         EscritoUseCase escritoUseCase = new EscritoUseCase(daoEscrito);

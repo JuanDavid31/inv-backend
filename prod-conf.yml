@@ -20,7 +20,7 @@ database:
   password: 1234
 
   # the JDBC URL
-  url: jdbc:postgresql://db/inv
+  url: jdbc:postgresql://3.130.29.100/inv
 
 # use the simple server factory if you only want to run on a single port
 #server:

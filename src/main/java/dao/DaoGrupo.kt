@@ -6,14 +6,11 @@ import java.util.Optional
 
 class DaoGrupo(private val jdbi: Jdbi) {
 
-    fun darGrupos(idProblematica: Int): List<Map<String, Any>> {
-        return jdbi.withHandle<List<Map<String, Any>>, RuntimeException> { handle ->
-            handle.createQuery("SELECT g.c_id as  \"idGrupo\", g.c_id_padre as \"idPadreGrupo\", g.d_nombre as \"nombreGrupo\", " +
-                "n.a_url_foto as \"urlFotoNodo\", n.c_id_padre as \"idPadreNodo\" " +
-                "from problematica p, grupo g, nodo n " +
-                "where p.c_id = g.c_id_problematica and p.c_id = :idProblematica and g.c_id = n.c_id_grupo")
+    fun darGrupos(idProblematica: Long): List<Grupo> {
+        return jdbi.withHandle<List<Grupo>, RuntimeException> {
+            it.createQuery("SELECT * FROM GRUPO G WHERE G.c_id_problematica = :idProblematica")
                 .bind("idProblematica", idProblematica)
-                .mapToMap()
+                .mapToBean(Grupo::class.java)
                 .list()
         }
     }
@@ -30,30 +27,45 @@ class DaoGrupo(private val jdbi: Jdbi) {
     }
 
     fun actualizarGrupo(idGrupo: Int, grupo: Grupo): Boolean {
-        return jdbi.withHandle<Boolean, RuntimeException> { handle ->
-            handle.createUpdate("UPDATE GRUPO SET d_nombre = :nombre where c_id = :idGrupo")
-                .bind("idGrupo", idGrupo)
-                .bindBean(grupo)
-                .execute() > 0
+        return try{
+            jdbi.withHandle<Boolean, RuntimeException> {
+                it.createUpdate("UPDATE GRUPO SET d_nombre = :nombre where c_id = :idGrupo")
+                    .bind("idGrupo", idGrupo)
+                    .bindBean(grupo)
+                    .execute() > 0
+            }
+        }catch(e: Exception){
+            e.printStackTrace()
+            false
         }
     }
 
     fun apadrinar(id: Int, idPadre: Int, idProblematica: Int): Boolean {
-        return jdbi.withHandle<Boolean, RuntimeException> { handle ->
-            handle.createUpdate("UPDATE GRUPO SET c_id_padre = :idPadre WHERE c_id = :id AND c_id_problematica = :idProblematica")
-                .bind("id", id)
-                .bind("idPadre", idPadre)
-                .bind("idProblematica", idProblematica)
-                .execute() > 0
+        return try{
+            jdbi.withHandle<Boolean, RuntimeException> {
+                it.createUpdate("UPDATE GRUPO SET c_id_padre = :idPadre WHERE c_id = :id AND c_id_problematica = :idProblematica")
+                        .bind("id", id)
+                        .bind("idPadre", idPadre)
+                        .bind("idProblematica", idProblematica)
+                        .execute() > 0
+            }
+        }catch (e: Exception){
+            e.printStackTrace()
+            false
         }
     }
 
     fun desApadrinar(id: Int, idProblematica: Int): Boolean {
-        return jdbi.withHandle<Boolean, RuntimeException> { handle ->
-            handle.createUpdate("UPDATE GRUPO SET c_id_padre = null WHERE c_id = :id AND c_id_problematica = :idProblematica")
-                .bind("id", id)
-                .bind("idProblematica", idProblematica)
-                .execute() > 0
+        return try{
+            jdbi.withHandle<Boolean, RuntimeException> {
+                it.createUpdate("UPDATE GRUPO SET c_id_padre = null WHERE c_id = :id AND c_id_problematica = :idProblematica")
+                        .bind("id", id)
+                        .bind("idProblematica", idProblematica)
+                        .execute() > 0
+            }
+        }catch (e: Exception){
+            e.printStackTrace()
+            false
         }
     }
 
@@ -77,13 +89,36 @@ class DaoGrupo(private val jdbi: Jdbi) {
     }
 
     fun eliminarGrupo(id: Int, idProblematica: Int): Boolean {
-        return jdbi.inTransaction<Boolean, RuntimeException> { handle ->
-            desApadrinar(id, idProblematica)
+        return try{
+            jdbi.inTransaction<Boolean, RuntimeException> {
+                desApadrinar(id, idProblematica)
 
-            handle.createUpdate("DELETE FROM GRUPO WHERE c_id = :id AND c_id_problematica = :idProblematica")
-                .bind("id", id)
-                .bind("idProblematica", idProblematica)
-                .execute() > 0
+                it.createUpdate("UPDATE NODO SET c_id_padre = null WHERE c_id_padre = :idPadre")
+                        .bind("idPadre", id)
+                        .execute()
+
+                it.createUpdate("DELETE FROM GRUPO WHERE c_id = :id AND c_id_problematica = :idProblematica")
+                        .bind("id", id)
+                        .bind("idProblematica", idProblematica)
+                        .execute() > 0
+            }
+        }catch (e: Exception){
+            e.printStackTrace()
+            false
+        }
+    }
+
+    fun eliminarGrupos(idsGrupos: List<Int>, idProblematica: Int): Boolean {
+        return try {
+            jdbi.withHandle<Boolean, Exception> {
+                it.createUpdate("DELETE FROM GRUPO WHERE c_id in (<idsGrupos>) AND c_id_problematica = :idProblematica")
+                    .bindList("idsGrupos", idsGrupos) //TODO: Si la lista esta vacia entonces se lanza una excepción
+                    .bind("idProblematica", idProblematica)
+                    .execute() > 0
+            }
+        }catch (e: Exception){
+            e.printStackTrace()
+            false
         }
     }
 }
