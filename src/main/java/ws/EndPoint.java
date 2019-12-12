@@ -73,9 +73,11 @@ public class EndPoint {
                 return juntarNodos(json, session);
             case "Separar nodos":
                 return separarNodos(json, session);
-            case "Apadrinar":
+            case "Conectar grupos":
+                return conectarGrupos(json, session);
                 break;
-            case "Desapadrinar":
+            case "Desconectar grupos":
+                return desconectarGrupos(json, session);
                 break;
             case "Bloquear":
                 return bloquearNodo(json);
@@ -89,6 +91,38 @@ public class EndPoint {
                 return null;
         }
         return "No hay nada";
+    }
+
+    private String conectarGrupos(JsonNode json, Session session) {
+        JsonNode nuevaConexion = json.get("edge");
+        String edgeId = nuevaConexion.get("data").get("id").asText();
+        int idSala = EndPointHandler.extraerIdSala(session);
+        Sala sala = EndPointHandler.darSala(idSala);
+        Map<String, JsonNode> nodos = sala.getNodos();
+
+        nodos.put(edgeId, nuevaConexion);
+
+        sala.getGruposAgregados().put(edgeId, nuevaConexion);
+
+        return json.toString();
+    }
+
+    private String desconectarGrupos(JsonNode json, Session session) {
+        JsonNode conexionAEliminar = json.get("edge");
+        String edgeId = conexionAEliminar.get("data").get("id").asText();
+        int idSala = EndPointHandler.extraerIdSala(session);
+        Sala sala = EndPointHandler.darSala(idSala);
+        Map<String, JsonNode> nodos = sala.getNodos();
+
+        nodos.remove(edgeId);
+
+        if(sala.getGruposAgregados().containsKey(edgeId)){
+            sala.getGruposAgregados().remove(edgeId);
+        }else{
+            sala.getGruposEliminados().put(edgeId, conexionAEliminar);
+        }
+
+        return json.toString();
     }
 
 

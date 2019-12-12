@@ -57,8 +57,18 @@ public class EndPointHandler {
      */
     private static void agregarNuevosGrupos(Sala sala, int idProblematica) {
         Map<String, JsonNode> gruposAgregados = sala.getGruposAgregados();
+        agregarNuevasConexiones(gruposAgregados, idProblematica);
         agregarGruposSinPadre(gruposAgregados, idProblematica);
         agregarGruposConPadre(gruposAgregados, idProblematica);
+    }
+
+    private static void agregarNuevasConexiones(Map<String, JsonNode> grupos, int idProblematica) {
+        grupos.values()
+            .stream()
+            .filter(grupo -> grupo.get("data").get("source") != null)
+            .forEach(conexion -> {
+
+            });
     }
 
     /**
@@ -70,14 +80,17 @@ public class EndPointHandler {
     private static void agregarGruposSinPadre(Map<String, JsonNode> grupos, int idProblematica){
         grupos.values()
             .stream()
-            .filter(grupo -> grupo.get("data").get("parent") == null)
+            .filter(grupo -> grupo.get("data").get("parent") == null && grupo.get("data").get("source") == null)
             .forEach(grupo -> {
+                boolean esConexion = grupo.get("data").get("source") != null;
+
                 String idProvicional = grupo.get("data").get("id").asText();
                 String nombreGrupo = grupo.get("data").get("nombre").asText();
 
                 Grupo nuevoGrupo = grupoUseCase.agregarGrupo(idProblematica, new Grupo(nombreGrupo));
 
                 grupos.replace(idProvicional, new IntNode(nuevoGrupo.id));
+
             });
     }
 
@@ -89,8 +102,8 @@ public class EndPointHandler {
      */
     private static void agregarGruposConPadre(Map<String, JsonNode> grupos, int idProblematica){
         grupos.values()
-            .stream()
-            .filter(grupo -> grupo.get("data") != null) //En este punto los nodos reemplazados no tendran data.
+            .stream()//En este punto los nodos reemplazados no tendran data.
+            .filter(grupo -> grupo.get("data") != null)
             .forEach(grupo -> {
                 String idProvicional = grupo.get("data").get("id").asText();
                 String nombreGrupo = grupo.get("data").get("nombre").asText();
