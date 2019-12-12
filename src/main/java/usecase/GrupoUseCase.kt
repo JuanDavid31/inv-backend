@@ -13,6 +13,7 @@ import org.jdbi.v3.core.statement.UnableToExecuteStatementException
 class GrupoUseCase(val daoGrupo: DaoGrupo){
 
     fun darGrupos(idProblematica: Long): List<JsonNode> {
+        val conexiones: MutableList<JsonNode> = ArrayList()
         return daoGrupo.darGrupos(idProblematica)
             .map {
                 val objectMapper = ObjectMapper()
@@ -20,12 +21,23 @@ class GrupoUseCase(val daoGrupo: DaoGrupo){
                 val grupo = objectMapper.createObjectNode()
 
                 data.set("id", IntNode(it.id))
-                data.set("parent", if(it.idPadre != null) IntNode(it.idPadre) else NullNode.instance)
+                data.set("parent", NullNode.instance)
                 data.set("nombre", TextNode(it.nombre))
                 data.set("esGrupo", BooleanNode.TRUE )
 
+                if(it.idPadre != null){
+                    val conexion = objectMapper.createObjectNode()
+                    val data = objectMapper.createObjectNode()
+
+                    data.set("id", TextNode("$it.idPadre$it.id"))
+                    data.set("source", IntNode(it.id))
+                    data.set("target", IntNode(it.idPadre))
+                    conexion.set("data", data)
+                    conexiones.add(conexion)
+                }
+
                 grupo.set("data", data)
-            }
+            }.toMutableList() + conexiones
     }
 
     fun agregarGrupo(idProblematica: Int, grupo: Grupo) = daoGrupo.agregarGrupo(idProblematica, grupo)

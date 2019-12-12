@@ -3,6 +3,7 @@ package ws;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import entity.Grupo;
 import entity.Nodo;
 import entity.Sala;
@@ -53,21 +54,28 @@ public class EndPointHandler {
 
     /**
      * La adición se divide en 2, primero se agregan los grupos sin padre y despues los restantes.
+     * El orden asegura la integridad de la DB.
      * @param sala
      */
     private static void agregarNuevosGrupos(Sala sala, int idProblematica) {
         Map<String, JsonNode> gruposAgregados = sala.getGruposAgregados();
-        agregarNuevasConexiones(gruposAgregados, idProblematica);
+        mapearNuevasConexiones(gruposAgregados);
         agregarGruposSinPadre(gruposAgregados, idProblematica);
         agregarGruposConPadre(gruposAgregados, idProblematica);
     }
 
-    private static void agregarNuevasConexiones(Map<String, JsonNode> grupos, int idProblematica) {
+    private static void mapearNuevasConexiones(Map<String, JsonNode> grupos) {
         grupos.values()
             .stream()
             .filter(grupo -> grupo.get("data").get("source") != null)
             .forEach(conexion -> {
+                String idString = conexion.get("data").get("id").asText();
+                String sourceString = conexion.get("data").get("source").asText();
+                String targetString = conexion.get("data").get("target").asText();
+                //TODO: Mucho por hacer
+                ((ObjectNode)grupos.get(targetString).get("data")).replace("parent", new IntNode(Integer.parseInt(sourceString)));
 
+                grupos.remove(idString);
             });
     }
 
@@ -82,8 +90,6 @@ public class EndPointHandler {
             .stream()
             .filter(grupo -> grupo.get("data").get("parent") == null && grupo.get("data").get("source") == null)
             .forEach(grupo -> {
-                boolean esConexion = grupo.get("data").get("source") != null;
-
                 String idProvicional = grupo.get("data").get("id").asText();
                 String nombreGrupo = grupo.get("data").get("nombre").asText();
 

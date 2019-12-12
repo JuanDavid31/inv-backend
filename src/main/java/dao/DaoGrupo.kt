@@ -6,8 +6,8 @@ import java.util.Optional
 
 class DaoGrupo(private val jdbi: Jdbi) {
 
-    fun darGrupos(idProblematica: Long): List<Grupo> {
-        return jdbi.withHandle<List<Grupo>, RuntimeException> {
+    fun darGrupos(idProblematica: Long): MutableList<Grupo> {
+        return jdbi.withHandle<MutableList<Grupo>, RuntimeException> {
             it.createQuery("SELECT * FROM GRUPO G WHERE G.c_id_problematica = :idProblematica")
                 .bind("idProblematica", idProblematica)
                 .mapToBean(Grupo::class.java)
