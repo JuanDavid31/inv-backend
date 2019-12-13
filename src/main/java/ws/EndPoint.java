@@ -120,6 +120,7 @@ public class EndPoint {
             sala.getGruposAgregados().remove(edgeId);
         }else{
             sala.getGruposEliminados().put(edgeId, conexionAEliminar);
+            sala.getNodos().remove(edgeId);
         }
 
         return json.toString();

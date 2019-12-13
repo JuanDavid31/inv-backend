@@ -59,12 +59,12 @@ public class EndPointHandler {
      */
     private static void agregarNuevosGrupos(Sala sala, int idProblematica) {
         Map<String, JsonNode> gruposAgregados = sala.getGruposAgregados();
-        mapearNuevasConexiones(gruposAgregados);
+        mapearNuevasConexiones(gruposAgregados, sala.getNodos());
         agregarGruposSinPadre(gruposAgregados, idProblematica);
         agregarGruposConPadre(gruposAgregados, idProblematica);
     }
 
-    private static void mapearNuevasConexiones(Map<String, JsonNode> grupos) {
+    private static void mapearNuevasConexiones(Map<String, JsonNode> grupos, final Map<String, JsonNode> gruposActuales) {
         grupos.values()
             .stream()
             .filter(grupo -> grupo.get("data").get("source") != null)
@@ -72,8 +72,13 @@ public class EndPointHandler {
                 String idString = conexion.get("data").get("id").asText();
                 String sourceString = conexion.get("data").get("source").asText();
                 String targetString = conexion.get("data").get("target").asText();
-                //TODO: Mucho por hacer
-                ((ObjectNode)grupos.get(targetString).get("data")).replace("parent", new IntNode(Integer.parseInt(sourceString)));
+
+                if(grupos.get(targetString) != null){
+                    //Si el grupo es nuevo entonces su id seran letras autogeneradas
+                    ((ObjectNode)grupos.get(targetString).get("data")).replace("parent", new TextNode(sourceString));
+                }else{//Es viejo. Su id sera un número.
+                    ((ObjectNode)gruposActuales.get(targetString).get("data")).replace("parent", new IntNode(Integer.parseInt(sourceString)));
+                }
 
                 grupos.remove(idString);
             });
@@ -96,7 +101,6 @@ public class EndPointHandler {
                 Grupo nuevoGrupo = grupoUseCase.agregarGrupo(idProblematica, new Grupo(nombreGrupo));
 
                 grupos.replace(idProvicional, new IntNode(nuevoGrupo.id));
-
             });
     }
 
@@ -113,9 +117,12 @@ public class EndPointHandler {
             .forEach(grupo -> {
                 String idProvicional = grupo.get("data").get("id").asText();
                 String nombreGrupo = grupo.get("data").get("nombre").asText();
+
+                String stringIdPadre = grupo.get("data").get("parent").asText();
+
+                ((ObjectNode)grupo.get("data")).replace("parent", grupos.get(stringIdPadre));
+
                 int idPadre = grupo.get("data").get("parent").asInt();
-                ((ObjectNode)grupo.get("data")).replace("parent", grupos.get(idPadre));
-                idPadre = grupo.get("data").get("parent").asInt();
 
                 Grupo nuevoGrupo = grupoUseCase.agregarGrupo(idProblematica, new Grupo(nombreGrupo, idPadre));
 
@@ -132,10 +139,15 @@ public class EndPointHandler {
 
     private static void eliminarGrupos(Sala sala, int idSala) {
         Map<String, JsonNode> gruposEliminados = sala.getGruposEliminados();
+
+
+        grupoUseCase.eliminarConexiones(idsTargets, sala);
+
         List idsGrupos = gruposEliminados.entrySet()
                 .stream()
                 .map(entry -> Integer.parseInt(entry.getKey()))
                 .collect(Collectors.toList());
+
         grupoUseCase.eliminarGrupos(idsGrupos, idSala);
     }
 
@@ -147,8 +159,13 @@ public class EndPointHandler {
                 if(esGrupo){
                     int id = Integer.parseInt(nodo.get("data").get("id").asText());
                     String nombre = nodo.get("data").get("nombre").asText();
-                    //nodo.get("data").get("parent").as; TODO: Pendiente
-                    grupoUseCase.actualizarGrupo(id, new Grupo(nombre));
+
+                    JsonNode nodoIdPadre = nodo.get("data").get("parent");
+                    if(nodoIdPadre != null){
+                        grupoUseCase.actualizarGrupo(id, new Grupo(nombre, nodoIdPadre.asInt()));
+                    }else{
+                        grupoUseCase.actualizarGrupo(id, new Grupo(nombre));
+                    }
                 }else{
                     int id = Integer.parseInt(nodo.get("data").get("id").asText());
                     String idGrupo = nodo.get("data").get("parent").asText();
