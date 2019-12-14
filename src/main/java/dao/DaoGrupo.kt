@@ -121,4 +121,17 @@ class DaoGrupo(private val jdbi: Jdbi) {
             false
         }
     }
+
+    fun eliminarConexiones(idsGrupos: Any): Boolean {
+        return try {
+            jdbi.withHandle<Boolean, Exception> {
+                it.createUpdate("UPDATE GRUPO SET c_id_padre = null WHERE c_id in (<idsGrupos>)")
+                        .bindList("idsGrupos", idsGrupos)
+                        .execute() > 0
+            }
+        }catch (e: Exception){
+            e.printStackTrace()
+            false
+        }
+    }
 }

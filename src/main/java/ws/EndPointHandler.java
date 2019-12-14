@@ -46,8 +46,8 @@ public class EndPointHandler {
         if(sala.getClientes().size() == 0){
             agregarNuevosGrupos(sala, idSala);
             eliminarGruposNuevosDeGruposActuales(sala);
-            eliminarGrupos(sala, idSala);
             actualizarNodosActuales(sala, idSala);
+            eliminarGrupos(sala, idSala);
             salasActivas.remove(idSala);
         }
     }
@@ -80,7 +80,7 @@ public class EndPointHandler {
                     ((ObjectNode)gruposActuales.get(targetString).get("data")).replace("parent", new IntNode(Integer.parseInt(sourceString)));
                 }
 
-                grupos.remove(idString);
+                //grupos.remove(idString);
             });
     }
 
@@ -112,8 +112,9 @@ public class EndPointHandler {
      */
     private static void agregarGruposConPadre(Map<String, JsonNode> grupos, int idProblematica){
         grupos.values()
-            .stream()//En este punto los nodos reemplazados no tendran data.
-            .filter(grupo -> grupo.get("data") != null)
+            .stream()
+            .filter(grupo -> grupo.get("data") != null)//En este punto los nodos sin padre fueron reemplazados por {}.
+            .filter(grupo -> grupo.get("data").get("source") == null)//Que no sea un edge.
             .forEach(grupo -> {
                 String idProvicional = grupo.get("data").get("id").asText();
                 String nombreGrupo = grupo.get("data").get("nombre").asText();
@@ -140,8 +141,15 @@ public class EndPointHandler {
     private static void eliminarGrupos(Sala sala, int idSala) {
         Map<String, JsonNode> gruposEliminados = sala.getGruposEliminados();
 
+        //Eliminar conexiones
+        List idsTargets = gruposEliminados.values()
+                .stream()
+                .filter(nodo -> nodo.get("data") != null)
+                .filter(nodo -> nodo.get("data").get("source") != null)
+                .map(nodo -> Integer.parseInt(nodo.get("data").get("target").asText()))
+                .collect(Collectors.toList());
 
-        grupoUseCase.eliminarConexiones(idsTargets, sala);
+        grupoUseCase.eliminarConexiones(idsTargets);
 
         List idsGrupos = gruposEliminados.entrySet()
                 .stream()

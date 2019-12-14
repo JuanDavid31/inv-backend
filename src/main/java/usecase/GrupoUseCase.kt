@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.node.NullNode
 import com.fasterxml.jackson.databind.node.TextNode
 import dao.DaoGrupo
 import entity.Grupo
-import org.jdbi.v3.core.statement.UnableToExecuteStatementException
 
 class GrupoUseCase(val daoGrupo: DaoGrupo){
 
@@ -57,5 +56,13 @@ class GrupoUseCase(val daoGrupo: DaoGrupo){
 
     fun eliminarGrupo(id: Int, idProblematica: Int): Boolean = daoGrupo.eliminarGrupo(id, idProblematica)
 
+    /**
+     * Lanza una excepción si la lista esta vacia.
+     */
     fun eliminarGrupos(idsGrupos: List<Int>, idSala: Int) = if (idsGrupos.isEmpty()) false else daoGrupo.eliminarGrupos(idsGrupos, idSala)
+
+    /**
+     * Lanza una excepción si la lista esta vacia.
+     */
+    fun eliminarConexiones(idsGrupos: List<Any?>) = if(idsGrupos.isEmpty()) false else daoGrupo.eliminarConexiones(idsGrupos)
 }

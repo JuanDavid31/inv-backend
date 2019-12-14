@@ -40,7 +40,6 @@ public class EndPoint {
 
     @OnWebSocketMessage
     public void onMessage(Session sesion, String mensajeRecibido) throws IOException {
-        /*System.out.println("Llego un mensaje de " + String.valueOf(sesion.hashCode()) + " : " +mensajeRecibido);*/
         JsonNode jsonNode = new ObjectMapper().readTree(mensajeRecibido);
         String mensajeADifundir = leerAccion(jsonNode, sesion);
         difundir(sesion, mensajeADifundir);
@@ -65,7 +64,7 @@ public class EndPoint {
         }
     }
 
-    private String leerAccion(JsonNode json, Session session) throws JsonProcessingException {
+    private String leerAccion(JsonNode json, Session session) {
         switch (json.get("accion").asText()){
             case "Conectarse":
                 return agregarDatos(json, session);
@@ -75,10 +74,8 @@ public class EndPoint {
                 return separarNodos(json, session);
             case "Conectar grupos":
                 return conectarGrupos(json, session);
-                break;
             case "Desconectar grupos":
                 return desconectarGrupos(json, session);
-                break;
             case "Bloquear":
                 return bloquearNodo(json);
             case "Mover":
@@ -88,9 +85,8 @@ public class EndPoint {
             case "Desbloquear":
                 return desbloquearNodo(json);
             default:
-                return null;
+                return "No hay nada";
         }
-        return "No hay nada";
     }
 
     private String conectarGrupos(JsonNode json, Session session) {
