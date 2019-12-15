@@ -1,0 +1,68 @@
+#Volverlo una variable del entorno
+jwtKey: ${JWT_KEY}
+
+adminEmail: ${ADMIN_EMAIL}
+
+adminPass: ${ADMIN_PASS}
+
+# Database settings.
+database:
+
+  # the name of your JDBC driver
+  driverClass: org.postgresql.Driver
+  # the username
+  user: postgres
+
+  # the password
+  password: 1234
+
+  # the JDBC URL
+  url: jdbc:postgresql://3.130.29.100:5432/inv
+
+# use the simple server factory if you only want to run on a single port
+#server:
+#  type: simple
+#  connector:
+#    type: http
+#    port: 8080
+
+
+
+
+# Logging settings.
+logging:
+
+  # The default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
+  level: INFO
+
+  # Logger-specific levels.
+  loggers:
+
+    # Sets the level for 'com.example.app' to DEBUG.
+    "rest":
+      level: INFO
+
+    # Redirects SQL logs to a separate file
+    org.hibernate.SQL:
+      level: DEBUG
+
+#  appenders:
+#    - type: file
+      # The file to which current statements will be logged.
+#      currentLogFilename: ./logs/app.log
+
+      # When the log file rotates, the archived log will be renamed to this and gzipped. The
+      # %d is replaced with the previous day (yyyy-MM-dd). Custom rolling windows can be created
+      # by passing a SimpleDateFormat-compatible format as an argument: "%d{yyyy-MM-dd-hh}".
+#      archivedLogFilenamePattern: ./logs/app-%d.log.gz
+
+      # The number of archived files to keep.
+#      archivedFileCount: 5
+
+      # The timezone used to format dates. HINT: USE THE DEFAULT, UTC.
+#      timeZone: UTC
+
+  # Logback's Time Based Rolling Policy - archivedLogFilenamePattern: /tmp/application-%d{yyyy-MM-dd}.log.gz
+  # Logback's Size and Time Based Rolling Policy -  archivedLogFilenamePattern: /tmp/application-%d{yyyy-MM-dd}-%i.log.gz
+  # Logback's Fixed Window Rolling Policy -  archivedLogFilenamePattern: /tmp/application-%i.log.gz
+

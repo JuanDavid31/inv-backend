@@ -28,9 +28,10 @@ class GrupoUseCase(val daoGrupo: DaoGrupo){
                     val conexion = objectMapper.createObjectNode()
                     val data = objectMapper.createObjectNode()
 
-                    data.set("id", TextNode("$it.idPadre$it.id"))
-                    data.set("source", IntNode(it.id))
-                    data.set("target", IntNode(it.idPadre))
+                    val id = "${it.idPadre}${it.id}".toInt()
+                    data.set("id", IntNode(id))
+                    data.set("source", IntNode(it.idPadre))
+                    data.set("target", IntNode(it.id))
                     conexion.set("data", data)
                     conexiones.add(conexion)
                 }
@@ -41,7 +42,7 @@ class GrupoUseCase(val daoGrupo: DaoGrupo){
 
     fun agregarGrupo(idProblematica: Int, grupo: Grupo) = daoGrupo.agregarGrupo(idProblematica, grupo)
 
-    fun actualizarGrupo(idGrupo: Int, grupo: Grupo): Boolean = daoGrupo.actualizarGrupo(idGrupo, grupo)
+    fun actualizarNombreYPadreGrupo(grupo: Grupo): Boolean = daoGrupo.actualizarNombreYPadreGrupo(grupo)
 
     fun apadrinar(id: Int, idPadre: Int, idProblematica: Int): Boolean = daoGrupo.apadrinar(id, idPadre, idProblematica)
 

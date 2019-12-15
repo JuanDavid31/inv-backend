@@ -184,9 +184,6 @@ public class EndPoint {
         Sala sala = EndPointHandler.darSala(EndPointHandler.extraerIdSala(session));
         Map<String, JsonNode> nodos = sala.getNodos();
 
-        System.out.println("INICIO - JUNTAR NODOS");
-        nodos.forEach((key, value) -> System.out.println(value.toString()));
-
         JsonNode nodoPadre = json.get("nodoPadre");
         JsonNode nodoEntrante = json.get("nodo");
         JsonNode nodoVecino = json.get("nodoVecino");
@@ -210,18 +207,12 @@ public class EndPoint {
             ((ObjectNode)nodos.get(idNodoVecino).get("data")).set("parent", new TextNode(idNodoPadre));
         }
 
-        System.out.println("FIN - JUNTAR NODOS");
-        nodos.forEach((key, value) -> System.out.println(value.toString()));
-
         return json.toString();
     }
 
     private String separarNodos(JsonNode json, Session session) {
         Sala sala = EndPointHandler.darSala(EndPointHandler.extraerIdSala(session));
         Map<String, JsonNode> nodos = sala.getNodos();
-
-        System.out.println("INICIO - SEPARAR NODOS");
-        nodos.forEach((key, value) -> System.out.println(value.toString()));
 
         JsonNode nodoSaliente = json.get("nodo");
         JsonNode nodoVecino = json.get("nodoVecino");
@@ -246,9 +237,6 @@ public class EndPoint {
         }else{
             sala.getGruposEliminados().put(idNodoPadre, new ObjectMapper().createObjectNode());
         }
-
-        System.out.println("FIN - SEPARAR NODOS");
-        nodos.forEach((key, value) -> System.out.println(value.toString()));
 
         return json.toString();
     }

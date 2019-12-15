@@ -14,11 +14,14 @@ public class Grupo {
     public Grupo() {
     }
 
-    public Grupo(String nombre){
+    public Grupo(int id, String nombre){
+        this.id = id;
         this.nombre = nombre;
+        idPadre = null;
     }
 
-    public Grupo(String nombre, int idPadre){
+    public Grupo(int id, String nombre, int idPadre){
+        this.id = id;
         this.nombre = nombre;
         this.idPadre = idPadre;
     }

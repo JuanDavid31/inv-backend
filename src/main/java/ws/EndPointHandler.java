@@ -46,7 +46,8 @@ public class EndPointHandler {
         if(sala.getClientes().size() == 0){
             agregarNuevosGrupos(sala, idSala);
             eliminarGruposNuevosDeGruposActuales(sala);
-            actualizarNodosActuales(sala, idSala);
+            mapearConexionesActuales(sala);
+            actualizarNodosActuales(sala);
             eliminarGrupos(sala, idSala);
             salasActivas.remove(idSala);
         }
@@ -69,7 +70,7 @@ public class EndPointHandler {
             .stream()
             .filter(grupo -> grupo.get("data").get("source") != null)
             .forEach(conexion -> {
-                String idString = conexion.get("data").get("id").asText();
+                //String idString = conexion.get("data").get("id").asText();
                 String sourceString = conexion.get("data").get("source").asText();
                 String targetString = conexion.get("data").get("target").asText();
 
@@ -77,10 +78,8 @@ public class EndPointHandler {
                     //Si el grupo es nuevo entonces su id seran letras autogeneradas
                     ((ObjectNode)grupos.get(targetString).get("data")).replace("parent", new TextNode(sourceString));
                 }else{//Es viejo. Su id sera un número.
-                    ((ObjectNode)gruposActuales.get(targetString).get("data")).replace("parent", new IntNode(Integer.parseInt(sourceString)));
+                    ((ObjectNode)gruposActuales.get(targetString).get("data")).replace("parent", new TextNode(sourceString));
                 }
-
-                //grupos.remove(idString);
             });
     }
 
@@ -98,7 +97,7 @@ public class EndPointHandler {
                 String idProvicional = grupo.get("data").get("id").asText();
                 String nombreGrupo = grupo.get("data").get("nombre").asText();
 
-                Grupo nuevoGrupo = grupoUseCase.agregarGrupo(idProblematica, new Grupo(nombreGrupo));
+                Grupo nuevoGrupo = grupoUseCase.agregarGrupo(idProblematica, new Grupo(0, nombreGrupo));
 
                 grupos.replace(idProvicional, new IntNode(nuevoGrupo.id));
             });
@@ -125,7 +124,7 @@ public class EndPointHandler {
 
                 int idPadre = grupo.get("data").get("parent").asInt();
 
-                Grupo nuevoGrupo = grupoUseCase.agregarGrupo(idProblematica, new Grupo(nombreGrupo, idPadre));
+                Grupo nuevoGrupo = grupoUseCase.agregarGrupo(idProblematica, new Grupo(0, nombreGrupo, idPadre));
 
                 grupos.replace(idProvicional, new IntNode(nuevoGrupo.id));
             });
@@ -136,6 +135,19 @@ public class EndPointHandler {
         sala.getGruposAgregados()
             .keySet()
             .forEach(nodos::remove);
+    }
+
+    private static void mapearConexionesActuales(Sala sala) {
+        Map<String, JsonNode> nodos = sala.getNodos();
+        nodos.values()
+            .stream()
+            .filter(nodo -> nodo.get("data").get("source") != null)
+            .forEach(conexion -> {
+                String sourceString = conexion.get("data").get("source").asText();
+                String targetString = conexion.get("data").get("target").asText();
+
+                ((ObjectNode)nodos.get(targetString).get("data")).replace("parent", new IntNode(Integer.parseInt(sourceString)));
+            });
     }
 
     private static void eliminarGrupos(Sala sala, int idSala) {
@@ -159,23 +171,25 @@ public class EndPointHandler {
         grupoUseCase.eliminarGrupos(idsGrupos, idSala);
     }
 
-    private static void actualizarNodosActuales(Sala sala, int idSala) {
+    private static void actualizarNodosActuales(Sala sala) {
         Map<String, JsonNode> nodos = sala.getNodos();
         nodos.values()
+            .stream()
+            .filter(nodo -> nodo.get("data").get("source") == null)
             .forEach(nodo -> {
                 boolean esGrupo = nodo.get("data").get("esGrupo") != null;
                 if(esGrupo){
-                    int id = Integer.parseInt(nodo.get("data").get("id").asText());
+                    int id = nodo.get("data").get("id").asInt();
                     String nombre = nodo.get("data").get("nombre").asText();
 
                     JsonNode nodoIdPadre = nodo.get("data").get("parent");
-                    if(nodoIdPadre != null){
-                        grupoUseCase.actualizarGrupo(id, new Grupo(nombre, nodoIdPadre.asInt()));
+                    if(nodoIdPadre != null && !nodoIdPadre.isNull()){
+                        grupoUseCase.actualizarNombreYPadreGrupo(new Grupo(id, nombre, nodoIdPadre.asInt()));
                     }else{
-                        grupoUseCase.actualizarGrupo(id, new Grupo(nombre));
+                        grupoUseCase.actualizarNombreYPadreGrupo(new Grupo(id, nombre));
                     }
                 }else{
-                    int id = Integer.parseInt(nodo.get("data").get("id").asText());
+                    int id = nodo.get("data").get("id").asInt();
                     String idGrupo = nodo.get("data").get("parent").asText();
 
                     Map<String, JsonNode> gruposAgregados = sala.getGruposAgregados();
