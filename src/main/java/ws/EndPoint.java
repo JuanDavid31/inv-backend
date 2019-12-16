@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 @WebSocket
 public class EndPoint {
@@ -78,12 +79,14 @@ public class EndPoint {
                 return desconectarGrupos(json, session);
             case "Bloquear":
                 return bloquearNodo(json);
+            case "Desbloquear":
+                return desbloquearNodo(json);
             case "Mover":
                 return moverNodo(json, session);
             case "Mover padre":
                 return moverNodoPadre(json, session);
-            case "Desbloquear":
-                return desbloquearNodo(json);
+            case "Cambio solicitud de organizacion":
+                return cambioSolicitudOrganizacion(json, session);
             default:
                 return "No hay nada";
         }
@@ -164,11 +167,13 @@ public class EndPoint {
     private void actualizarSesionClienteVacia(JsonNode json, Session session){
         String nombre = json.get("nombre").asText();
         String email = json.get("email").asText();
+        boolean solicitandoOrganizacion = json.get("solicitandoOrganizacion").asBoolean();
 
         Map<String, SesionCliente> sesionesCliente = EndPointHandler.darSesionesPorSala(EndPointHandler.extraerIdSala(session));
         SesionCliente sesionCliente = sesionesCliente.get(String.valueOf(session.hashCode()));
         sesionCliente.setNombre(nombre);
         sesionCliente.setEmail(email);
+        sesionCliente.setSolicitandoOrganizacion(solicitandoOrganizacion);
         sesionesCliente.put(String.valueOf(session.hashCode()), sesionCliente);
     }
 
@@ -261,6 +266,36 @@ public class EndPoint {
     }
 
     private String desbloquearNodo(JsonNode json) {
+        return json.toString();
+    }
+
+    private String cambioSolicitudOrganizacion(JsonNode json, Session session) {
+        int idSala = EndPointHandler.extraerIdSala(session);
+        Sala sala = EndPointHandler.darSala(idSala);
+        String email = json.get("email").asText();
+        boolean solicitandoOrganizacion = json.get("solicitandoOrganizacion").asBoolean();
+
+        sala.getClientes()
+            .values()
+            .stream()
+            .filter(sesionCliente -> sesionCliente.getEmail().equals(email))
+            .findFirst()
+            .get()
+            .setSolicitandoOrganizacion(solicitandoOrganizacion);
+
+        int solicitantes = sala.getClientes()
+                .values()
+                .stream()
+                .filter(sesionCliente -> sesionCliente.getSolicitandoOrganizacion())
+                .collect(Collectors.toList())
+                .size();
+
+        int solicitantesTotales = sala.getClientes().values().size();
+
+        if(solicitantes == solicitantesTotales){
+            //TODO
+        }
+
         return json.toString();
     }
 
