@@ -293,7 +293,24 @@ public class EndPoint {
         int solicitantesTotales = sala.getClientes().values().size();
 
         if(solicitantes == solicitantesTotales){
-            //TODO
+            //Envio mensaje de reinicio a la sesión actual.
+            ObjectNode mensajeIniciarReinicio = new ObjectMapper().createObjectNode();
+            mensajeIniciarReinicio.set("accion", new TextNode("Iniciar reinicio"));
+            difundirA(mensajeIniciarReinicio.toString(), session);
+
+            //Envio reinicio de solicitudes a todos los nodos menos el actual.
+            ObjectNode mensajeReiniciarSolicitudes = new ObjectMapper().createObjectNode();
+            mensajeReiniciarSolicitudes.set("accion", new TextNode("Reiniciar solicitudes"));
+            difundir(session, mensajeReiniciarSolicitudes.toString());
+
+            //Cambiar las solicitudes actuales.
+            sala.getClientes()
+                .values()
+                .stream()
+                .forEach(sesionCliente -> sesionCliente.setSolicitandoOrganizacion(false));
+
+        }else{
+
         }
 
         return json.toString();
