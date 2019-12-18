@@ -87,6 +87,8 @@ public class EndPoint {
                 return moverNodoPadre(json, session);
             case "Cambio solicitud de organizacion":
                 return cambioSolicitudOrganizacion(json, session);
+            case "Cambiar nombre":
+                return cambiarNombre(json, session);
             default:
                 return "No hay nada";
         }
@@ -309,8 +311,26 @@ public class EndPoint {
                 .stream()
                 .forEach(sesionCliente -> sesionCliente.setSolicitandoOrganizacion(false));
 
+            return "";
         }else{
+            return json.toString();
+        }
+    }
 
+    private String cambiarNombre(JsonNode json, Session session){
+        int idSala = EndPointHandler.extraerIdSala(session);
+        Sala sala = EndPointHandler.darSala(idSala);
+        Map<String, JsonNode> nodos = sala.getNodos();
+        Map<String, JsonNode> gruposAgregados = sala.getGruposAgregados();
+
+        String id = json.get("data").get("id").asText();
+        String nuevoNombre = json.get("data").get("nombre").asText();
+
+
+        ((ObjectNode) nodos.get(id).get("data")).replace("nombre", new TextNode(nuevoNombre));
+
+        if(gruposAgregados.containsKey(id)){
+            ((ObjectNode) gruposAgregados.get(id).get("data")).replace("nombre", new TextNode(nuevoNombre));
         }
 
         return json.toString();
