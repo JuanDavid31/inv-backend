@@ -3,14 +3,15 @@ package entity
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import org.eclipse.jetty.websocket.api.Session
+import java.util.concurrent.ConcurrentHashMap
 
 class Sala(val clientes: MutableMap<String, SesionCliente>, var nodos: MutableMap<String, JsonNode>){
 
-    val gruposAgregados: MutableMap<String, JsonNode> = HashMap<String, JsonNode>()
-    val gruposEliminados: MutableMap<String, JsonNode> = HashMap<String, JsonNode>()
+    val gruposAgregados: MutableMap<String, JsonNode> = ConcurrentHashMap<String, JsonNode>()
+    val gruposEliminados: MutableMap<String, JsonNode> = ConcurrentHashMap<String, JsonNode>()
 
     fun agregarSesion(sesion: Session){
-        clientes[sesion.hashCode().toString()] = SesionCliente(sesion, "", "")
+        clientes[sesion.hashCode().toString()] = SesionCliente(sesion, "", "", false)
     }
 
     fun eliminarCliente(sesion: Session) = clientes.remove(sesion.hashCode().toString())

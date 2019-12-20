@@ -17,6 +17,7 @@ import org.jdbi.v3.core.mapper.CaseStrategy;
 import org.jdbi.v3.core.mapper.MapMappers;
 import org.jdbi.v3.postgres.PostgresPlugin;
 import rest.*;
+import rest.sse.SseEventSourceServlet;
 import usecase.*;
 import util.*;
 import ws.InteraccionWebsocketServlet;
@@ -65,6 +66,9 @@ public class App extends Application<ConfiguracionApp> {
         ServletRegistration.Dynamic miServlet = environment.servlets().addServlet("miServlet", new InteraccionWebsocketServlet());
         miServlet.setAsyncSupported(true);
         miServlet.addMapping("/colaboracion/*");
+
+        //Server sent events
+        environment.servlets().addServlet("/sse", new SseEventSourceServlet());
 
         //Utils
         JWTUtils jwtUtils = new JWTUtils(configuracionApp.jwtKey);
