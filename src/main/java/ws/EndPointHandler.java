@@ -14,6 +14,7 @@ import usecase.NodoUseCase;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class EndPointHandler {
@@ -69,7 +70,7 @@ public class EndPointHandler {
         grupos.values()
             .stream()
             .filter(grupo -> grupo.get("data").get("source") != null)
-            .forEach(conexion -> {
+            .forEach(consumerWrapper(conexion -> {
                 //String idString = conexion.get("data").get("id").asText();
                 String sourceString = conexion.get("data").get("source").asText();
                 String targetString = conexion.get("data").get("target").asText();
@@ -80,7 +81,7 @@ public class EndPointHandler {
                 }else{//Es viejo. Su id sera un número.
                     ((ObjectNode)gruposActuales.get(targetString).get("data")).replace("parent", new TextNode(sourceString));
                 }
-            });
+            }));
     }
 
     /**
@@ -93,14 +94,14 @@ public class EndPointHandler {
         grupos.values()
             .stream()
             .filter(grupo -> grupo.get("data").get("parent") == null && grupo.get("data").get("source") == null)
-            .forEach(grupo -> {
+            .forEach(consumerWrapper(grupo -> {
                 String idProvicional = grupo.get("data").get("id").asText();
                 String nombreGrupo = grupo.get("data").get("nombre").asText();
 
                 Grupo nuevoGrupo = grupoUseCase.agregarGrupo(idProblematica, new Grupo(0, nombreGrupo));
 
                 grupos.replace(idProvicional, new IntNode(nuevoGrupo.id));
-            });
+            }));
     }
 
     /**
@@ -114,20 +115,24 @@ public class EndPointHandler {
             .stream()
             .filter(grupo -> grupo.get("data") != null)//En este punto los nodos sin padre fueron reemplazados por {}.
             .filter(grupo -> grupo.get("data").get("source") == null)//Que no sea un edge.
-            .forEach(grupo -> {
+            .forEach(consumerWrapper(grupo -> {
                 String idProvicional = grupo.get("data").get("id").asText();
                 String nombreGrupo = grupo.get("data").get("nombre").asText();
 
                 String stringIdPadre = grupo.get("data").get("parent").asText();
 
-                ((ObjectNode)grupo.get("data")).replace("parent", grupos.get(stringIdPadre));
+                if(grupos.containsKey(stringIdPadre)){
+                    ((ObjectNode)grupo.get("data")).replace("parent", grupos.get(stringIdPadre));
+                }else{
+                    ((ObjectNode)grupo.get("data")).replace("parent", new IntNode(Integer.parseInt(stringIdPadre)));
+                }
 
                 int idPadre = grupo.get("data").get("parent").asInt();
 
                 Grupo nuevoGrupo = grupoUseCase.agregarGrupo(idProblematica, new Grupo(0, nombreGrupo, idPadre));
 
                 grupos.replace(idProvicional, new IntNode(nuevoGrupo.id));
-            });
+            }));
     }
 
     private static void eliminarGruposNuevosDeGruposActuales(Sala sala) {
@@ -142,19 +147,19 @@ public class EndPointHandler {
         nodos.values()
             .stream()
             .filter(nodo -> nodo.get("data").get("source") != null)
-            .forEach(conexion -> {
+            .forEach(consumerWrapper(conexion -> {
                 String sourceString = conexion.get("data").get("source").asText();
                 String targetString = conexion.get("data").get("target").asText();
 
                 ((ObjectNode)nodos.get(targetString).get("data")).replace("parent", new IntNode(Integer.parseInt(sourceString)));
-            });
+            }));
     }
 
     private static void eliminarGrupos(Sala sala, int idSala) {
         Map<String, JsonNode> gruposEliminados = sala.getGruposEliminados();
 
         //Eliminar conexiones
-        List idsTargets = gruposEliminados.values()
+        List<Integer> idsTargets = gruposEliminados.values()
                 .stream()
                 .filter(nodo -> nodo.get("data") != null)
                 .filter(nodo -> nodo.get("data").get("source") != null)
@@ -163,7 +168,7 @@ public class EndPointHandler {
 
         grupoUseCase.eliminarConexiones(idsTargets);
 
-        List idsGrupos = gruposEliminados.entrySet()
+        List<Integer> idsGrupos = gruposEliminados.entrySet()
                 .stream()
                 .map(entry -> Integer.parseInt(entry.getKey()))
                 .collect(Collectors.toList());
@@ -173,10 +178,11 @@ public class EndPointHandler {
 
     private static void actualizarNodosActuales(Sala sala) {
         Map<String, JsonNode> nodos = sala.getNodos();
+        Map<String, JsonNode> gruposAgregados = sala.getGruposAgregados();
         nodos.values()
             .stream()
             .filter(nodo -> nodo.get("data").get("source") == null)
-            .forEach(nodo -> {
+            .forEach(consumerWrapper(nodo -> {
                 boolean esGrupo = nodo.get("data").get("esGrupo") != null;
                 if(esGrupo){
                     int id = nodo.get("data").get("id").asInt();
@@ -184,7 +190,12 @@ public class EndPointHandler {
 
                     JsonNode nodoIdPadre = nodo.get("data").get("parent");
                     if(nodoIdPadre != null && !nodoIdPadre.isNull()){
-                        grupoUseCase.actualizarNombreYPadreGrupo(new Grupo(id, nombre, nodoIdPadre.asInt()));
+                        String nuevoIdPadreString = nodoIdPadre.asText();
+                        int nuevoIdPadre = gruposAgregados.containsKey(nodoIdPadre.asText()) ?
+                                gruposAgregados.get(nuevoIdPadreString).asInt() :
+                                Integer.parseInt(nuevoIdPadreString);
+
+                        grupoUseCase.actualizarNombreYPadreGrupo(new Grupo(id, nombre, nuevoIdPadre));
                     }else{
                         grupoUseCase.actualizarNombreYPadreGrupo(new Grupo(id, nombre));
                     }
@@ -192,7 +203,6 @@ public class EndPointHandler {
                     int id = nodo.get("data").get("id").asInt();
                     String idGrupo = nodo.get("data").get("parent").asText();
 
-                    Map<String, JsonNode> gruposAgregados = sala.getGruposAgregados();
                     JsonNode grupo = gruposAgregados.get(idGrupo);
                     if(grupo != null){
                         ((ObjectNode)nodo.get("data")).replace("parent", grupo);
@@ -204,7 +214,7 @@ public class EndPointHandler {
                         nodoUseCase.actualizarGrupoNodo(new Nodo(id, nuevoIdPadre));
                     }
                 }
-            });
+            }));
     }
 
 
@@ -241,5 +251,16 @@ public class EndPointHandler {
 
     public EndPointHandler getInstance(){
         return instance;
+    }
+
+    static <T, E extends Exception> Consumer<T> consumerWrapper(Consumer<T> consumer) {
+
+        return i -> {
+            try {
+                consumer.accept(i);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        };
     }
 }

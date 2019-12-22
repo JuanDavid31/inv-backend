@@ -17,7 +17,7 @@ class DaoGrupo(private val jdbi: Jdbi) {
 
     fun agregarGrupo(idProblematica: Int, grupo: Grupo): Grupo {
         return jdbi.withHandle<Grupo, RuntimeException> { handle ->
-            handle.createUpdate("INSERT INTO GRUPO(c_id_problematica, d_nombre) VALUES(:idProblematica, :nombre)")
+            handle.createUpdate("INSERT INTO GRUPO(c_id_problematica, d_nombre, c_id_padre) VALUES(:idProblematica, :nombre, :idPadre)")
                 .bind("idProblematica", idProblematica)
                 .bindBean(grupo)
                 .executeAndReturnGeneratedKeys()
@@ -121,7 +121,7 @@ class DaoGrupo(private val jdbi: Jdbi) {
         }
     }
 
-    fun eliminarConexiones(idsGrupos: Any): Boolean {
+    fun eliminarConexiones(idsGrupos: List<Int>): Boolean {
         return try {
             jdbi.withHandle<Boolean, Exception> {
                 it.createUpdate("UPDATE GRUPO SET c_id_padre = null WHERE c_id in (<idsGrupos>)")
