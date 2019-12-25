@@ -3,6 +3,7 @@ package ws;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import entity.Sala;
@@ -69,14 +70,12 @@ public class EndPoint {
         switch (json.get("accion").asText()){
             case "Conectarse":
                 return agregarDatos(json, session);
-            case "Juntar nodos":
-                return juntarNodos(json, session);
-            case "Separar nodos":
-                return separarNodos(json, session);
-            case "Conectar grupos":
-                return conectarGrupos(json, session);
-            case "Desconectar grupos":
-                return desconectarGrupos(json, session);
+            case "Agregar elemento":
+                return agregarElemento(json, session);
+            case "Mover elemento":
+                return moverElemento(json, session);
+            case "Eliminar elemento":
+                return eliminarElemento(json, session);
             case "Bloquear":
                 return bloquearNodo(json);
             case "Desbloquear":
@@ -127,6 +126,67 @@ public class EndPoint {
         return json.toString();
     }
 
+    private String juntarNodos(JsonNode json, Session session) {
+        Sala sala = EndPointHandler.darSala(EndPointHandler.extraerIdSala(session));
+        Map<String, JsonNode> nodos = sala.getNodos();
+
+        JsonNode nodoPadre = json.get("nodoPadre");
+        JsonNode nodoEntrante = json.get("nodo");
+        JsonNode nodoVecino = json.get("nodoVecino");
+
+        String idNodoEntrante = nodoEntrante.get("data").get("id").asText();
+        String idNodoPadre = nodoPadre.get("data").get("id").asText();
+
+        if(!nodos.containsKey(idNodoPadre)){ //No existe el padre en los nodos de la sala
+            nodos.put(idNodoPadre, nodoPadre);
+
+
+            //TODO: Nuevo codigo
+            sala.getGruposAgregados().put(idNodoPadre, nodoPadre);
+        }
+
+
+        ((ObjectNode)nodos.get(idNodoEntrante).get("data")).set("parent", new TextNode(idNodoPadre));
+
+        //El nodo vecino no esta vacio. Esta vacio en caso de que en el grupo hayan quedado 2 nodos o más, por tanto no hay un solo vecino.
+        if(nodoVecino.fieldNames().hasNext()){
+            String idNodoVecino = nodoVecino.get("data").get("id").asText();
+            ((ObjectNode)nodos.get(idNodoVecino).get("data")).set("parent", new TextNode(idNodoPadre));
+        }
+
+        return json.toString();
+    }
+
+    private String separarNodos(JsonNode json, Session session) {
+        Sala sala = EndPointHandler.darSala(EndPointHandler.extraerIdSala(session));
+        Map<String, JsonNode> nodos = sala.getNodos();
+
+        JsonNode nodoSaliente = json.get("nodo");
+        JsonNode nodoVecino = json.get("nodoVecino");
+
+        String idNodoSaliente = nodoSaliente.get("data").get("id").asText();
+
+        //Elimino el padre del nodo saliente
+        ((ObjectNode)nodos.get(idNodoSaliente).get("data")).set("parent", null);
+
+        //nodoVecino esta vacio en caso de que en el grupo hayan quedado 2 nodos o más, por tanto no hay un solo vecino.
+        if(!nodoVecino.fieldNames().hasNext()) return json.toString();
+
+        String idNodoVecino = nodoVecino.get("data").get("id").asText();
+        String idNodoPadre = nodoVecino.get("data").get("parent").asText();
+        ((ObjectNode)nodos.get(idNodoVecino).get("data")).set("parent", null);
+
+        nodos.remove(idNodoPadre);
+
+        //TODO: Nuevo codigo.
+        if(sala.getGruposAgregados().containsKey(idNodoPadre)){
+            sala.getGruposAgregados().remove(idNodoPadre);
+        }else{
+            sala.getGruposEliminados().put(idNodoPadre, new ObjectMapper().createObjectNode());
+        }
+
+        return json.toString();
+    }
 
     private String eliminarDatos(Session session) throws JsonProcessingException {
         Map<String, SesionCliente> sesionesCliente = EndPointHandler.darSesionesPorSala(EndPointHandler.extraerIdSala(session));
@@ -143,6 +203,55 @@ public class EndPoint {
         actualizarSesionClienteVacia(json, session);
 
         enviarNodosACliente(session);
+
+        return json.toString();
+    }
+
+    private String agregarElemento(JsonNode json, Session session) {
+        int idSala = EndPointHandler.extraerIdSala(session);
+        Sala sala = EndPointHandler.darSala(idSala);
+        Map<String, JsonNode> nodos = sala.getNodos();
+        JsonNode elemento = json.get("elemento");
+        if(elemento.get("data").get("source") != null){ //Es grupo
+            nodos.put(elemento.get("id").asText(), elemento);
+            sala.getGruposAgregados().put(elemento.get("id").asText(), elemento);
+        }else{ //Es edge
+            String edgeId = elemento.get("data").get("id").asText();
+
+            nodos.put(edgeId, elemento);
+            sala.getGruposAgregados().put(edgeId, elemento);
+        }
+        return json.toString();
+    }
+
+    private String moverElemento(JsonNode json, Session session) {
+        int idSala = EndPointHandler.extraerIdSala(session);
+        Sala sala = EndPointHandler.darSala(idSala);
+        Map<String, JsonNode> nodos = sala.getNodos();
+        JsonNode elemento = json.get("elemento");
+
+        String id = elemento.get("data").get("id").asText();
+        JsonNode parent = elemento.get("data").get("parent");
+
+        ((ObjectNode)nodos.get(id).get("data")).set("parent", parent != null ? parent : NullNode.getInstance());
+
+        return json.toString();
+    }
+
+    private String eliminarElemento(JsonNode json, Session session) {
+        int idSala = EndPointHandler.extraerIdSala(session);
+        Sala sala = EndPointHandler.darSala(idSala);
+        Map<String, JsonNode> nodos = sala.getNodos();
+        JsonNode elemento = json.get("elemento");
+        String id = elemento.get("data").get("id").asText();
+
+        nodos.remove(id);
+
+        if(sala.getGruposAgregados().containsKey(id)){
+            sala.getGruposAgregados().remove(id);
+        }else{
+            sala.getGruposEliminados().put(id, new ObjectMapper().createObjectNode());
+        }
 
         return json.toString();
     }
@@ -185,67 +294,6 @@ public class EndPoint {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private String juntarNodos(JsonNode json, Session session) {
-        Sala sala = EndPointHandler.darSala(EndPointHandler.extraerIdSala(session));
-        Map<String, JsonNode> nodos = sala.getNodos();
-
-        JsonNode nodoPadre = json.get("nodoPadre");
-        JsonNode nodoEntrante = json.get("nodo");
-        JsonNode nodoVecino = json.get("nodoVecino");
-
-        String idNodoEntrante = nodoEntrante.get("data").get("id").asText();
-        String idNodoPadre = nodoPadre.get("data").get("id").asText();
-
-        if(!nodos.containsKey(idNodoPadre)){ //No existe el padre en los nodos de la sala
-            nodos.put(idNodoPadre, nodoPadre);
-
-
-            //TODO: Nuevo codigo
-            sala.getGruposAgregados().put(idNodoPadre, nodoPadre);
-        }
-
-        ((ObjectNode)nodos.get(idNodoEntrante).get("data")).set("parent", new TextNode(idNodoPadre));
-
-        //El nodo vecino no esta vacio. Esta vacio en caso de que en el grupo hayan quedado 2 nodos o más, por tanto no hay un solo vecino.
-        if(nodoVecino.fieldNames().hasNext()){
-            String idNodoVecino = nodoVecino.get("data").get("id").asText();
-            ((ObjectNode)nodos.get(idNodoVecino).get("data")).set("parent", new TextNode(idNodoPadre));
-        }
-
-        return json.toString();
-    }
-
-    private String separarNodos(JsonNode json, Session session) {
-        Sala sala = EndPointHandler.darSala(EndPointHandler.extraerIdSala(session));
-        Map<String, JsonNode> nodos = sala.getNodos();
-
-        JsonNode nodoSaliente = json.get("nodo");
-        JsonNode nodoVecino = json.get("nodoVecino");
-
-        String idNodoSaliente = nodoSaliente.get("data").get("id").asText();
-
-        //Elimino el padre del nodo saliente
-        ((ObjectNode)nodos.get(idNodoSaliente).get("data")).set("parent", null);
-
-        //nodoVecino esta vacio en caso de que en el grupo hayan quedado 2 nodos o más, por tanto no hay un solo vecino.
-        if(!nodoVecino.fieldNames().hasNext()) return json.toString();
-
-        String idNodoVecino = nodoVecino.get("data").get("id").asText();
-        String idNodoPadre = nodoVecino.get("data").get("parent").asText();
-        ((ObjectNode)nodos.get(idNodoVecino).get("data")).set("parent", null);
-
-        nodos.remove(idNodoPadre);
-
-        //TODO: Nuevo codigo.
-        if(sala.getGruposAgregados().containsKey(idNodoPadre)){
-            sala.getGruposAgregados().remove(idNodoPadre);
-        }else{
-            sala.getGruposEliminados().put(idNodoPadre, new ObjectMapper().createObjectNode());
-        }
-
-        return json.toString();
     }
 
     private String bloquearNodo(JsonNode json) {
