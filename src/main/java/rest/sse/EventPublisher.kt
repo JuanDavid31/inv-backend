@@ -4,11 +4,14 @@ import java.util.*
 
 class EventPublisher {
 
-    companion object{
+    companion object{ //Crea un singleton en todo el programa.
         val listeners: MutableList<SseEventSource> = Collections.synchronizedList(ArrayList<SseEventSource>())
 
-        fun publish(){
-            listeners.forEach { println(it) }
+        fun publish(s: String) {
+            listeners.forEach {
+                println(it)
+                it.emit(s)
+            }
         }
 
         fun agregarListener(eventPublisher: SseEventSource){

@@ -1,9 +1,13 @@
 package usecase
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.IntNode
+import com.fasterxml.jackson.databind.node.TextNode
 import dao.DaoProblematica
 import entity.Error
 import entity.Mensaje
 import entity.Problematica
+import rest.sse.EventPublisher
 
 class ProblematicaUseCase(private val daoProblematica: DaoProblematica) {
 
@@ -66,6 +70,15 @@ class ProblematicaUseCase(private val daoProblematica: DaoProblematica) {
         val faseActual = daoProblematica.darFase(idProblematica)
         if(!faseActual.isPresent) return Error(arrayOf("La problematica dada no existe"))
         if(!daoProblematica.avanzarFaseProblematica(idProblematica)) return Error(arrayOf("La problematica ya esta en su fase final."))
+
+        val json = ObjectMapper().createObjectNode()
+
+        json.set("accion", TextNode("Cambio fase problematica"))
+        json.set("idProblematica", IntNode(idProblematica));
+        json.set("nuevaFase", IntNode(faseActual.get()+1))
+
+        EventPublisher.publish(json.toString());
+
         if(faseActual.get() == 2){
             //TODO: Enviar un mensaje a todos los websockets para que ya no puedan editar.
         }
