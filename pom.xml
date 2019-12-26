@@ -144,7 +144,7 @@
     <properties>
         <dropwizard.version>1.3.9</dropwizard.version>
         <maven.test.skip>true</maven.test.skip>
-        <kotlin.version>1.3.31</kotlin.version>
+        <kotlin.version>1.3.61</kotlin.version>
     </properties>
 
     <dependencies>
@@ -264,5 +264,21 @@
             <version>1.11.3</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
     </dependencies>
+    <repositories>
+    <repository>
+            <id>central</id>
+            <url>http://jcenter.bintray.com</url>
+        </repository>
+    </repositories>
 </project>

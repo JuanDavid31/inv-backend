@@ -213,8 +213,8 @@ public class EndPoint {
         Map<String, JsonNode> nodos = sala.getNodos();
         JsonNode elemento = json.get("elemento");
         if(elemento.get("data").get("source") != null){ //Es grupo
-            nodos.put(elemento.get("id").asText(), elemento);
-            sala.getGruposAgregados().put(elemento.get("id").asText(), elemento);
+            nodos.put(elemento.get("data").get("id").asText(), elemento);
+            sala.getGruposAgregados().put(elemento.get("data").get("id").asText(), elemento);
         }else{ //Es edge
             String edgeId = elemento.get("data").get("id").asText();
 
@@ -301,7 +301,7 @@ public class EndPoint {
     }
 
     private String moverNodo(JsonNode json, Session session) {
-        EndPointHandler.actualizarPosicionNodo(json.get("nodo"), session);
+        EndPointHandler.actualizarPosicionNodo(json.get("elemento"), session);
         return json.toString();
     }
 

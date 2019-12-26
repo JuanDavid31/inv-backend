@@ -68,7 +68,8 @@ public class App extends Application<ConfiguracionApp> {
         miServlet.addMapping("/colaboracion/*");
 
         //Server sent events
-        environment.servlets().addServlet("/sse", new SseEventSourceServlet());
+        ServletRegistration.Dynamic sseServlet = environment.servlets().addServlet("sse", new SseEventSourceServlet());
+        sseServlet.addMapping("/sse");
 
         //Utils
         JWTUtils jwtUtils = new JWTUtils(configuracionApp.jwtKey);
