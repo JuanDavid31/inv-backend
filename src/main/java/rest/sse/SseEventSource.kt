@@ -6,11 +6,10 @@ class SseEventSource: EventSource {
 
 
     private var emitter: EventSource.Emitter? = null
-    private var id: String = ""
 
     override fun onOpen(emitter: EventSource.Emitter){
         this.emitter = emitter
-        println("Se conecto algo")
+        println("onOpenEvent - SseEventSource")
     }
 
     override fun onClose(){
