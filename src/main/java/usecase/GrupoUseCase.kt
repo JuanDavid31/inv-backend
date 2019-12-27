@@ -7,11 +7,12 @@ import com.fasterxml.jackson.databind.node.IntNode
 import com.fasterxml.jackson.databind.node.NullNode
 import com.fasterxml.jackson.databind.node.TextNode
 import dao.DaoGrupo
+import dao.DaoReaccion
 import entity.Grupo
 
-class GrupoUseCase(val daoGrupo: DaoGrupo){
+class GrupoUseCase(val daoGrupo: DaoGrupo, val daoReaccion: DaoReaccion){
 
-    fun darGrupos(idProblematica: Long): List<JsonNode> {
+    fun darGrupos(idProblematica: Int): List<JsonNode> {
         val conexiones: MutableList<JsonNode> = ArrayList()
         return daoGrupo.darGrupos(idProblematica)
             .map {
@@ -44,9 +45,17 @@ class GrupoUseCase(val daoGrupo: DaoGrupo){
 
     fun actualizarNombreYPadreGrupo(grupo: Grupo): Boolean = daoGrupo.actualizarNombreYPadreGrupo(grupo)
 
-    fun apadrinar(id: Int, idPadre: Int, idProblematica: Int): Boolean = daoGrupo.apadrinar(id, idPadre, idProblematica)
-
-    fun desApadrinar(id: Int, idProblematica: Int): Boolean = daoGrupo.desApadrinar(id, idProblematica)
+    fun darGruposConReaccionDeUsuario(idProblematica: Int, email: String): MutableList<Grupo> {
+        val grupos = daoGrupo.darGrupos(idProblematica)
+        val reaccionOptional = daoReaccion.darReaccionEnGrupoPorUsuario(idProblematica, email)
+        val reaccion = reaccionOptional.orElseGet(null)
+        reaccionOptional.ifPresent {
+            val grupo = grupos.find { it.id == reaccion.idGrupo }
+            grupo!!.reaccion = reaccion.valor
+            grupo!!.cantidad = 1
+        }
+        return grupos
+    }
 
     fun darGruposConReacciones(idProblematica: Int) = daoGrupo.darGruposConReacciones(idProblematica)
 

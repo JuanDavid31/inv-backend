@@ -11,17 +11,10 @@ import javax.ws.rs.core.Response
 @Consumes(MediaType.APPLICATION_JSON)
 class ProblematicaGrupoResource(val grupoUseCase: GrupoUseCase){
 
-    //TODO: Probablemente esto sea reemplazado por los Websockets
+    @GET
+    @Path("/{idProblematica}/grupos")
+    fun darGruposConReaccionPropia(@PathParam("idProblematica") idProblematica: Int, @QueryParam("email") email: String) =
+        grupoUseCase.darGruposConReaccionDeUsuario(idProblematica, email)
 
-    @POST
-    @Path("/{idProblematica}/gruposActivos")
-    fun agregarGrupo(@PathParam("idProblematica") idProblematica: Int, grupo: Grupo) = grupoUseCase.agregarGrupo(idProblematica, grupo)
 
-    @Path("/{idProblematica}/gruposActivos/{idGrupo}")
-    @DELETE
-    fun eliminarGrupo(@PathParam("idProblematica") idProblematica: Int,
-                      @PathParam("idGrupo") idGrupo: Int): Response {
-        val seElimino = grupoUseCase.eliminarGrupo(idGrupo, idProblematica)
-        return if (seElimino) Response.ok().build() else Response.status(Response.Status.BAD_REQUEST).build()
-    }
 }

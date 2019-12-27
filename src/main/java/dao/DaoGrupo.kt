@@ -6,7 +6,7 @@ import java.util.Optional
 
 class DaoGrupo(private val jdbi: Jdbi) {
 
-    fun darGrupos(idProblematica: Long): MutableList<Grupo> {
+    fun darGrupos(idProblematica: Int): MutableList<Grupo> {
         return jdbi.withHandle<MutableList<Grupo>, RuntimeException> {
             it.createQuery("SELECT * FROM GRUPO G WHERE G.c_id_problematica = :idProblematica")
                 .bind("idProblematica", idProblematica)
@@ -69,8 +69,9 @@ class DaoGrupo(private val jdbi: Jdbi) {
     }
 
     fun darGruposConReacciones(idProblematica: Int): List<Grupo> {
-        return jdbi.withHandle<List<Grupo>, RuntimeException> { handle ->
-            handle.createQuery("SELECT D_NOMBRE, R.c_valor, COUNT(R.C_VALOR) FROM GRUPO G, REACCION R WHERE G.c_id = R.c_id_grupo AND " + "G.c_id_problematica = :idProblematica GROUP BY c_valor, G.c_id ORDER BY count desc")
+        return jdbi.withHandle<List<Grupo>, RuntimeException> {
+            it.createQuery("SELECT D_NOMBRE, R.c_valor, COUNT(R.C_VALOR) FROM GRUPO G, REACCION R WHERE G.c_id = R.c_id_grupo AND " +
+                "G.c_id_problematica = :idProblematica GROUP BY c_valor, G.c_id ORDER BY count desc")
                 .bind("idProblematica", idProblematica)
                 .mapToBean(Grupo::class.java)
                 .list()
@@ -78,8 +79,9 @@ class DaoGrupo(private val jdbi: Jdbi) {
     }
 
     fun darGrupoConReaccion(idProblematica: Int, idPersonaProblematica: String): Optional<Grupo> {
-        return jdbi.withHandle<Optional<Grupo>, RuntimeException> { handle ->
-            handle.createQuery("SELECT G.c_id, G.D_NOMBRE, R.c_valor FROM GRUPO G, REACCION R " + "WHERE G.c_id = R.c_id_grupo AND G.c_id_problematica = :idProblematica AND R.a_id_pers_prob = :idPersonaProblematica")
+        return jdbi.withHandle<Optional<Grupo>, RuntimeException> {
+            it.createQuery("SELECT G.c_id, G.D_NOMBRE, R.c_valor FROM GRUPO G, REACCION R " +
+                "WHERE G.c_id = R.c_id_grupo AND G.c_id_problematica = :idProblematica AND R.a_id_pers_prob = :idPersonaProblematica")
                 .bind("idProblematica", idProblematica)
                 .bind("idPersonaProblematica", idPersonaProblematica)
                 .mapToBean(Grupo::class.java)

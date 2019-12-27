@@ -1,7 +1,9 @@
 package dao
 
+import entity.Reaccion
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException
+import java.util.*
 
 class DaoReaccion(private val jdbi: Jdbi) {
 
@@ -22,6 +24,16 @@ class DaoReaccion(private val jdbi: Jdbi) {
                 .bind("idGrupo", idGrupo)
                 .bind("idPersonaProblematica", idPersonaProblematica)
                 .execute() > 0
+        }
+    }
+
+    fun darReaccionEnGrupoPorUsuario(idProblematica: Int, email: String):Optional<Reaccion> {
+        return jdbi.withHandle<Optional<Reaccion>, Exception>{
+            it.createQuery("SELECT C_VALOR AS \"valor\", C_ID_GRUPO AS \"idGrupo\", A_ID_PERS_PROB AS \"idPersonaProblematica\" FROM REACCION WHERE " +
+            "A_ID_PERS_PROB = :idPersonaProblematica")
+            .bind("idPErsonaProblematica", "$email$idProblematica")
+            .mapToBean(Reaccion::class.java)
+            .findFirst()
         }
     }
 }
