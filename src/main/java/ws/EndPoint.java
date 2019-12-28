@@ -281,9 +281,8 @@ public class EndPoint {
         Map<String, JsonNode> nodos = sala.getNodos();
         Map<String, JsonNode> gruposAgregados = sala.getGruposAgregados();
 
-        String id = json.get("data").get("id").asText();
-        String nuevoNombre = json.get("data").get("nombre").asText();
-
+        String id = json.get("grupo").get("data").get("id").asText();
+        String nuevoNombre = json.get("grupo").get("data").get("nombre").asText();
 
         ((ObjectNode) nodos.get(id).get("data")).replace("nombre", new TextNode(nuevoNombre));
 

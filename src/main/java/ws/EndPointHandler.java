@@ -217,7 +217,6 @@ public class EndPointHandler {
             }));
     }
 
-
     /**
      * Retorna el map de sesiones cliente de la sala dado el id de la problematica o id de la sala.
      * @param idProblematica
