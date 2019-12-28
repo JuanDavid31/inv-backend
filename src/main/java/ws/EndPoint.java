@@ -70,6 +70,8 @@ public class EndPoint {
         switch (json.get("accion").asText()){
             case "Conectarse":
                 return agregarDatos(json, session);
+            case "Actualizar posiciones":
+                return actualizarPosiciones(json);
             case "Agregar elemento":
                 return agregarElemento(json, session);
             case "Mover elemento":
@@ -93,101 +95,6 @@ public class EndPoint {
         }
     }
 
-    private String conectarGrupos(JsonNode json, Session session) {
-        JsonNode nuevaConexion = json.get("edge");
-        String edgeId = nuevaConexion.get("data").get("id").asText();
-        int idSala = EndPointHandler.extraerIdSala(session);
-        Sala sala = EndPointHandler.darSala(idSala);
-        Map<String, JsonNode> nodos = sala.getNodos();
-
-        nodos.put(edgeId, nuevaConexion);
-
-        sala.getGruposAgregados().put(edgeId, nuevaConexion);
-
-        return json.toString();
-    }
-
-    private String desconectarGrupos(JsonNode json, Session session) {
-        JsonNode conexionAEliminar = json.get("edge");
-        String edgeId = conexionAEliminar.get("data").get("id").asText();
-        int idSala = EndPointHandler.extraerIdSala(session);
-        Sala sala = EndPointHandler.darSala(idSala);
-        Map<String, JsonNode> nodos = sala.getNodos();
-
-        nodos.remove(edgeId);
-
-        if(sala.getGruposAgregados().containsKey(edgeId)){
-            sala.getGruposAgregados().remove(edgeId);
-        }else{
-            sala.getGruposEliminados().put(edgeId, conexionAEliminar);
-            sala.getNodos().remove(edgeId);
-        }
-
-        return json.toString();
-    }
-
-    private String juntarNodos(JsonNode json, Session session) {
-        Sala sala = EndPointHandler.darSala(EndPointHandler.extraerIdSala(session));
-        Map<String, JsonNode> nodos = sala.getNodos();
-
-        JsonNode nodoPadre = json.get("nodoPadre");
-        JsonNode nodoEntrante = json.get("nodo");
-        JsonNode nodoVecino = json.get("nodoVecino");
-
-        String idNodoEntrante = nodoEntrante.get("data").get("id").asText();
-        String idNodoPadre = nodoPadre.get("data").get("id").asText();
-
-        if(!nodos.containsKey(idNodoPadre)){ //No existe el padre en los nodos de la sala
-            nodos.put(idNodoPadre, nodoPadre);
-
-
-            //TODO: Nuevo codigo
-            sala.getGruposAgregados().put(idNodoPadre, nodoPadre);
-        }
-
-
-        ((ObjectNode)nodos.get(idNodoEntrante).get("data")).set("parent", new TextNode(idNodoPadre));
-
-        //El nodo vecino no esta vacio. Esta vacio en caso de que en el grupo hayan quedado 2 nodos o más, por tanto no hay un solo vecino.
-        if(nodoVecino.fieldNames().hasNext()){
-            String idNodoVecino = nodoVecino.get("data").get("id").asText();
-            ((ObjectNode)nodos.get(idNodoVecino).get("data")).set("parent", new TextNode(idNodoPadre));
-        }
-
-        return json.toString();
-    }
-
-    private String separarNodos(JsonNode json, Session session) {
-        Sala sala = EndPointHandler.darSala(EndPointHandler.extraerIdSala(session));
-        Map<String, JsonNode> nodos = sala.getNodos();
-
-        JsonNode nodoSaliente = json.get("nodo");
-        JsonNode nodoVecino = json.get("nodoVecino");
-
-        String idNodoSaliente = nodoSaliente.get("data").get("id").asText();
-
-        //Elimino el padre del nodo saliente
-        ((ObjectNode)nodos.get(idNodoSaliente).get("data")).set("parent", null);
-
-        //nodoVecino esta vacio en caso de que en el grupo hayan quedado 2 nodos o más, por tanto no hay un solo vecino.
-        if(!nodoVecino.fieldNames().hasNext()) return json.toString();
-
-        String idNodoVecino = nodoVecino.get("data").get("id").asText();
-        String idNodoPadre = nodoVecino.get("data").get("parent").asText();
-        ((ObjectNode)nodos.get(idNodoVecino).get("data")).set("parent", null);
-
-        nodos.remove(idNodoPadre);
-
-        //TODO: Nuevo codigo.
-        if(sala.getGruposAgregados().containsKey(idNodoPadre)){
-            sala.getGruposAgregados().remove(idNodoPadre);
-        }else{
-            sala.getGruposEliminados().put(idNodoPadre, new ObjectMapper().createObjectNode());
-        }
-
-        return json.toString();
-    }
-
     private String eliminarDatos(Session session) throws JsonProcessingException {
         Map<String, SesionCliente> sesionesCliente = EndPointHandler.darSesionesPorSala(EndPointHandler.extraerIdSala(session));
         SesionCliente sesionCliente = sesionesCliente.get(String.valueOf(session.hashCode()));
@@ -205,6 +112,12 @@ public class EndPoint {
         enviarNodosACliente(session);
 
         return json.toString();
+    }
+
+    private String actualizarPosiciones(JsonNode json) {
+
+
+        return "No hay nada";
     }
 
     private String agregarElemento(JsonNode json, Session session) {
@@ -342,27 +255,24 @@ public class EndPoint {
 
         int solicitantesTotales = sala.getClientes().values().size();
 
-        if(solicitantes == solicitantesTotales){
-            //Envio mensaje de reinicio a la sesión actual.
-            ObjectNode mensajeIniciarReinicio = new ObjectMapper().createObjectNode();
-            mensajeIniciarReinicio.set("accion", new TextNode("Iniciar reinicio"));
-            difundirA(mensajeIniciarReinicio.toString(), session);
+        if(solicitantes != solicitantesTotales)return json.toString();
+        //Envio mensaje de reinicio a la sesión actual.
+        ObjectNode mensajeIniciarReinicio = new ObjectMapper().createObjectNode();
+        mensajeIniciarReinicio.set("accion", new TextNode("Iniciar reinicio"));
+        difundirA(mensajeIniciarReinicio.toString(), session);
 
-            //Envio reinicio de solicitudes a todos los nodos menos el actual.
-            ObjectNode mensajeReiniciarSolicitudes = new ObjectMapper().createObjectNode();
-            mensajeReiniciarSolicitudes.set("accion", new TextNode("Reiniciar solicitudes"));
-            difundir(session, mensajeReiniciarSolicitudes.toString());
+        //Envio reinicio de solicitudes a todos los nodos menos el actual.
+        ObjectNode mensajeReiniciarSolicitudes = new ObjectMapper().createObjectNode();
+        mensajeReiniciarSolicitudes.set("accion", new TextNode("Reiniciar solicitudes"));
+        difundir(session, mensajeReiniciarSolicitudes.toString());
 
-            //Cambiar las solicitudes actuales.
-            sala.getClientes()
-                .values()
-                .stream()
-                .forEach(sesionCliente -> sesionCliente.setSolicitandoOrganizacion(false));
+        //Cambiar las solicitudes actuales.
+        sala.getClientes()
+            .values()
+            .stream()
+            .forEach(sesionCliente -> sesionCliente.setSolicitandoOrganizacion(false));
 
-            return "";
-        }else{
-            return json.toString();
-        }
+        return "";
     }
 
     private String cambiarNombre(JsonNode json, Session session){
