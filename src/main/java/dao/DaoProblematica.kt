@@ -95,7 +95,7 @@ class DaoProblematica(internal val jdbi: Jdbi) {
 
     fun darCantidadGrupos(idProblematica: Int): Int {
         return jdbi.withHandle<Int, Exception> {
-            it.createQuery("SELECT COUNT(c_id) FROM GRUPO WHERE c_id_problematica = :c_id_problematica")
+            it.createQuery("SELECT COUNT(c_id) FROM GRUPO WHERE c_id_problematica = :idProblematica")
                     .bind("idProblematica", idProblematica)
                     .mapTo(Int::class.java)
                     .findOnly()
