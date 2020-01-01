@@ -10,6 +10,8 @@ class Sala(val clientes: MutableMap<String, SesionCliente>, var nodos: MutableMa
     val gruposAgregados: MutableMap<String, JsonNode> = ConcurrentHashMap<String, JsonNode>()
     val gruposEliminados: MutableMap<String, JsonNode> = ConcurrentHashMap<String, JsonNode>()
 
+    var posicionesIniciales: JsonNode? = null;
+
     fun agregarSesion(sesion: Session){
         clientes[sesion.hashCode().toString()] = SesionCliente(sesion, "", "", false)
     }

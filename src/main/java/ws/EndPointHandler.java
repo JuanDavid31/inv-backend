@@ -237,6 +237,16 @@ public class EndPointHandler {
         sala.actualizarNodo(json);
     }
 
+    static void guardarPosicionesIniciales(JsonNode nodos, Session sesion){
+        Sala sala = salasActivas.get(extraerIdSala(sesion));
+        sala.setPosicionesIniciales(nodos);
+    }
+
+    static JsonNode darPosicionesIniciales(Session sesion){
+        Sala sala = salasActivas.get(extraerIdSala(sesion));
+        return sala.getPosicionesIniciales();
+    }
+
     public static Sala darSala(int idSala) {
         return salasActivas.get(idSala);
     }
@@ -252,7 +262,7 @@ public class EndPointHandler {
         return instance;
     }
 
-    static <T, E extends Exception> Consumer<T> consumerWrapper(Consumer<T> consumer) {
+    private static <T, E extends Exception> Consumer<T> consumerWrapper(Consumer<T> consumer) {
 
         return i -> {
             try {

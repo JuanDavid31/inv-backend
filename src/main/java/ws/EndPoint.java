@@ -3,6 +3,7 @@ package ws;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
@@ -16,6 +17,7 @@ import util.SingletonUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -44,14 +46,14 @@ public class EndPoint {
     public void onMessage(Session sesion, String mensajeRecibido) throws IOException {
         JsonNode jsonNode = new ObjectMapper().readTree(mensajeRecibido);
         String mensajeADifundir = leerAccion(jsonNode, sesion);
-        difundir(sesion, mensajeADifundir);
+        difundirATodosMenosA(sesion, mensajeADifundir);
     }
 
     @OnWebSocketClose
     public void onClose(Session session, int statusCode, String reason) throws IOException {
         System.out.println("Cerrando sesion - " + session.hashCode());
         String mensajeADifundir = eliminarDatos(session);
-        difundir(session, mensajeADifundir);
+        difundirATodosMenosA(session, mensajeADifundir);
         EndPointHandler.eliminarCliente(session);
     }
 
@@ -66,12 +68,12 @@ public class EndPoint {
         }
     }
 
-    private String leerAccion(JsonNode json, Session session) {
+    private synchronized String leerAccion(JsonNode json, Session session) {
         switch (json.get("accion").asText()){
             case "Conectarse":
                 return agregarDatos(json, session);
-            case "Actualizar posiciones":
-                return actualizarPosiciones(json);
+            case "Actualizar posiciones": //Esta acción no existe en el cliente
+                return actualizarPosiciones(json, session);
             case "Agregar elemento":
                 return agregarElemento(json, session);
             case "Mover elemento":
@@ -79,9 +81,9 @@ public class EndPoint {
             case "Eliminar elemento":
                 return eliminarElemento(json, session);
             case "Bloquear":
-                return bloquearNodo(json);
+                return bloquearNodos(json, session);
             case "Desbloquear":
-                return desbloquearNodo(json);
+                return desbloquearNodos(json, session);
             case "Mover":
                 return moverNodo(json, session);
             case "Mover padre":
@@ -91,7 +93,7 @@ public class EndPoint {
             case "Cambiar nombre":
                 return cambiarNombre(json, session);
             default:
-                return "No hay nada";
+                return "{}";
         }
     }
 
@@ -114,10 +116,13 @@ public class EndPoint {
         return json.toString();
     }
 
-    private String actualizarPosiciones(JsonNode json) {
-
-
-        return "No hay nada";
+    private String actualizarPosiciones(JsonNode json, Session session) {
+        JsonNode nodos = json.get("nodos");
+        for(JsonNode nodo : nodos){
+            EndPointHandler.actualizarPosicionNodo(nodo, session);
+        }
+        EndPointHandler.guardarPosicionesIniciales(nodos, session);
+        return json.toString();
     }
 
     private String agregarElemento(JsonNode json, Session session) {
@@ -172,8 +177,18 @@ public class EndPoint {
     private void enviarNodosACliente(Session session) {
         Sala sala = EndPointHandler.darSala(EndPointHandler.extraerIdSala(session));
         HashMap<String, Object> jsonMap = new HashMap<String, Object>();
+
+        List<ObjectNode> solicitantes = sala.getClientes().values().stream().map(sesionCliente -> {
+            ObjectNode solicitante = new ObjectMapper().createObjectNode();
+            solicitante.set("nombre", new TextNode(sesionCliente.getNombre()));
+            solicitante.set("email", new TextNode(sesionCliente.getEmail()));
+            solicitante.set("solicitandoOrganizacion", sesionCliente.getSolicitandoOrganizacion() ? BooleanNode.TRUE : BooleanNode.FALSE);
+            return solicitante;
+        }).collect(Collectors.toList());
+
         jsonMap.put("accion", "Nodos");
         jsonMap.put("nodos", sala.getNodos().values());
+        jsonMap.put("solicitantes", solicitantes);
 
         try {
             String jsonString = new ObjectMapper().writeValueAsString(jsonMap);
@@ -209,7 +224,27 @@ public class EndPoint {
         }
     }
 
-    private String bloquearNodo(JsonNode json) {
+    private String bloquearNodos(JsonNode json, Session sesion) {
+        int idSala = EndPointHandler.extraerIdSala(sesion);
+        Sala sala = EndPointHandler.darSala(idSala);
+        Map<String, JsonNode> nodosActuales = sala.getNodos();
+        JsonNode nodos = json.get("nodos");
+        for(final JsonNode nodo : nodos){
+            JsonNode nodoACambiar = nodosActuales.get(nodo.get("id").asText());
+            ((ObjectNode)nodoACambiar.get("data")).set("bloqueado", BooleanNode.TRUE);
+        }
+        return json.toString();
+    }
+
+    private String desbloquearNodos(JsonNode json, Session sesion) {
+        int idSala = EndPointHandler.extraerIdSala(sesion);
+        Sala sala = EndPointHandler.darSala(idSala);
+        Map<String, JsonNode> nodosActuales = sala.getNodos();
+        JsonNode nodos = json.get("nodos");
+        for(final JsonNode nodo : nodos){
+            JsonNode nodoACambiar = nodosActuales.get(nodo.get("id").asText());
+            ((ObjectNode)nodoACambiar.get("data")).set("bloqueado", BooleanNode.FALSE);
+        }
         return json.toString();
     }
 
@@ -219,16 +254,11 @@ public class EndPoint {
     }
 
     private String moverNodoPadre(JsonNode json, Session session) {
-        /*EndPointHandler.actualizarPosicionNodo(json.get("nodo"), session);*/
         JsonNode nodosHijos = json.get("nodosHijos");
         for(JsonNode nodo : nodosHijos){
             EndPointHandler.actualizarPosicionNodo(nodo, session);
         }
         ((ObjectNode)json).set("accion", new TextNode("Mover"));
-        return json.toString();
-    }
-
-    private String desbloquearNodo(JsonNode json) {
         return json.toString();
     }
 
@@ -256,15 +286,12 @@ public class EndPoint {
         int solicitantesTotales = sala.getClientes().values().size();
 
         if(solicitantes != solicitantesTotales)return json.toString();
-        //Envio mensaje de reinicio a la sesión actual.
-        ObjectNode mensajeIniciarReinicio = new ObjectMapper().createObjectNode();
-        mensajeIniciarReinicio.set("accion", new TextNode("Iniciar reinicio"));
-        difundirA(mensajeIniciarReinicio.toString(), session);
 
         //Envio reinicio de solicitudes a todos los nodos menos el actual.
         ObjectNode mensajeReiniciarSolicitudes = new ObjectMapper().createObjectNode();
         mensajeReiniciarSolicitudes.set("accion", new TextNode("Reiniciar solicitudes"));
-        difundir(session, mensajeReiniciarSolicitudes.toString());
+        mensajeReiniciarSolicitudes.set("nodos", EndPointHandler.darPosicionesIniciales(session));
+        difundirATodos(session, mensajeReiniciarSolicitudes.toString());
 
         //Cambiar las solicitudes actuales.
         sala.getClientes()
@@ -272,7 +299,7 @@ public class EndPoint {
             .stream()
             .forEach(sesionCliente -> sesionCliente.setSolicitandoOrganizacion(false));
 
-        return "";
+        return "{}";
     }
 
     private String cambiarNombre(JsonNode json, Session session){
@@ -293,7 +320,7 @@ public class EndPoint {
         return json.toString();
     }
 
-    private void difundir(Session sesion, String mensaje) {
+    private void difundirATodosMenosA(Session sesion, String mensaje) {
         int idSala = EndPointHandler.extraerIdSala(sesion);
         Map<String, SesionCliente> endPoints = EndPointHandler.darSesionesPorSala(idSala);
 
@@ -312,5 +339,12 @@ public class EndPoint {
                 }
             }
         });
+    }
+
+    private void difundirATodos(Session sesion, String mensaje){
+        int idSala = EndPointHandler.extraerIdSala(sesion);
+        Map<String, SesionCliente> endPoints = EndPointHandler.darSesionesPorSala(idSala);
+
+        endPoints.forEach((key, value) -> difundirA(mensaje, value.getSesion()));
     }
 }
