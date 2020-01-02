@@ -18,11 +18,11 @@ class DaoReaccion(private val jdbi: Jdbi) {
     }
 
     @Throws(UnableToExecuteStatementException::class)
-    fun eliminarReaccion(idGrupo: Int, idPersonaProblematica: String): Boolean {
+    fun eliminarReaccion(idGrupo: Int, idReaccion: Int): Boolean {
         return jdbi.withHandle<Boolean, RuntimeException> {
-            it.createUpdate("DELETE FROM REACCION WHERE c_id_grupo = :idGrupo AND a_id_pers_prob = :idPersonaProblematica")
+            it.createUpdate("DELETE FROM REACCION WHERE c_id_grupo = :idGrupo AND c_id = :idReaccion")
                 .bind("idGrupo", idGrupo)
-                .bind("idPersonaProblematica", idPersonaProblematica)
+                .bind("idReaccion", idReaccion)
                 .execute() > 0
         }
     }
@@ -34,6 +34,15 @@ class DaoReaccion(private val jdbi: Jdbi) {
             .bind("idPErsonaProblematica", "$email$idProblematica")
             .mapToBean(Reaccion::class.java)
             .findFirst()
+        }
+    }
+
+    fun eliminarReaccionPorGrupoYUsuario(idGrupo: Int, idPersonaProblematica: String): Boolean {
+        return jdbi.withHandle<Boolean, Exception> {
+            it.createUpdate("DELETE FROM REACCION WHERE c_id_grupo = :idGrupo AND a_id_pers_prob = :idPersonaProblematica")
+                .bind("idGrupo", idGrupo)
+                .bind("idPersonaProblematica", idPersonaProblematica)
+                .execute() > 0
         }
     }
 }

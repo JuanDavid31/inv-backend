@@ -113,8 +113,8 @@ ALTER TABLE REACCION
     ADD CONSTRAINT FK_REACCION_GRUPO foreign key (c_id_grupo) REFERENCES GRUPO (c_id);
 ALTER TABLE REACCION
     ADD CONSTRAINT FK_REACCION_PERS_PROB foreign key (a_id_pers_prob) REFERENCES PERSONA_PROBLEMATICA (a_id);
-alter table reaccion
-    Add constraint UK_REACCION UNIQUE (a_id_pers_prob);
+--alter table reaccion
+--    Add constraint UK_REACCION UNIQUE (a_id_pers_prob); --Solo si quisiera una relación 1 a 1.
 
 CREATE TABLE ESCRITO
 (
