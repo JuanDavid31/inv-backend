@@ -70,8 +70,14 @@ class DaoGrupo(private val jdbi: Jdbi) {
 
     fun darGruposConReacciones(idProblematica: Int): List<Grupo> {
         return jdbi.withHandle<List<Grupo>, RuntimeException> {
-            it.createQuery("SELECT D_NOMBRE, R.c_valor, COUNT(R.C_VALOR) FROM GRUPO G, REACCION R WHERE G.c_id = R.c_id_grupo AND " +
-                "G.c_id_problematica = :idProblematica GROUP BY c_valor, G.c_id ORDER BY count desc")
+            it.createQuery("""
+                SELECT VCR.c_id AS "c_id", d_nombre, c_valor AS "reaccion", cantidad
+                FROM VISTA_CONTEO_REACCIONES AS VCR INNER JOIN(
+                SELECT c_id, MAX(cantidad) as cantidadMaxima
+                FROM VISTA_CONTEO_REACCIONES GROUP BY c_id
+                ) AS vcrAgrupada on VCR.c_id = vcrAgrupada.c_id and VCR.cantidad = vcrAgrupada.cantidadMaxima
+                WHERE VCR.c_id_problematica = idProblematica
+                """.trimIndent())
                 .bind("idProblematica", idProblematica)
                 .mapToBean(Grupo::class.java)
                 .list()

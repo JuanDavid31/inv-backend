@@ -9,7 +9,6 @@ class SseEventSource: EventSource {
 
     override fun onOpen(emitter: EventSource.Emitter){
         this.emitter = emitter
-        println("onOpenEvent - SseEventSource")
     }
 
     override fun onClose(){

@@ -113,8 +113,8 @@ ALTER TABLE REACCION
     ADD CONSTRAINT FK_REACCION_GRUPO foreign key (c_id_grupo) REFERENCES GRUPO (c_id);
 ALTER TABLE REACCION
     ADD CONSTRAINT FK_REACCION_PERS_PROB foreign key (a_id_pers_prob) REFERENCES PERSONA_PROBLEMATICA (a_id);
-alter table reaccion
-    Add constraint UK_REACCION UNIQUE (a_id_pers_prob);
+--alter table reaccion
+--    Add constraint UK_REACCION UNIQUE (a_id_pers_prob); --Solo si quisiera una relación 1 a 1.
 
 CREATE TABLE ESCRITO
 (
@@ -130,6 +130,16 @@ ALTER TABLE ESCRITO
     ADD CONSTRAINT FK_ESCRITO_GRUPO foreign key (c_id_grupo) REFERENCES GRUPO (c_id);
 ALTER TABLE ESCRITO
     ADD CONSTRAINT FK_ESCRITO_PERS_PROB foreign key (a_id_pers_prob) REFERENCES PERSONA_PROBLEMATICA (a_id);
+
+--Creación de vista para facilitar Queries.
+create view vista_conteo_reacciones as
+(
+select grupo.c_id, grupo.d_nombre, r.c_valor, count(r.c_valor) as cantidad
+from grupo inner join reaccion r on grupo.c_id = r.c_id_grupo
+group by grupo.c_id, grupo.d_nombre, r.c_valor
+order by grupo.c_id
+ );
+
 
 
 --declarar la función que va a eliminar todas los registros de todas las tablas

@@ -71,7 +71,7 @@ public class Grupo {
         this.reaccion = reaccion;
     }
 
-    @ColumnName("count")
+    @ColumnName("cantidad")
     public int getCantidad() {
         return cantidad;
     }
