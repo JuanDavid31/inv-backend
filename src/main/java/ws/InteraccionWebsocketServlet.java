@@ -1,7 +1,5 @@
 package ws;
 
-import dao.DaoGrupo;
-import dao.DaoNodo;
 import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 

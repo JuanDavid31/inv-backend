@@ -1,5 +1,7 @@
 package rest
 
+import entity.Mensaje
+import rest.sse.EventPublisher
 import usecase.InvitacionUseCase
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
@@ -16,4 +18,11 @@ class PersonaInvitacionResource(val invitacionUseCase: InvitacionUseCase){
     @Path("/{email}/invitaciones")
     fun darInvitacionesVigentesRecibidas(@PathParam("email") email: String) =
             invitacionUseCase.darInvitacionesVigentes(email)
+
+    @GET
+    @Path("/mensaje")
+    fun algo(@QueryParam("mensaje") mensaje: String): String{
+        EventPublisher.publish(mensaje)
+        return "Ok"
+    }
 }

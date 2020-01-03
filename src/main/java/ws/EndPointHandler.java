@@ -22,7 +22,6 @@ public class EndPointHandler {
     public static GrupoUseCase grupoUseCase;
     public static NodoUseCase nodoUseCase;
 
-    private static EndPointHandler instance;
     private static Map<Integer, Sala> salasActivas = new ConcurrentHashMap<>();//TODO: Esta variable debe ser ultra thread safe
 
     static void agregarCliente(Session sesion) {
@@ -249,17 +248,6 @@ public class EndPointHandler {
 
     public static Sala darSala(int idSala) {
         return salasActivas.get(idSala);
-    }
-
-    public static class EndPointHandlerBuilder{
-
-        public static void build(){
-            instance = new EndPointHandler();
-        }
-    }
-
-    public EndPointHandler getInstance(){
-        return instance;
     }
 
     private static <T, E extends Exception> Consumer<T> consumerWrapper(Consumer<T> consumer) {
