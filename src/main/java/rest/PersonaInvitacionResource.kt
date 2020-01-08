@@ -18,11 +18,4 @@ class PersonaInvitacionResource(val invitacionUseCase: InvitacionUseCase){
     @Path("/{email}/invitaciones")
     fun darInvitacionesVigentesRecibidas(@PathParam("email") email: String) =
             invitacionUseCase.darInvitacionesVigentes(email)
-
-    @GET
-    @Path("/mensaje")
-    fun algo(@QueryParam("mensaje") mensaje: String): String{
-        EventPublisher.publish(mensaje)
-        return "Ok"
-    }
 }
