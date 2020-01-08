@@ -28,7 +28,7 @@ class DaoEscrito(private val jdbi: Jdbi){
 
     fun agregarEscrito(escrito: Escrito, idPersonaProblematica: String): Escrito{
         return jdbi.withHandle<Escrito, Exception>{
-            it.createUpdate("INSERT INTO ESCRITO(a_descripcion, c_id_grupo, a_id_pers_prob) VALUES(:descripcion, :idGrupo, :idPersProb)")
+            it.createUpdate("INSERT INTO ESCRITO(a_nombre, a_descripcion, c_id_grupo, a_id_pers_prob) VALUES(:nombre, :descripcion, :idGrupo, :idPersProb)")
                 .bindBean(escrito)
                 .bind("idPersProb", idPersonaProblematica)
                 .executeAndReturnGeneratedKeys()

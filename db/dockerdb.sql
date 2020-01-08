@@ -119,6 +119,7 @@ ALTER TABLE REACCION
 CREATE TABLE ESCRITO
 (
     c_id           serial,
+    a_nombre       varchar(20),
     a_descripcion  varchar(500),
     c_id_grupo     int,
     a_id_pers_prob varchar(40)

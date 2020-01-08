@@ -16,6 +16,12 @@ class SseEventSource: EventSource {
     }
 
     public fun emit(datos :String){
+        this.emitter!!.event("elname", "Ladata")
         this.emitter!!.data(datos)
+        this.emitter!!.comment("elComment")
+    }
+
+    public fun emit2(datos: String){
+        this.emitter!!.data("data: message"+datos+"\n\n")
     }
 }

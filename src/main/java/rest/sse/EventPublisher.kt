@@ -11,6 +11,7 @@ class EventPublisher {
             listeners.forEach {
                 println(it)
                 it.emit(s)
+                it.emit2(s)
             }
         }
 
