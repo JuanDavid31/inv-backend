@@ -31,7 +31,7 @@ class DaoReaccion(private val jdbi: Jdbi) {
         return jdbi.withHandle<Optional<Reaccion>, Exception>{
             it.createQuery("SELECT C_VALOR AS \"valor\", C_ID_GRUPO AS \"idGrupo\", A_ID_PERS_PROB AS \"idPersonaProblematica\" FROM REACCION WHERE " +
             "A_ID_PERS_PROB = :idPersonaProblematica")
-            .bind("idPErsonaProblematica", "$email$idProblematica")
+            .bind("idPersonaProblematica", "$email$idProblematica")
             .mapToBean(Reaccion::class.java)
             .findFirst()
         }
