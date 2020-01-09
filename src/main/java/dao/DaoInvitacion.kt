@@ -27,8 +27,8 @@ class DaoInvitacion(private val jdbi: Jdbi) {
      * @param invitacion con los atributos emailRemitente, emailDestinatario, idProblematica y paraInterventor
      * @return La nueva invitacion agregada
      */
-    fun agregarInvitacion(invitacion: Invitacion): Invitacion {
-        return jdbi.withHandle<Invitacion, RuntimeException> { handle ->
+    fun agregarInvitacion(invitacion: Invitacion): Invitacion? {
+        return jdbi.withHandle<Invitacion?, RuntimeException> { handle ->
             try {
                 handle.createUpdate("INSERT INTO INVITACION(a_email_remitente, a_email_destinatario, c_id_problematica, a_id, b_vigente, " +
                         "b_para_interventor, b_rechazada) VALUES(:emailRemitente, :emailDestinatario, :idProblematica, concat(:idProblematica, :emailRemitente, " +
@@ -85,9 +85,9 @@ class DaoInvitacion(private val jdbi: Jdbi) {
      * @param idInvitacion
      * @return True si se acepto, False en caso contrario
      */
-    fun aceptarInvitacion(invitacion: Invitacion, idInvitacion: String): Invitacion {
-        return jdbi.inTransaction<Invitacion, RuntimeException> {
-            try {
+    fun aceptarInvitacion(invitacion: Invitacion, idInvitacion: String): Invitacion? {
+        return jdbi.inTransaction<Invitacion?, RuntimeException> {
+            try {//La invitación siempre llegara con datos.
                 it.createUpdate("INSERT INTO PERSONA_PROBLEMATICA(a_id, a_email, c_id_problematica, b_interventor) " +
                         "VALUES(concat(:emailDestinatario, :idProblematica), :emailDestinatario, :idProblematica, :paraInterventor)")
                         .bindBean(invitacion)
@@ -100,7 +100,6 @@ class DaoInvitacion(private val jdbi: Jdbi) {
                         .executeAndReturnGeneratedKeys()
                         .mapToBean(Invitacion::class.java)
                         .findOnly()
-                if (invitacion == null) it.rollback()
                 invitacion
             } catch (e: UnableToExecuteStatementException) {
                 e.printStackTrace()
@@ -116,14 +115,19 @@ class DaoInvitacion(private val jdbi: Jdbi) {
      * @param idInvitacion
      * @return True si se rechazo, False en caso contrario
      */
-    fun rechazarInvitacion(invitacion: Invitacion): Invitacion {
-        return jdbi.withHandle<Invitacion, RuntimeException> {
-            it.createUpdate("UPDATE INVITACION SET b_rechazada = true, b_vigente = false " +
-                    "WHERE a_email_destinatario = :emailDestinatario AND a_email_remitente = :emailRemitente AND c_id_problematica = :idProblematica")
-                    .bindBean(invitacion)
-                    .executeAndReturnGeneratedKeys()
-                    .mapToBean(Invitacion::class.java)
-                    .findOnly()
+    fun rechazarInvitacion(invitacion: Invitacion): Invitacion? {
+        return jdbi.withHandle<Invitacion?, RuntimeException> {
+            try {
+                it.createUpdate("UPDATE INVITACION SET b_rechazada = true, b_vigente = false " +
+                        "WHERE a_email_destinatario = :emailDestinatario AND a_email_remitente = :emailRemitente AND c_id_problematica = :idProblematica")
+                        .bindBean(invitacion)
+                        .executeAndReturnGeneratedKeys()
+                        .mapToBean(Invitacion::class.java)
+                        .findOnly()
+            }catch (e: Exception){
+                e.printStackTrace()
+                null
+            }
         }
     }
 }
