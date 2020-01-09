@@ -77,7 +77,7 @@ class ProblematicaUseCase(private val daoProblematica: DaoProblematica) {
         json.set("idProblematica", IntNode(idProblematica));
         json.set("nuevaFase", IntNode(faseActual.get()+1))
 
-        EventPublisher.publish(json.toString());
+        /*EventPublisher.publish(json.toString());*/
 
         if(faseActual.get() == 2){
             //TODO: Enviar un mensaje a todos los websockets para que ya no puedan editar.
