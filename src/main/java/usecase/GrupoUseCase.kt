@@ -48,8 +48,8 @@ class GrupoUseCase(val daoGrupo: DaoGrupo, val daoReaccion: DaoReaccion){
     fun darGruposConReaccionDeUsuario(idProblematica: Int, email: String): MutableList<Grupo> {
         val grupos = daoGrupo.darGrupos(idProblematica)
         val reaccionOptional = daoReaccion.darReaccionEnGrupoPorUsuario(idProblematica, email)
-        val reaccion = reaccionOptional.orElseGet(null) //TODO: Ojo. Arreglar
         reaccionOptional.ifPresent {
+            val reaccion = reaccionOptional.get()
             val grupo = grupos.find { it.id == reaccion.idGrupo }
             grupo!!.reaccion = reaccion.valor
             grupo!!.cantidad = 1
