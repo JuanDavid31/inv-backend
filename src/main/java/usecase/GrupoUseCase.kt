@@ -13,7 +13,7 @@ import entity.Grupo
 class GrupoUseCase(val daoGrupo: DaoGrupo, val daoReaccion: DaoReaccion){
 
     fun darGrupos(idProblematica: Int): List<JsonNode> {
-        val conexiones: MutableList<JsonNode> = ArrayList()
+        val conexiones: MutableList<JsonNode> = ArrayList<JsonNode>()
         return daoGrupo.darGrupos(idProblematica)
             .map {
                 val objectMapper = ObjectMapper()
@@ -48,8 +48,7 @@ class GrupoUseCase(val daoGrupo: DaoGrupo, val daoReaccion: DaoReaccion){
     fun darGruposConReaccionDeUsuario(idProblematica: Int, email: String): MutableList<Grupo> {
         val grupos = daoGrupo.darGrupos(idProblematica)
         val reaccionOptional = daoReaccion.darReaccionEnGrupoPorUsuario(idProblematica, email)
-        reaccionOptional.ifPresent {
-            val reaccion = reaccionOptional.get()
+        reaccionOptional.ifPresent {reaccion ->
             val grupo = grupos.find { it.id == reaccion.idGrupo }
             grupo!!.reaccion = reaccion.valor
             grupo!!.cantidad = 1

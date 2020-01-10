@@ -17,7 +17,7 @@ import org.jdbi.v3.core.mapper.CaseStrategy;
 import org.jdbi.v3.core.mapper.MapMappers;
 import org.jdbi.v3.postgres.PostgresPlugin;
 import rest.*;
-import rest.sse.SseEventSourceServlet;
+import rest.sse.DashboardEventSourceServlet;
 import usecase.*;
 import util.*;
 import ws.InteraccionWebsocketServlet;
@@ -68,8 +68,8 @@ public class App extends Application<ConfiguracionApp> {
         miServlet.addMapping("/colaboracion/*");
 
         //Server sent events
-        ServletRegistration.Dynamic sseServlet = environment.servlets().addServlet("sse", new SseEventSourceServlet());
-        sseServlet.addMapping("/sse");
+        ServletRegistration.Dynamic sseServlet = environment.servlets().addServlet("EventosDashboard", new DashboardEventSourceServlet());
+        sseServlet.addMapping("/eventos-dashboard");
 
         //Utils
         JWTUtils jwtUtils = new JWTUtils(configuracionApp.jwtKey);
