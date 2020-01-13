@@ -1,5 +1,6 @@
+import annotation.filter.EventBroadcasterFilter;
 import dao.*;
-import filter.AuthFilter;
+import annotation.filter.AuthFilter;
 import health.PlantillaHealthCheck;
 import io.dropwizard.Application;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
@@ -9,6 +10,7 @@ import io.dropwizard.jdbi3.bundles.JdbiExceptionsBundle;
 import io.dropwizard.jersey.jackson.JsonProcessingExceptionMapper;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.jdbi.v3.core.Jdbi;
@@ -71,6 +73,9 @@ public class App extends Application<ConfiguracionApp> {
         ServletRegistration.Dynamic sseServlet = environment.servlets().addServlet("EventosDashboard", new DashboardEventSourceServlet());
         sseServlet.addMapping("/eventos-dashboard");
 
+        //SessionHandler para mantener sesiones con los clientes conectados a los endpoint de SSE.
+        environment.servlets().setSessionHandler(new SessionHandler());
+
         //Utils
         JWTUtils jwtUtils = new JWTUtils(configuracionApp.jwtKey);
         CorreoUtils correoUtils = new CorreoUtils(configuracionApp.adminEmail, configuracionApp.adminPass);
@@ -107,6 +112,7 @@ public class App extends Application<ConfiguracionApp> {
 
         //Filtros
         final AuthFilter authFilter = new AuthFilter(jwtUtils);
+        final EventBroadcasterFilter eventBroadcasterFilter = new EventBroadcasterFilter();
 
         //Resources
         final AuthResource authResource = new AuthResource(personaUseCase, correoUseCase);
@@ -129,6 +135,7 @@ public class App extends Application<ConfiguracionApp> {
         environment.healthChecks().register("template", plantillaCheck);
         environment.jersey().register(new JsonProcessingExceptionMapper(true));
         environment.jersey().register(authFilter);
+        environment.jersey().register(eventBroadcasterFilter);
         environment.jersey().register(authResource);
         environment.jersey().register(personaResource);
         environment.jersey().register(problematicaResource);

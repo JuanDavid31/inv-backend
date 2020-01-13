@@ -1,7 +1,5 @@
 package rest
 
-import entity.Mensaje
-import rest.sse.EventPublisher
 import usecase.InvitacionUseCase
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType

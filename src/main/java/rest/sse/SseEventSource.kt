@@ -11,7 +11,7 @@ class SseEventSource: EventSource {
     }
 
     override fun onClose(){
-        EventPublisher.eliminarListener(this)
+        DashboardEventPublisher.eliminarListener(this)
     }
 
     public fun emit(datos :String){

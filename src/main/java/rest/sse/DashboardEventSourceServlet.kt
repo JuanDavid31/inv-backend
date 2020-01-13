@@ -6,9 +6,10 @@ import javax.servlet.http.HttpServletRequest
 
 class DashboardEventSourceServlet: EventSourceServlet() {
 
-    override fun newEventSource(request: HttpServletRequest): EventSource? {
+    override fun newEventSource(request: HttpServletRequest): EventSource {
         val sseEventSource = SseEventSource()
-        EventPublisher.agregarListener(sseEventSource)
+        val session = request.getSession(true)
+        DashboardEventPublisher.agregarListener(session.id, sseEventSource)
         return sseEventSource
     }
 }

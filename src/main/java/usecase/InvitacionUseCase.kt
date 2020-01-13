@@ -3,7 +3,7 @@ package usecase
 import dao.DaoInvitacion
 import entity.Error
 import entity.Invitacion
-import rest.sse.EventPublisher
+import rest.sse.DashboardEventPublisher
 
 class InvitacionUseCase(val daoInvitacion : DaoInvitacion){
 
@@ -45,6 +45,6 @@ class InvitacionUseCase(val daoInvitacion : DaoInvitacion){
         val jsonHash = HashMap<String, Any>()
         jsonHash["accion"] = "Invitacion respondida"
         jsonHash["elemento"] = invitacion
-        EventPublisher.publish(jsonHash)
+        DashboardEventPublisher.publish(jsonHash)
     }
 }

@@ -14,6 +14,8 @@ public class SingletonUtils {
 
     static Map<String, Object> singletons = new HashMap<>();
 
+    private static ThreadLocal<String> idSesion = new ThreadLocal<>();
+
     public static GrupoUseCase guardarGrupoUseCase(GrupoUseCase grupoUseCase){
         singletons.put("grupoUseCase", grupoUseCase);
         return grupoUseCase;
@@ -30,5 +32,11 @@ public class SingletonUtils {
 
     public static NodoUseCase darNodoUseCase(){
         return (NodoUseCase) singletons.get("nodoUseCase");
+    }
+
+    public static String darIdSesion(){ return idSesion.get(); }
+
+    public static void guardarIdSesion(String idSession){
+        idSesion.set(idSession);
     }
 }

@@ -1,4 +1,4 @@
-package filter;
+package annotation.filter;
 
 import io.jsonwebtoken.Claims;
 import util.JWTUtils;
@@ -7,7 +7,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 
 @VerificadorAuth
 public class AuthFilter implements ContainerRequestFilter {

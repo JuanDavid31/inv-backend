@@ -7,7 +7,6 @@ import dao.DaoProblematica
 import entity.Error
 import entity.Mensaje
 import entity.Problematica
-import rest.sse.EventPublisher
 
 class ProblematicaUseCase(private val daoProblematica: DaoProblematica) {
 
