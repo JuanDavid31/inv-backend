@@ -119,7 +119,7 @@ class DaoGrupo(private val jdbi: Jdbi) {
         return try {
             jdbi.withHandle<Boolean, Exception> {
                 it.createUpdate("DELETE FROM GRUPO WHERE c_id in (<idsGrupos>) AND c_id_problematica = :idProblematica")
-                    .bindList("idsGrupos", idsGrupos) //TODO: Si la lista esta vacia entonces se lanza una excepción
+                    .bindList("idsGrupos", idsGrupos) //Si la lista esta vacia entonces se lanza una excepción
                     .bind("idProblematica", idProblematica)
                     .execute() > 0
             }

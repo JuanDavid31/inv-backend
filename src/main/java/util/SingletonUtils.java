@@ -13,8 +13,8 @@ import java.util.Map;
 public class SingletonUtils {
 
     static Map<String, Object> singletons = new HashMap<>();
-
     private static ThreadLocal<String> idSesion = new ThreadLocal<>();
+    public static final Object lock = new Object();
 
     public static GrupoUseCase guardarGrupoUseCase(GrupoUseCase grupoUseCase){
         singletons.put("grupoUseCase", grupoUseCase);

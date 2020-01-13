@@ -11,6 +11,7 @@ import entity.SesionCliente;
 import org.eclipse.jetty.websocket.api.Session;
 import usecase.GrupoUseCase;
 import usecase.NodoUseCase;
+import util.SingletonUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,7 +23,7 @@ public class EndPointHandler {
     public static GrupoUseCase grupoUseCase;
     public static NodoUseCase nodoUseCase;
 
-    private static Map<Integer, Sala> salasActivas = new ConcurrentHashMap<>();//TODO: Esta variable debe ser ultra thread safe
+    private static Map<Integer, Sala> salasActivas = new ConcurrentHashMap<>();
 
     static void agregarCliente(Session sesion) {
         int idProblematica = extraerIdSala(sesion);
@@ -31,7 +32,8 @@ public class EndPointHandler {
         Sala sala = salasActivas.get(idProblematica);
         sala.agregarSesion(sesion);
 
-        if(sala.getClientes().size() == 1){ // Es el primer cliente en conectarse
+        if(sala.getClientes().size() != 1) return; // Es el primer cliente en conectarse
+        synchronized (SingletonUtils.lock){
             List<JsonNode> grupos = grupoUseCase.darGrupos(idProblematica);
             List<JsonNode> nodos = nodoUseCase.darNodosPorProblematica(idProblematica);
             nodos.addAll(grupos);
@@ -43,7 +45,8 @@ public class EndPointHandler {
         int idSala = extraerIdSala(sesion);
         Sala sala = salasActivas.get(idSala);
         sala.eliminarCliente(sesion);
-        if(sala.getClientes().size() == 0){
+        if(sala.getClientes().size() != 0)return;
+        synchronized (SingletonUtils.lock){
             agregarNuevosGrupos(sala, idSala);
             eliminarGruposNuevosDeGruposActuales(sala);
             mapearConexionesActuales(sala);
