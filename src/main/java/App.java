@@ -19,7 +19,7 @@ import org.jdbi.v3.core.mapper.CaseStrategy;
 import org.jdbi.v3.core.mapper.MapMappers;
 import org.jdbi.v3.postgres.PostgresPlugin;
 import rest.*;
-import rest.sse.DashboardEventSourceServlet;
+import rest.sse.*;
 import usecase.*;
 import util.*;
 import ws.InteraccionWebsocketServlet;
@@ -48,7 +48,7 @@ public class App extends Application<ConfiguracionApp> {
         ));
     }
 
-    public void run(ConfiguracionApp configuracionApp, Environment environment) throws Exception {
+    public void run(ConfiguracionApp configuracionApp, Environment environment) {
 
         // Enable CORS headers
         final FilterRegistration.Dynamic cors = environment.servlets().addFilter("CORS", CrossOriginFilter.class);
@@ -64,17 +64,27 @@ public class App extends Application<ConfiguracionApp> {
 
         //-------------------------------------------------------------------------------------------------------
 
+        //SessionHandler para mantener sesiones con los clientes conectados a los endpoint de SSE.
+        environment.servlets().setSessionHandler(new SessionHandler());
+
+        EventPublisher dashBoardEventPublisher = new DashboardEventPublisher();
+        EventPublisher invitacionesEventPublisher = new InvitacionesEventPublisher();
+
         //ws://localhost:8080/colaboracion
         ServletRegistration.Dynamic miServlet = environment.servlets().addServlet("miServlet", new InteraccionWebsocketServlet());
         miServlet.setAsyncSupported(true);
         miServlet.addMapping("/colaboracion/*");
 
-        //Server sent events
-        ServletRegistration.Dynamic sseServlet = environment.servlets().addServlet("EventosDashboard", new DashboardEventSourceServlet());
-        sseServlet.addMapping("/eventos-dashboard");
+        //Server sent events servlets
+        environment
+            .servlets()
+            .addServlet("EventosDashboard", new DashboardEventSourceServlet(dashBoardEventPublisher))
+            .addMapping("/eventos-dashboard");
 
-        //SessionHandler para mantener sesiones con los clientes conectados a los endpoint de SSE.
-        environment.servlets().setSessionHandler(new SessionHandler());
+        environment
+            .servlets()
+            .addServlet("EventosInvitaciones", new InvitacionesEventSourceServlet(invitacionesEventPublisher))
+            .addMapping("/eventos-invitaciones");
 
         //Utils
         JWTUtils jwtUtils = new JWTUtils(configuracionApp.jwtKey);
@@ -101,9 +111,9 @@ public class App extends Application<ConfiguracionApp> {
 
         //Use cases
         FotoUseCase fotoUseCase = new FotoUseCase(daoNodo, fotoUtils, s3Utils);
-        ProblematicaUseCase problematicaUseCase = new ProblematicaUseCase(daoProblematica);
+        ProblematicaUseCase problematicaUseCase = new ProblematicaUseCase(daoProblematica, dashBoardEventPublisher);
         CorreoUseCase correoUseCase = new CorreoUseCase(daoPersona, correoUtils);
-        InvitacionUseCase invitacionUseCase = new InvitacionUseCase(daoInvitacion);
+        InvitacionUseCase invitacionUseCase = new InvitacionUseCase(daoInvitacion, invitacionesEventPublisher);
         NodoUseCase nodoUseCase = SingletonUtils.guardarNodoUseCase(new NodoUseCase(daoNodo));
         GrupoUseCase grupoUseCase = new GrupoUseCase(daoGrupo, daoReaccion);
         ReaccionUseCase reaccionUseCase = new ReaccionUseCase(daoReaccion);

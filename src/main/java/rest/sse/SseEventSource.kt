@@ -2,7 +2,7 @@ package rest.sse
 
 import org.eclipse.jetty.servlets.EventSource
 
-class SseEventSource: EventSource {
+class SseEventSource(private val eventPublisher: EventPublisher) : EventSource {
 
     private var emitter: EventSource.Emitter? = null
 
@@ -11,7 +11,7 @@ class SseEventSource: EventSource {
     }
 
     override fun onClose(){
-        DashboardEventPublisher.eliminarListener(this)
+        eventPublisher.eliminarListener(this)
     }
 
     public fun emit(datos :String){

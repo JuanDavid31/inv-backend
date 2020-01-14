@@ -122,5 +122,14 @@ class DaoProblematica(internal val jdbi: Jdbi) {
         }
     }
 
+    fun darParticipantesPorProblematica(idProblematica: Int): List<String> {
+        return jdbi.withHandle<List<String>, Exception> {
+            it.createQuery("SELECT a_email from PERSONA_PROBLEMATICA WHERE c_id_problematica = :idProblematica")
+                    .bind("idProblematica", idProblematica)
+                    .mapTo(String::class.java)
+                    .list()
+        }
+    }
+
 
 }

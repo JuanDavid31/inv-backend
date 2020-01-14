@@ -2,31 +2,15 @@ package rest.sse
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import util.SingletonUtils
-import java.util.*
 
-class DashboardEventPublisher {
+class DashboardEventPublisher : EventPublisher() {
 
-    companion object{ //Crea un singleton en el programa.
-        private val publishers: MutableMap<String, SessionWrapper> = Collections.synchronizedMap(HashMap<String, SessionWrapper>())
-
-        fun publish(s: Map<String, Any>) {
-            val idSesion = SingletonUtils.darIdSesion()
-            val mapper = ObjectMapper()
-            publishers.filterKeys { it !== idSesion}
-                    .forEach { (idSesion, sesionWrapper) -> sesionWrapper.eventSource.emit(mapper.writeValueAsString(s))}
-        }
-
-        fun agregarListener(sessionId: String, wrapper: SessionWrapper){
-            publishers.put(sessionId, wrapper)
-        }
-
-        fun eliminarListener(eventSource: SseEventSource){
-            val lista = publishers.toList()
-            val pair = lista.find { it.second.sesion.equals(eventSource) }
-            pair?.second?.sesion.invalidate()
-            publishers.remove(pair?.first)
-        }
+    fun difundirAParticipantes(datos: Map<String, Any>, participantes: List<String>){
+        val idSesion = SingletonUtils.darIdSesion() //Si este metodo se realiza en otro hilo la llamada debe moverse.
+        publishers.filterKeys { it !== idSesion}
+                //.flatMapTo(arrayListOf<SessionWrapper>()){ (_, sesionWrapper) -> arrayListOf(sesionWrapper) }
+                .map { (_, sessionWrapper) -> sessionWrapper}
+                .filter { sessionWrapper -> participantes.contains(sessionWrapper.emailUsuario) }
+                .forEach { sesionWrapper -> sesionWrapper.eventSource.emit(mapper.writeValueAsString(datos))}
     }
 }
-
-data class SessionWrapper(val sesion: HttpSession, val eventSource: SseEventSource)
