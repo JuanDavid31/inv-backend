@@ -10,7 +10,7 @@ import java.util.Optional
  */
 class DaoProblematica(internal val jdbi: Jdbi) {
 
-    fun agregarProblematicaPorPersona(email: String, problematica: Problematica): Problematica {
+    fun agregarProblematicaPorPersona(email: String, problematica: Problematica): Problematica? {
         return jdbi.inTransaction<Problematica, RuntimeException> {
             try{
                 val nuevaProblematica = it
@@ -28,8 +28,10 @@ class DaoProblematica(internal val jdbi: Jdbi) {
                 if (!seAgrego) {
                     it.rollback()
                     null
+                }else{
+                    nuevaProblematica.esInterventor = true
+                    nuevaProblematica
                 }
-                nuevaProblematica
             }catch (e: UnableToExecuteStatementException){
                 e.printStackTrace()
                 it.rollback()
@@ -119,6 +121,15 @@ class DaoProblematica(internal val jdbi: Jdbi) {
                     .bind("idProblematica", idProblematica)
                     .mapTo(Int::class.java)
                     .findOnly()
+        }
+    }
+
+    fun darParticipantesPorProblematica(idProblematica: Int): List<String> {
+        return jdbi.withHandle<List<String>, Exception> {
+            it.createQuery("SELECT a_email from PERSONA_PROBLEMATICA WHERE c_id_problematica = :idProblematica")
+                    .bind("idProblematica", idProblematica)
+                    .mapTo(String::class.java)
+                    .list()
         }
     }
 

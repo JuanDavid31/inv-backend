@@ -2,7 +2,7 @@ package rest
 
 import entity.Error
 import entity.Persona
-import filter.ValidPersonaLogin
+import annotation.validator.ValidPersonaLogin
 import org.hibernate.validator.constraints.NotEmpty
 import org.jetbrains.annotations.NotNull
 import usecase.CorreoUseCase

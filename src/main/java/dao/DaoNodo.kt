@@ -75,7 +75,7 @@ class DaoNodo(private val jdbi: Jdbi) {
     }
 
     /**
-     * Dado el id del nodo padre, se buscara todo nodo hijo y se eliminara la relación entre ellos.
+     * Dado el id del nodo padre, se buscaran nodos hijo y se eliminara la relación entre ellos.
      * Los nodos hijos perderan a su padre.
      * @param idPadre
      * @return

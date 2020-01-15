@@ -1,5 +1,6 @@
-package filter
+package annotation.validator
 
+import annotation.validator.PersonaLoginValidator
 import javax.validation.Constraint
 import javax.validation.Payload
 import java.lang.annotation.*

@@ -1,25 +1,29 @@
 package rest.sse
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import entity.Mensaje
-import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import javax.servlet.http.HttpSession
 
-class EventPublisher {
+open class EventPublisher() {
+    //Companion object -> Crea un singleton en el programa.
+    val publishers: MutableMap<String, SessionWrapper>
+    val mapper: ObjectMapper
 
-    companion object{ //Crea un singleton en todo el programa.
-        private val publishers: MutableList<SseEventSource> = Collections.synchronizedList(ArrayList<SseEventSource>())
+    init {
+        publishers = ConcurrentHashMap<String, SessionWrapper>()
+        mapper = ObjectMapper()
+    }
 
-        fun publish(mensaje: Map<String, Any>) {
-            val mapper = ObjectMapper()
-            publishers.forEach { it.emit(mapper.writeValueAsString(mensaje)) }
-        }
+    fun agregarListener(sessionId: String, wrapper: SessionWrapper){
+        publishers.put(sessionId, wrapper)
+    }
 
-        fun agregarListener(eventPublisher: SseEventSource){
-            publishers.add(eventPublisher)
-        }
-
-        fun eliminarListener(eventPublisher: SseEventSource){
-            publishers.remove(eventPublisher)
-        }
+    fun eliminarListener(eventSource: SseEventSource){
+        val lista = publishers.toList()
+        val pair = lista.find { it.second.sesion.equals(eventSource) }
+        pair?.second?.sesion?.invalidate()
+        publishers.remove(pair?.first)
     }
 }
+
+data class SessionWrapper(val emailUsuario: String, val sesion: HttpSession, val eventSource: SseEventSource)

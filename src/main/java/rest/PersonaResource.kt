@@ -4,14 +4,12 @@ import dao.DaoNodo
 import entity.Persona
 import entity.Problematica
 import entity.Error
-import filter.VerificadorAuth
+import annotation.filter.VerificadorAuth
 import usecase.PersonaUseCase
 import usecase.ProblematicaUseCase
 
 import javax.validation.Valid
-import javax.validation.constraints.Min
 import javax.validation.constraints.NotNull
-import javax.validation.constraints.Size
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response

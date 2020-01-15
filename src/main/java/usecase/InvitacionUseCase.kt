@@ -5,7 +5,7 @@ import entity.Error
 import entity.Invitacion
 import rest.sse.EventPublisher
 
-class InvitacionUseCase(val daoInvitacion : DaoInvitacion){
+class InvitacionUseCase(private val daoInvitacion: DaoInvitacion, private val invitacionesEventPublisher: EventPublisher){
 
     fun hacerInvitacion(invitacion: Invitacion): Any {
         val invitacion = daoInvitacion.agregarInvitacion(invitacion)
@@ -45,6 +45,6 @@ class InvitacionUseCase(val daoInvitacion : DaoInvitacion){
         val jsonHash = HashMap<String, Any>()
         jsonHash["accion"] = "Invitacion respondida"
         jsonHash["elemento"] = invitacion
-        EventPublisher.publish(jsonHash)
+        /*invitacionesEventPublisher.difundirATodosMenosAUsuarioSolicitante(jsonHash)*/
     }
 }

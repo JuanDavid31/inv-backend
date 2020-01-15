@@ -1,15 +1,17 @@
 package usecase
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.IntNode
-import com.fasterxml.jackson.databind.node.TextNode
 import dao.DaoProblematica
 import entity.Error
 import entity.Mensaje
 import entity.Problematica
-import rest.sse.EventPublisher
+import io.reactivex.Completable
+import io.reactivex.schedulers.Schedulers
+import rest.sse.DashboardEventPublisher
+import util.SingletonUtils
+import java.util.*
+import kotlin.collections.HashMap
 
-class ProblematicaUseCase(private val daoProblematica: DaoProblematica) {
+class ProblematicaUseCase(private val daoProblematica: DaoProblematica, private val dashBoardEventPublisher: DashboardEventPublisher) {
 
     fun agregarProblematicaPorPersona(email: String, problematica: Problematica): Any {
         val nuevaProblematica = daoProblematica.agregarProblematicaPorPersona(email, problematica)
@@ -71,17 +73,30 @@ class ProblematicaUseCase(private val daoProblematica: DaoProblematica) {
         if(!faseActual.isPresent) return Error(arrayOf("La problematica dada no existe"))
         if(!daoProblematica.avanzarFaseProblematica(idProblematica)) return Error(arrayOf("La problematica ya esta en su fase final."))
 
-        val json = ObjectMapper().createObjectNode()
-
-        json.set("accion", TextNode("Cambio fase problematica"))
-        json.set("idProblematica", IntNode(idProblematica));
-        json.set("nuevaFase", IntNode(faseActual.get()+1))
-
-        /*EventPublisher.publish(json.toString());*/
+        difundirAParticipantes(idProblematica, faseActual);
 
         if(faseActual.get() == 2){
             //TODO: Enviar un mensaje a todos los websockets para que ya no puedan editar.
         }
         return Mensaje("Se avanzó exitosamente la fase de la problematica")
     }
+
+    private fun difundirAParticipantes(idProblematica: Int, faseActual: Optional<Int>) {
+        val json = HashMap<String, Any>()
+
+        json["accion"] = "Cambio fase problematica"
+        json["idProblematica"] = idProblematica
+        json["nuevaFase"] = faseActual.get() + 1
+
+        val idSesion = SingletonUtils.darIdSesion()
+
+        Completable
+            .fromRunnable {
+                println(Thread.currentThread().name)
+                dashBoardEventPublisher.difundirAParticipantesMenosA(idSesion, json, daoProblematica.darParticipantesPorProblematica(idProblematica));
+            }.subscribeOn(Schedulers.io())
+            .subscribe{println("Completando threads")}
+    }
+
+
 }
