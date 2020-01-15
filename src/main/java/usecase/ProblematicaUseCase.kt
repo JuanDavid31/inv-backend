@@ -4,7 +4,10 @@ import dao.DaoProblematica
 import entity.Error
 import entity.Mensaje
 import entity.Problematica
+import io.reactivex.Completable
+import io.reactivex.schedulers.Schedulers
 import rest.sse.DashboardEventPublisher
+import util.SingletonUtils
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -85,7 +88,14 @@ class ProblematicaUseCase(private val daoProblematica: DaoProblematica, private 
         json["idProblematica"] = idProblematica
         json["nuevaFase"] = faseActual.get() + 1
 
-        dashBoardEventPublisher.difundirAParticipantes(json, daoProblematica.darParticipantesPorProblematica(idProblematica));
+        val idSesion = SingletonUtils.darIdSesion()
+
+        Completable
+            .fromRunnable {
+                println(Thread.currentThread().name)
+                dashBoardEventPublisher.difundirAParticipantesMenosA(idSesion, json, daoProblematica.darParticipantesPorProblematica(idProblematica));
+            }.subscribeOn(Schedulers.io())
+            .subscribe{println("Completando threads")}
     }
 
 

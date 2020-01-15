@@ -9,7 +9,8 @@ class InvitacionesEventSourceServlet(private val eventPublisher: EventPublisher)
     override fun newEventSource(request: HttpServletRequest): EventSource {
         val email = request.getParameter("email")
         val sseEventSource = SseEventSource(eventPublisher)
-        val session = request.getSession(true)
+        val session = request.getSession()
+        println("${session.id} - $session")
         eventPublisher.agregarListener(session.id, SessionWrapper(email, session, sseEventSource))
         return sseEventSource
     }
