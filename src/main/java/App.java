@@ -134,7 +134,7 @@ public class App extends Application<ConfiguracionApp> {
         final GrupoResource grupoResource = new GrupoResource(reaccionUseCase);
         final ProblematicaEscritoResource problematicaEscritoResource = new ProblematicaEscritoResource(escritoUseCase);
         final ProblematicaReaccionResource problematicaReaccionResource = new ProblematicaReaccionResource(SingletonUtils.guardarGrupoUseCase(grupoUseCase));
-        final ProblematicaGrupoResource problematicaGrupoResource = new ProblematicaGrupoResource(grupoUseCase);
+        final ProblematicaGrupoResource problematicaGrupoResource = new ProblematicaGrupoResource(grupoUseCase, escritoUseCase);
         final ProblematicaPersonaResource problematicaPersonaResource = new ProblematicaPersonaResource(escritoUseCase, fotoUseCase, personaUseCase);
 
         //Healthchecks
