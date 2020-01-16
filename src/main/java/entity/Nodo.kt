@@ -14,6 +14,8 @@ class Nodo {
     var idPadre: Int = 0
     @get:ColumnName("c_id_grupo")
     var idGrupo: Int? = null
+    @get:ColumnName("nombreCreador")
+    var nombreCreador: String = ""
     var email: String = ""
     var idProblematica: Int = 0
 

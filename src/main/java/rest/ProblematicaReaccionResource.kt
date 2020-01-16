@@ -11,7 +11,8 @@ class ProblematicaReaccionResource(val GrupoUseCase: GrupoUseCase){
 
     @GET
     @Path("/{idProblematica}/reacciones")
-    fun darReacciones(@PathParam("idProblematica") idProblematica: Int) = GrupoUseCase.darGruposConReacciones(idProblematica)
+    fun darReacciones(@PathParam("idProblematica") idProblematica: Int) =
+            GrupoUseCase.darGruposConReacciones(idProblematica)
 
     @GET
     @Path("/{idProblematica}/personas/{email}/reacciones}")

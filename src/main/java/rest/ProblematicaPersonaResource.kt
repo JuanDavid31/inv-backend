@@ -32,13 +32,13 @@ class ProblematicaPersonaResource(val escritoUseCase: EscritoUseCase, val fotoUs
         return if (nodo != null) Response.ok(nodo).build() else Response.status(Response.Status.BAD_REQUEST).build()
     }
 
-    @GET
-    @Path("/{idProblematica}/personas/{email}/escritos")
-    fun darEscritosPorPersona(@PathParam("idProblematica") idProblematica: Int,
-                              @PathParam("email") email: String): Response{
-        val optionalEscrito = escritoUseCase.darEscritoPorPersona("$email$idProblematica")
-        return if(optionalEscrito.isPresent)return Response.ok(optionalEscrito.get()).build() else Response.ok().build()
-    }
+//    @GET
+//    @Path("/{idProblematica}/personas/{email}/escritos")
+//    fun darEscritosPorPersona(@PathParam("idProblematica") idProblematica: Int,
+//                              @PathParam("email") email: String): Response{
+//        val optionalEscrito = escritoUseCase.darEscritoPorPersona("$email$idProblematica")
+//        return if(optionalEscrito.isPresent)return Response.ok(optionalEscrito.get()).build() else Response.ok().build()
+//    }
 
     @GET
     @Path("/{idProblematica}/personas")
