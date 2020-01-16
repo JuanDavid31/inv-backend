@@ -25,12 +25,17 @@ class DaoNodo(private val jdbi: Jdbi) {
         }
     }
 
+    /**
+     * Consulta los nodos que esten o no asociados a un grupo junto con información adicional.
+     */
     fun darNodos(idProblematica: Long): List<Nodo>{
         return jdbi.withHandle<List<Nodo>, Exception> {
             try {
-                it.createQuery("""SELECT N.c_id, N.a_nombre, N.a_url_foto, N.c_id_grupo, G.d_nombre FROM PERSONA_PROBLEMATICA pp, NODO n
-                LEFT JOIN GRUPO G on G.c_id = N.c_id_grupo where PP.a_id = N.a_id_pers_prob 
-                and PP.c_id_problematica = :idProblematica""")
+                it.createQuery("""SELECT N.c_id, N.a_nombre, N.a_url_foto, N.c_id_grupo, concat(p.d_nombres, ' ', p.d_apellidos) as "nombreCreador"
+                FROM NODO n LEFT JOIN GRUPO G on G.c_id = N.c_id_grupo
+                inner join PERSONA_PROBLEMATICA pp on pp.a_id = n.a_id_pers_prob
+                inner join persona p on pp.a_email = p.a_email
+                where PP.c_id_problematica = :idProblematica""")
                 .bind("idProblematica", idProblematica)
                 .mapToBean(Nodo::class.java)
                 .list()

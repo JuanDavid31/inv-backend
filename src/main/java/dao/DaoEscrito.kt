@@ -47,5 +47,15 @@ class DaoEscrito(private val jdbi: Jdbi){
         }
     }
 
+    fun darEscrito(idPersonaProblematica: String, idGrupo: Int): Optional<Escrito> {
+        return jdbi.withHandle<Optional<Escrito>, Exception> {
+            it.createQuery("SELECT * FROM ESCRITO WHERE a_id_pers_prob = :idPersonaProblematica AND c_id_grupo = :idGrupo")
+                .bind("idPersonaProblematica", idPersonaProblematica)
+                .bind("idGrupo", idGrupo)
+                .mapToBean(Escrito::class.java)
+                .findFirst()
+        }
+    }
+
 
 }

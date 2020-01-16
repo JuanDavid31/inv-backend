@@ -63,8 +63,6 @@ class GrupoUseCase(val daoGrupo: DaoGrupo, val daoReaccion: DaoReaccion){
         return if (optionalGrupo.isPresent) optionalGrupo.get() else null
     }
 
-    fun eliminarGrupo(id: Int, idProblematica: Int): Boolean = daoGrupo.eliminarGrupo(id, idProblematica)
-
     /**
      * Lanza una excepción si la lista esta vacia.
      */

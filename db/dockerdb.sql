@@ -131,6 +131,8 @@ ALTER TABLE ESCRITO
     ADD CONSTRAINT FK_ESCRITO_GRUPO foreign key (c_id_grupo) REFERENCES GRUPO (c_id);
 ALTER TABLE ESCRITO
     ADD CONSTRAINT FK_ESCRITO_PERS_PROB foreign key (a_id_pers_prob) REFERENCES PERSONA_PROBLEMATICA (a_id);
+ALTER TABLE ESCRITO
+    ADD CONSTRAINT UK_ESCRITO UNIQUE(a_id_pers_prob, c_id_grupo);
 
 --Creación de vista para facilitar Queries.
 create view vista_conteo_reacciones as

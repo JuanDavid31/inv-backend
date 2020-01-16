@@ -25,21 +25,17 @@ class NodoUseCase(val daoNodo: DaoNodo) {
 
     fun darNodosPorProblematica(idProblematica: Long): List<JsonNode> {
         return daoNodo.darNodos(idProblematica).map {
-            val objectMapper = ObjectMapper()
-            val nodo = objectMapper.createObjectNode()
-            val data = objectMapper.createObjectNode()
+            val data = hashMapOf("id" to it.id,
+                    "nombre" to it.nombre,
+                    "parent" to it.idGrupo,
+                    "urlFoto" to it.urlFoto,
+                    "nombreCreador" to it.nombreCreador)
 
-            (data as ObjectNode).set("id", IntNode(it.id))
-            data.set("nombre", TextNode(it.nombre))
-            data.set("parent", if (it.idGrupo != null) IntNode(it.idGrupo!!) else NullNode.instance)
-            data.set("urlFoto", TextNode(it.urlFoto))
+            val nodo = hashMapOf("data" to data)
 
-            (nodo as ObjectNode).set("data", data)
-
-            nodo
+            ObjectMapper().valueToTree<JsonNode>(nodo)
         }
     }
 
     fun actualizarGrupoNodo(nodo: Nodo) = daoNodo.actualizarGrupoNodo(nodo)
-
 }
