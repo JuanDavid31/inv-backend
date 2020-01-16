@@ -45,6 +45,6 @@ class InvitacionUseCase(private val daoInvitacion: DaoInvitacion, private val in
         val jsonHash = HashMap<String, Any>()
         jsonHash["accion"] = "Invitacion respondida"
         jsonHash["elemento"] = invitacion
-        invitacionesEventPublisher.difundirATodosMenosAUsuarioSolicitante(jsonHash)
+        /*invitacionesEventPublisher.difundirATodosMenosAUsuarioSolicitante(jsonHash)*/
     }
 }

@@ -29,7 +29,7 @@ class Persona {
     @get:ColumnName("d_apellidos")
     var apellidos: String = ""
 
-    @JsonProperty
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotNull(message = "no puede estar vacia")
     @Size(min = 8, max = 25, message = "debe tener minimo 8 y maximo 25 caracteres")
     @get:ColumnName("a_pass_hasheado")

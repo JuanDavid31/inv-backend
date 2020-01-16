@@ -10,7 +10,7 @@ import java.util.Optional
  */
 class DaoProblematica(internal val jdbi: Jdbi) {
 
-    fun agregarProblematicaPorPersona(email: String, problematica: Problematica): Problematica {
+    fun agregarProblematicaPorPersona(email: String, problematica: Problematica): Problematica? {
         return jdbi.inTransaction<Problematica, RuntimeException> {
             try{
                 val nuevaProblematica = it
@@ -28,8 +28,10 @@ class DaoProblematica(internal val jdbi: Jdbi) {
                 if (!seAgrego) {
                     it.rollback()
                     null
+                }else{
+                    nuevaProblematica.esInterventor = true
+                    nuevaProblematica
                 }
-                nuevaProblematica
             }catch (e: UnableToExecuteStatementException){
                 e.printStackTrace()
                 it.rollback()

@@ -67,7 +67,7 @@ public class App extends Application<ConfiguracionApp> {
         //SessionHandler para mantener sesiones con los clientes conectados a los endpoint de SSE.
         environment.servlets().setSessionHandler(new SessionHandler());
 
-        EventPublisher dashBoardEventPublisher = new DashboardEventPublisher();
+        DashboardEventPublisher dashBoardEventPublisher = new DashboardEventPublisher();
         EventPublisher invitacionesEventPublisher = new InvitacionesEventPublisher();
 
         //ws://localhost:8080/colaboracion

@@ -16,13 +16,6 @@ open class EventPublisher() {
         mapper = ObjectMapper()
     }
 
-    fun difundirATodosMenosAUsuarioSolicitante(s: Map<String, Any>) {
-        val idSesion = SingletonUtils.darIdSesion() //Si este metodo se realiza en otro hilo la llamada debe moverse.
-        val mapper = ObjectMapper()
-        publishers.filterKeys { it !== idSesion}
-                .forEach { (idSesion, sesionWrapper) -> sesionWrapper.eventSource.emit(mapper.writeValueAsString(s))}
-    }
-
     fun agregarListener(sessionId: String, wrapper: SessionWrapper){
         publishers.put(sessionId, wrapper)
     }

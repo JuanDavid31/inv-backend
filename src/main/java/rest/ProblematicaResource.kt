@@ -1,7 +1,10 @@
 package rest
 
+import annotation.filter.ServerEventBroadcaster
+import io.dropwizard.jersey.sessions.Session
 import usecase.InvitacionUseCase
 import usecase.ProblematicaUseCase
+import javax.servlet.http.HttpSession
 import javax.validation.constraints.NotNull
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
@@ -33,6 +36,7 @@ class ProblematicaResource(private val InvitacionUseCase: InvitacionUseCase, pri
 
     @Path("/{idProblematica}")
     @POST
+    @ServerEventBroadcaster
     fun avanzarFase(@PathParam("idProblematica") idProblematica: Int,
                     @QueryParam("avanzar") @NotNull avanzar: Boolean?): Response {
 
