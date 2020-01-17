@@ -45,14 +45,15 @@ class GrupoUseCase(val daoGrupo: DaoGrupo, val daoReaccion: DaoReaccion){
 
     fun actualizarNombreYPadreGrupo(grupo: Grupo): Boolean = daoGrupo.actualizarNombreYPadreGrupo(grupo)
 
-    fun darGruposConReaccionDeUsuario(idProblematica: Int, email: String): MutableList<Grupo> {
-        val grupos = daoGrupo.darGrupos(idProblematica)
-        val reaccionOptional = daoReaccion.darReaccionEnGrupoPorUsuario(idProblematica, email)
+    fun darGruposConReaccionDeUsuario(idProblematica: Int, email: String): List<JsonNode> {
+            /*MutableList<Grupo> {*/
+        val grupos = darGrupos(idProblematica)
+        /*val reaccionOptional = daoReaccion.darReaccionEnGrupoPorUsuario(idProblematica, email)
         reaccionOptional.ifPresent {reaccion ->
             val grupo = grupos.find { it.id == reaccion.idGrupo }
             grupo!!.reaccion = reaccion.valor
             grupo!!.cantidad = 1
-        }
+        }*/
         return grupos
     }
 
