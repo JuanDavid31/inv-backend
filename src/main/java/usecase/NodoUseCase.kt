@@ -2,10 +2,6 @@ package usecase
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.IntNode
-import com.fasterxml.jackson.databind.node.NullNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.databind.node.TextNode
 import dao.DaoNodo
 import entity.Mensaje
 import entity.Error
@@ -23,8 +19,8 @@ class NodoUseCase(val daoNodo: DaoNodo) {
         return if(conexionesEliminadas) Mensaje("Conexiones eliminadas exitosamente") else Error(arrayOf("El nodo no existe o no tiene conexiones."))
     }
 
-    fun darNodosPorProblematica(idProblematica: Long): List<JsonNode> {
-        return daoNodo.darNodos(idProblematica).map {
+    fun darNodosPorProblematica(idProblematica: Int): List<JsonNode> {
+        return daoNodo.darNodosPorProblematica(idProblematica).map {
             val data = hashMapOf("id" to it.id,
                     "nombre" to it.nombre,
                     "parent" to it.idGrupo,

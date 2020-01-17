@@ -3,6 +3,7 @@ package rest
 import entity.Grupo
 import usecase.EscritoUseCase
 import usecase.GrupoUseCase
+import javax.validation.constraints.NotNull
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
@@ -14,8 +15,10 @@ class ProblematicaGrupoResource(val grupoUseCase: GrupoUseCase, val escritoUseCa
 
     @GET
     @Path("/{idProblematica}/grupos")
-    fun darGruposConReaccionPropia(@PathParam("idProblematica") idProblematica: Int, @QueryParam("email") email: String) =
-        grupoUseCase.darGruposConReaccionDeUsuario(idProblematica, email)
+    fun darGruposConReaccionPropia(@PathParam("idProblematica") idProblematica: Int,
+                                   @NotNull(message = "no puede ser vacio")
+                                   @QueryParam("email") email: String)
+            = grupoUseCase.darGruposConReaccionDeUsuario(idProblematica, email)
 
 
     @GET

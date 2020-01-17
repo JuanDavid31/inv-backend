@@ -11,7 +11,7 @@ import java.lang.Exception
  */
 class DaoNodo(private val jdbi: Jdbi) {
 
-    fun darNodos(idPersonaProblematica: String): List<Nodo> {
+    fun darNodosPorPersonaYProblematica(idPersonaProblematica: String): List<Nodo> {
         return jdbi.withHandle<List<Nodo>, Exception> {
             try {
                 it.createQuery("SELECT * FROM NODO WHERE a_id_pers_prob = :idPersProb")
@@ -28,7 +28,7 @@ class DaoNodo(private val jdbi: Jdbi) {
     /**
      * Consulta los nodos que esten o no asociados a un grupo junto con información adicional.
      */
-    fun darNodos(idProblematica: Long): List<Nodo>{
+    fun darNodosPorProblematica(idProblematica: Int): List<Nodo>{
         return jdbi.withHandle<List<Nodo>, Exception> {
             try {
                 it.createQuery("""SELECT N.c_id, N.a_nombre, N.a_url_foto, N.c_id_grupo, concat(p.d_nombres, ' ', p.d_apellidos) as "nombreCreador"

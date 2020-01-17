@@ -7,7 +7,7 @@ import dao.DaoGrupo
 import dao.DaoReaccion
 import entity.Grupo
 
-class GrupoUseCase(val daoGrupo: DaoGrupo, val daoReaccion: DaoReaccion){
+class GrupoUseCase(val daoGrupo: DaoGrupo, val daoReaccion: DaoReaccion, val nodoUseCase: NodoUseCase){
 
     fun darGrupos(idProblematica: Int): List<JsonNode> {
         val conexiones: MutableList<JsonNode> = ArrayList<JsonNode>()
@@ -46,6 +46,7 @@ class GrupoUseCase(val daoGrupo: DaoGrupo, val daoReaccion: DaoReaccion){
             /*MutableList<Grupo> {*/
         val grupos = darGrupos(idProblematica)
         val reacciones = daoReaccion.darReaccionesPorUsuario(idProblematica, email)
+        val nodosJson = nodoUseCase.darNodosPorProblematica(idProblematica);
 
         reacciones.forEach { reacccion ->
             val grupo = grupos.find {it.get("data").get("id").asInt() == reacccion.idGrupo}
@@ -57,7 +58,7 @@ class GrupoUseCase(val daoGrupo: DaoGrupo, val daoReaccion: DaoReaccion){
             grupo!!.reaccion = reaccion.valor
             grupo!!.cantidad = 1
         }*/
-        return grupos
+        return grupos + nodosJson
     }
 
     fun darGruposConReacciones(idProblematica: Int) = daoGrupo.darGruposConReacciones(idProblematica)
@@ -84,5 +85,27 @@ class GrupoUseCase(val daoGrupo: DaoGrupo, val daoReaccion: DaoReaccion){
     private fun objetoAJsonNode(objeto: Any){
 
     }
+
+    /*fun cosas(idProblematica: Int): List<JsonNode> {
+        val grupos =  daoGrupo.darGrupos(idProblematica)
+        val gruposJson: List<JsonNode> = grupos.map {
+                    val data = hashMapOf("id" to it.id,
+                            "parent" to null,
+                            "nombre" to it.nombre,
+                            "esGrupo" to true)
+                    return ObjectMapper().valueToTree<JsonNode>(hashMapOf("data" to data))
+                }//.map { ObjectMapper().valueToTree<JsonNode>(hashMapOf("data" to it)) }
+
+        val conexionesJson = grupos.filter { it.idPadre != null }
+            .map {
+                val data = hashMapOf("id" to "${it.idPadre}${it.id}",
+                        "source" to it.idPadre,
+                        "target" to it.id)
+
+                val conexion = hashMapOf("data" to data)
+                ObjectMapper().valueToTree<JsonNode>(conexion)
+            }
+        return gruposJson + conexionesJson
+    }*/
 
 }

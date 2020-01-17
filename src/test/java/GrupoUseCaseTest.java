@@ -30,7 +30,7 @@ public class GrupoUseCaseTest {
         jdbi = factory.build(RULE.getEnvironment(), RULE.getConfiguration().getDataSourceFactory(), "postgres");
         jdbi.installPlugin(new PostgresPlugin());
         DaoGrupo daoInvitacion = new DaoGrupo(jdbi);
-        grupoUseCase = new GrupoUseCase(daoInvitacion, null);
+        grupoUseCase = new GrupoUseCase(daoInvitacion, null, null);
     }
 
     @Before

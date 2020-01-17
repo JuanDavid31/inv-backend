@@ -52,7 +52,7 @@ class PersonaResource(private val problematicaUseCase: ProblematicaUseCase, priv
     @Path("/{email}/problematicas/{idProblematica}/nodos")
     fun darNodos(@PathParam("email") email: String,
                  @PathParam("idProblematica") idProblematica: Int): Response {
-        val nodos = daoNodo.darNodos(email + idProblematica)
+        val nodos = daoNodo.darNodosPorPersonaYProblematica(email + idProblematica)
         return Response.ok(nodos).build()
     }
 }
