@@ -27,13 +27,13 @@ class DaoReaccion(private val jdbi: Jdbi) {
         }
     }
 
-    fun darReaccionEnGrupoPorUsuario(idProblematica: Int, email: String):Optional<Reaccion> {
-        return jdbi.withHandle<Optional<Reaccion>, Exception>{
-            it.createQuery("SELECT C_VALOR, C_ID_GRUPO, A_ID_PERS_PROB FROM REACCION WHERE " +
+    fun darReaccionesPorUsuario(idProblematica: Int, email: String):List<Reaccion> {
+        return jdbi.withHandle<List<Reaccion>, Exception>{
+            it.createQuery("SELECT C_VALOR, C_ID_GRUPO FROM REACCION WHERE " +
             "A_ID_PERS_PROB = :idPersonaProblematica")
             .bind("idPersonaProblematica", "$email$idProblematica")
             .mapToBean(Reaccion::class.java)
-            .findFirst()
+            .list()
         }
     }
 

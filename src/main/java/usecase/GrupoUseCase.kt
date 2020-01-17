@@ -2,10 +2,7 @@ package usecase
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.BooleanNode
-import com.fasterxml.jackson.databind.node.IntNode
-import com.fasterxml.jackson.databind.node.NullNode
-import com.fasterxml.jackson.databind.node.TextNode
+import com.fasterxml.jackson.databind.node.*
 import dao.DaoGrupo
 import dao.DaoReaccion
 import entity.Grupo
@@ -48,8 +45,14 @@ class GrupoUseCase(val daoGrupo: DaoGrupo, val daoReaccion: DaoReaccion){
     fun darGruposConReaccionDeUsuario(idProblematica: Int, email: String): List<JsonNode> {
             /*MutableList<Grupo> {*/
         val grupos = darGrupos(idProblematica)
-        /*val reaccionOptional = daoReaccion.darReaccionEnGrupoPorUsuario(idProblematica, email)
-        reaccionOptional.ifPresent {reaccion ->
+        val reacciones = daoReaccion.darReaccionesPorUsuario(idProblematica, email)
+
+        reacciones.forEach { reacccion ->
+            val grupo = grupos.find {it.get("data").get("id").asInt() == reacccion.idGrupo}
+            (grupo?.get("data") as ObjectNode).set("reaccion", IntNode(reacccion.valor))
+        }
+
+/*        reaccionOptional.ifPresent {reaccion ->
             val grupo = grupos.find { it.id == reaccion.idGrupo }
             grupo!!.reaccion = reaccion.valor
             grupo!!.cantidad = 1
@@ -73,4 +76,13 @@ class GrupoUseCase(val daoGrupo: DaoGrupo, val daoReaccion: DaoReaccion){
      * Lanza una excepción si la lista esta vacia.
      */
     fun eliminarConexiones(idsGrupos: List<Int>) = if(idsGrupos.isEmpty()) false else daoGrupo.eliminarConexiones(idsGrupos)
+
+    private fun jsonNodeAObjeto(json: JsonNode){
+
+    }
+
+    private fun objetoAJsonNode(objeto: Any){
+
+    }
+
 }
