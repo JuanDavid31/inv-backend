@@ -12,12 +12,10 @@ class GrupoUseCase(val daoGrupo: DaoGrupo, val daoReaccion: DaoReaccion, val nod
     fun darGrupos(idProblematica: Int): List<JsonNode> {
         val grupos: List<Grupo> =  daoGrupo.darGrupos(idProblematica)
         val gruposJson: List<JsonNode> = grupos.map {
-            val data = hashMapOf("id" to it.id,
+            hashMapOf("id" to it.id,
                     "parent" to null,
                     "nombre" to it.nombre,
                     "esGrupo" to true)
-
-            hashMapOf("data" to data)
         }.map { ObjectMapper().valueToTree<JsonNode>(hashMapOf("data" to it)) }
 
         val conexionesJson: List<JsonNode> = grupos.filter { it.idPadre != null }
