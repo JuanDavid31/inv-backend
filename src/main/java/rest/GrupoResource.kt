@@ -2,6 +2,7 @@ package rest
 
 import org.hibernate.validator.constraints.NotEmpty
 import usecase.ReaccionUseCase
+import javax.validation.constraints.NotNull
 
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
@@ -16,7 +17,7 @@ class GrupoResource(private val reaccionUseCase: ReaccionUseCase) {
     @POST
     @Path("/{idGrupo}/reacciones")
     fun reaccionar(@PathParam("idGrupo") idGrupo: Int,
-                   @QueryParam("valor") @NotEmpty valor: Int,
+                   @QueryParam("valor") @NotNull(message = "no puede ser vacio") valor: Int,
                    @QueryParam("id-persona-problematica") @NotEmpty idPersonaProblematica: String): Response {
         val seReacciono = reaccionUseCase.reaccionar(valor, idGrupo, idPersonaProblematica)
         return if (seReacciono) Response.ok().build() else Response.status(Response.Status.BAD_REQUEST).build()
