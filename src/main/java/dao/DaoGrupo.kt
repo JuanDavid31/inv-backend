@@ -76,7 +76,7 @@ class DaoGrupo(private val jdbi: Jdbi) {
                 SELECT c_id, MAX(cantidad) as cantidadMaxima
                 FROM VISTA_CONTEO_REACCIONES GROUP BY c_id
                 ) AS vcrAgrupada on VCR.c_id = vcrAgrupada.c_id and VCR.cantidad = vcrAgrupada.cantidadMaxima
-                WHERE VCR.c_id_problematica = idProblematica
+                WHERE VCR.c_id_problematica = :idProblematica
                 """.trimIndent())
                 .bind("idProblematica", idProblematica)
                 .mapToBean(Grupo::class.java)

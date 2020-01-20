@@ -54,13 +54,4 @@ class Persona {
     constructor(nombres: String) {
         this.nombres = nombres
     }
-
-    override fun toString(): String {
-        return "Persona{" +
-                "email='" + email + '\''.toString() +
-                ", nombres='" + nombres + '\''.toString() +
-                ", apellidos='" + apellidos + '\''.toString() +
-                ", pass='" + pass + '\''.toString() +
-                '}'.toString()
-    }
 }

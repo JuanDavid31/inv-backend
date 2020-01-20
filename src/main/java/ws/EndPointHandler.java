@@ -4,10 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import entity.Grupo;
-import entity.Nodo;
-import entity.Sala;
-import entity.SesionCliente;
+
+import entity.*;
 import org.eclipse.jetty.websocket.api.Session;
 import usecase.GrupoUseCase;
 import usecase.NodoUseCase;
@@ -102,7 +100,7 @@ public class EndPointHandler {
 
                 Grupo nuevoGrupo = grupoUseCase.agregarGrupo(idProblematica, new Grupo(0, nombreGrupo));
 
-                grupos.replace(idProvicional, new IntNode(nuevoGrupo.id));
+                grupos.replace(idProvicional, new IntNode(nuevoGrupo.getId()));
             }));
     }
 
@@ -133,7 +131,7 @@ public class EndPointHandler {
 
                 Grupo nuevoGrupo = grupoUseCase.agregarGrupo(idProblematica, new Grupo(0, nombreGrupo, idPadre));
 
-                grupos.replace(idProvicional, new IntNode(nuevoGrupo.id));
+                grupos.replace(idProvicional, new IntNode(nuevoGrupo.getId()));
             }));
     }
 
