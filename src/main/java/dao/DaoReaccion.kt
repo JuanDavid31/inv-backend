@@ -2,24 +2,21 @@ package dao
 
 import entity.Reaccion
 import org.jdbi.v3.core.Jdbi
-import org.jdbi.v3.core.statement.UnableToExecuteStatementException
-import java.util.*
 
 class DaoReaccion(private val jdbi: Jdbi) {
 
-    fun reaccionar(valor: Int, idGrupo: Int, idPersonaProblematica: String): Reaccion {
+    fun reaccionar(reaccion: Reaccion, idGrupo: Int, idPersonaProblematica: String): Reaccion {
         return jdbi.withHandle<Reaccion, RuntimeException> {
             it.createUpdate("INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(:valor, :idGrupo, :idPersonaProblematica)")
-                .bind("valor", valor)
                 .bind("idGrupo", idGrupo)
                 .bind("idPersonaProblematica", idPersonaProblematica)
+                .bindBean(reaccion)
                 .executeAndReturnGeneratedKeys()
                 .mapToBean(Reaccion::class.java)
                 .findOnly()
         }
     }
 
-    @Throws(UnableToExecuteStatementException::class)
     fun eliminarReaccion(idGrupo: Int, idReaccion: Int): Boolean {
         return jdbi.withHandle<Boolean, RuntimeException> {
             it.createUpdate("DELETE FROM REACCION WHERE c_id_grupo = :idGrupo AND c_id = :idReaccion")

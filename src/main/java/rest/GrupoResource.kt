@@ -14,16 +14,6 @@ import javax.ws.rs.core.Response
 @Consumes(MediaType.APPLICATION_JSON)
 class GrupoResource(private val reaccionUseCase: ReaccionUseCase) {
 
-    @POST
-    @Path("/{idGrupo}/reacciones")
-    fun reaccionar(@PathParam("idGrupo") idGrupo: Int,
-                   @QueryParam("valor")
-                   @NotNull(message = "no puede ser vacio") valor: Int,
-                   @QueryParam("id-persona-problematica") @NotEmpty idPersonaProblematica: String)
-            = reaccionUseCase.reaccionar(valor, idGrupo, idPersonaProblematica)
-
-
-
     @DELETE
     @Path("/{idGrupo}/reacciones/{id}")
     fun eliminarReaccion(@PathParam("idGrupo") idGrupo: Int,

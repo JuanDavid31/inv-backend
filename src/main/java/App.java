@@ -126,7 +126,8 @@ public class App extends Application<ConfiguracionApp> {
 
         //Resources
         final AuthResource authResource = new AuthResource(personaUseCase, correoUseCase);
-        final PersonaResource personaResource = new PersonaResource(problematicaUseCase, personaUseCase, daoNodo);
+        final PersonaResource personaResource = new PersonaResource(personaUseCase);
+        final PersonaProblematicaResource personaProblematicaResource = new PersonaProblematicaResource(problematicaUseCase, daoNodo, grupoUseCase, reaccionUseCase);
         final PersonaInvitacionResource personaInvitacionResource = new PersonaInvitacionResource(invitacionUseCase);
         final ProblematicaResource problematicaResource = new ProblematicaResource(invitacionUseCase, problematicaUseCase);
         final InvitacionResource invitacionResource = new InvitacionResource(invitacionUseCase);
@@ -157,6 +158,7 @@ public class App extends Application<ConfiguracionApp> {
         environment.jersey().register(problematicaGrupoResource);
         environment.jersey().register(problematicaPersonaResource);
         environment.jersey().register(personaInvitacionResource);
+        environment.jersey().register(personaProblematicaResource);
 
         environment.lifecycle().manage(s3Utils);
     }
