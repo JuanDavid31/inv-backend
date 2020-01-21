@@ -65,5 +65,14 @@ class DaoEscrito(private val jdbi: Jdbi){
         }
     }
 
+    fun eliminarEscrito(idPersonaProblematica: String, idEscrito: String): Boolean {
+        return jdbi.withHandle<Boolean, Exception> {
+            it.createUpdate("DELETE FROM ESCRITO WHERE a_id_pers_prob = :idPersonaProblematica AND c_id = :idEscrito")
+                .bind("idPersonaProblematica", idPersonaProblematica)
+                .bind("idEscrito", idEscrito)
+                .execute() > 0
+        }
+    }
+
 
 }

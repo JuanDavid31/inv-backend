@@ -78,4 +78,16 @@ class ProblematicaPersonaResource(val escritoUseCase: EscritoUseCase, val fotoUs
             else -> Response.ok(resultado).build()
         }
     }
+
+    @DELETE
+    @Path("/{idProblematica}/personas/{email}/escritos/{idEscrito}")
+    fun eliminarEscrito(@PathParam("idProblematica") idProblematica: Int,
+                      @PathParam("email") email: String,
+                      @PathParam("idEscrito") idEscrito: String): Response{
+        val resultado = escritoUseCase.eliminarEscrito("$email$idProblematica", idEscrito)
+        return when (resultado) {
+            is Error -> Response.status(Response.Status.BAD_REQUEST).entity(resultado).build()
+            else -> Response.ok(Response.Status.NO_CONTENT).build()
+        }
+    }
 }

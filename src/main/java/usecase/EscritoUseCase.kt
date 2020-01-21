@@ -3,6 +3,7 @@ package usecase
 import dao.DaoEscrito
 import entity.Error
 import entity.Escrito
+import entity.Mensaje
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException
 import java.util.*
 
@@ -22,4 +23,9 @@ class EscritoUseCase(val daoEscrito: DaoEscrito){
 
     fun darEscritosPorPersona(idPersonaProblematica: String)
         = daoEscrito.darEscritos(idPersonaProblematica)
+
+    fun eliminarEscrito(idPersonaProblematica: String, idEscrito: String): Any {
+        val seElimino: Boolean = daoEscrito.eliminarEscrito(idPersonaProblematica, idEscrito)
+        return if(seElimino) Mensaje("Escrito eliminado correctamente") else Error(arrayOf("El escrito no se pudo eliminar, verifique los parametros ingresados."))
+    }
 }
