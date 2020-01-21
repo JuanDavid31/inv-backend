@@ -1,6 +1,7 @@
 package dao
 
 import entity.Grupo
+import entity.GrupoConReaccion
 import org.jdbi.v3.core.Jdbi
 import java.util.Optional
 
@@ -68,18 +69,15 @@ class DaoGrupo(private val jdbi: Jdbi) {
         }
     }
 
-    fun darGruposConReacciones(idProblematica: Int): List<Grupo> {
-        return jdbi.withHandle<List<Grupo>, RuntimeException> {
+    fun darGruposConReacciones(idProblematica: Int): List<GrupoConReaccion> {
+        return jdbi.withHandle<List<GrupoConReaccion>, RuntimeException> {
             it.createQuery("""
-                SELECT VCR.c_id AS "c_id", d_nombre, c_valor AS "reaccion", cantidad
-                FROM VISTA_CONTEO_REACCIONES AS VCR INNER JOIN(
-                SELECT c_id, MAX(cantidad) as cantidadMaxima
-                FROM VISTA_CONTEO_REACCIONES GROUP BY c_id
-                ) AS vcrAgrupada on VCR.c_id = vcrAgrupada.c_id and VCR.cantidad = vcrAgrupada.cantidadMaxima
-                WHERE VCR.c_id_problematica = :idProblematica
+                SELECT c_id, d_nombre, c_id_padre, V.negativa, V.neutra, V.positiva FROM GRUPO INNER JOIN
+                VISTA_CONTEO_REACCIONES V on V.c_id_grupo = c_id
+                WHERE c_id_problematica = :idProblematica
                 """.trimIndent())
                 .bind("idProblematica", idProblematica)
-                .mapToBean(Grupo::class.java)
+                .mapToBean(GrupoConReaccion::class.java)
                 .list()
         }
     }

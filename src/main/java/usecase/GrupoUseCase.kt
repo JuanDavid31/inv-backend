@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.*
 import dao.DaoGrupo
 import dao.DaoReaccion
 import entity.Grupo
+import entity.GrupoConReaccion
 
 class GrupoUseCase(val daoGrupo: DaoGrupo, val daoReaccion: DaoReaccion, val nodoUseCase: NodoUseCase){
 
@@ -36,7 +37,7 @@ class GrupoUseCase(val daoGrupo: DaoGrupo, val daoReaccion: DaoReaccion, val nod
     fun darGruposConReaccionDeUsuario(idProblematica: Int, email: String): List<JsonNode> {
         val grupos = darGrupos(idProblematica)
         val reacciones = daoReaccion.darReaccionesPorUsuario(idProblematica, email)
-        val nodosJson = nodoUseCase.darNodosPorProblematica(idProblematica);
+        val nodosJson = nodoUseCase.darNodosPorProblematica(idProblematica)
 
         reacciones.forEach { reacccion ->
             val grupo = grupos.find {it.get("data").get("id").asInt() == reacccion.idGrupo}
@@ -46,7 +47,11 @@ class GrupoUseCase(val daoGrupo: DaoGrupo, val daoReaccion: DaoReaccion, val nod
         return grupos + nodosJson
     }
 
-    fun darGruposConReacciones(idProblematica: Int) = daoGrupo.darGruposConReacciones(idProblematica)
+    fun darGruposConReacciones(idProblematica: Int): List<Any> {
+        val nodosJson = nodoUseCase.darNodosPorProblematica(idProblematica)
+        val gruposConReacciones = daoGrupo.darGruposConReacciones(idProblematica).map { hashMapOf<String, Any>("data" to it) }
+        return gruposConReacciones + nodosJson
+    }
 
     fun darGrupoConReaccion(idProblematica: Int, idPersonaProblematica: String): Grupo? {
         val optionalGrupo = daoGrupo.darGrupoConReaccion(idProblematica, idPersonaProblematica)

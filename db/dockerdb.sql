@@ -137,10 +137,12 @@ ALTER TABLE ESCRITO
 --Creación de vista para facilitar Queries.
 create view vista_conteo_reacciones as
 (
-select grupo.c_id, grupo.d_nombre, r.c_valor, count(r.c_valor) as cantidad
-from grupo inner join reaccion r on grupo.c_id = r.c_id_grupo
-group by grupo.c_id, grupo.d_nombre, r.c_valor
-order by grupo.c_id
+select
+	c_id_grupo,
+	count(case when c_valor = -1 then c_valor end) as "negativa",
+	count(case when c_valor = 0 then c_valor end)  as "neutra",
+	count(case when c_valor = 1 then c_valor end)  as "positiva"
+    from reaccion group by c_id_grupo
  );
 
 

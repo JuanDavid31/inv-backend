@@ -1,13 +1,14 @@
 package rest
 
+import entity.Error
 import entity.Escrito
 import entity.Nodo
 import org.glassfish.jersey.media.multipart.FormDataParam
+import org.hibernate.validator.constraints.NotEmpty
 import usecase.EscritoUseCase
 import usecase.FotoUseCase
 import usecase.PersonaUseCase
 import java.io.InputStream
-import javax.validation.constraints.Min
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 import javax.ws.rs.*
@@ -32,22 +33,26 @@ class ProblematicaPersonaResource(val escritoUseCase: EscritoUseCase, val fotoUs
         return if (nodo != null) Response.ok(nodo).build() else Response.status(Response.Status.BAD_REQUEST).build()
     }
 
-//    @GET
-//    @Path("/{idProblematica}/personas/{email}/escritos")
-//    fun darEscritosPorPersona(@PathParam("idProblematica") idProblematica: Int,
-//                              @PathParam("email") email: String): Response{
-//        val optionalEscrito = escritoUseCase.darEscritoPorPersona("$email$idProblematica")
-//        return if(optionalEscrito.isPresent)return Response.ok(optionalEscrito.get()).build() else Response.ok().build()
-//    }
+    @GET
+    @Path("/{idProblematica}/personas/{email}/escritos")
+    fun darEscritosPorPersona(@PathParam("idProblematica") idProblematica: Int,
+                              @PathParam("email") email: String)
+            = escritoUseCase.darEscritosPorPersona("$email$idProblematica")
 
+    /**
+     * Busca personas no invitadas a una problematica dado un patron de email.
+     * @param email Patron o fragmento de email por el cual se hara la busqueda
+     * @param emailRemitente Email de la persona que esta realizando la busqueda.
+     * Si esta no se incluyera entonces apareceria como resultado en la busqueda.
+     * @param idProblematica Problematica a la cual se quiere invitar a las personas.
+     */
     @GET
     @Path("/{idProblematica}/personas")
-    fun darPersonasPorCorreoNoInvitadas(@NotNull(message = "no puede ser nulo")
-                                        @Min(value = 1, message = "debe ser mayor a 1")
-                                        @PathParam("idProblematica") idProblematica: Int,
+    fun darPersonasPorCorreoNoInvitadas(@PathParam("idProblematica") idProblematica: Int,
+                                        @NotEmpty(message = "no puede estar vacio")
                                         @Size(min = 5, message = "debe tener al menos 5 caracteres")
                                         @QueryParam("email") email: String,
-                                        @NotNull(message = "no puede ser nulo")
+                                        @NotEmpty(message = "no puede estar vacio")
                                         @QueryParam("email-remitente")
                                         emailRemitente: String): Response{
         val personas = personaUseCase.darPersonasPorCorreoNoInvitadas(email, emailRemitente, idProblematica)
@@ -67,7 +72,10 @@ class ProblematicaPersonaResource(val escritoUseCase: EscritoUseCase, val fotoUs
                       @PathParam("email") email: String,
                       @PathParam("idEscrito") idEscrito: String,
                       escrito: Escrito): Response{
-        val seEdito = escritoUseCase.editarEscrito(escrito, "$email$idProblematica", idEscrito)
-        return if (seEdito) Response.ok().build() else Response.status(Response.Status.BAD_REQUEST).build()
+        val resultado = escritoUseCase.editarEscrito(escrito, "$email$idProblematica", idEscrito)
+        return when (resultado) {
+            is Error -> Response.status(Response.Status.BAD_REQUEST).entity(resultado).build()
+            else -> Response.ok(resultado).build()
+        }
     }
 }

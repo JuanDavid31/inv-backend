@@ -22,15 +22,15 @@ class S3Utils : Managed {
     @Throws(Exception::class)
     override fun start() {
 
-        clienteS3 = S3Client.builder()
-                .region(Region.US_EAST_2)
-                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
-                .build()
-
-        val build = ListBucketsRequest.builder().build()
-        val listBucketsResponse = clienteS3?.listBuckets(build)
-
-        bucketNodos = listBucketsResponse?.buckets()?.get(0)
+//        clienteS3 = S3Client.builder()
+//                .region(Region.US_EAST_2)
+//                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+//                .build()
+//
+//        val build = ListBucketsRequest.builder().build()
+//        val listBucketsResponse = clienteS3?.listBuckets(build)
+//
+//        bucketNodos = listBucketsResponse?.buckets()?.get(0)
     }
 
     fun cargarImagen(nodo: Nodo, foto: InputStream, extension: String): String{

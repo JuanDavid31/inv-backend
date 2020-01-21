@@ -17,18 +17,19 @@ class DaoEscrito(private val jdbi: Jdbi){
         }
     }
 
-    fun darEscritoPorPersona(idPersonaProblematica: String): Optional<Escrito>{
-        return jdbi.withHandle<Optional<Escrito>, Exception>{
+    fun darEscritos(idPersonaProblematica: String): List<Escrito>{
+        return jdbi.withHandle<List<Escrito>, Exception>{
             it.createQuery("SELECT * FROM ESCRITO WHERE a_id_pers_prob = :idPersonaProblematica")
                 .bind("idPersonaProblematica", idPersonaProblematica)
                 .mapToBean(Escrito::class.java)
-                .findFirst()
+                .list()
         }
     }
 
     fun agregarEscrito(escrito: Escrito, idPersonaProblematica: String): Escrito{
         return jdbi.withHandle<Escrito, Exception>{
-            it.createUpdate("INSERT INTO ESCRITO(a_nombre, a_descripcion, c_id_grupo, a_id_pers_prob) VALUES(:nombre, :descripcion, :idGrupo, :idPersProb)")
+            it.createUpdate("""INSERT INTO ESCRITO(a_nombre, a_descripcion, c_id_grupo, a_id_pers_prob) 
+|               VALUES(:nombre, :descripcion, :idGrupo, :idPersProb)""".trimMargin())
                 .bindBean(escrito)
                 .bind("idPersProb", idPersonaProblematica)
                 .executeAndReturnGeneratedKeys()
@@ -37,13 +38,20 @@ class DaoEscrito(private val jdbi: Jdbi){
         }
     }
 
-    fun editarEscrito(escrito: Escrito, idPersonaProblematica: String, idEscrito: String): Boolean{
-        return jdbi.withHandle<Boolean, Exception> {
-            it.createUpdate("UPDATE ESCRITO SET d_descripcion = :nuevaDescripcion WHERE c_id = :idEscrito AND a_id_pers_prob = :idPersProb")
-                .bindBean(escrito)
-                .bind("idEscrito", idEscrito)
-                .bind("idPersProb", idPersonaProblematica)
-                .execute() > 0
+    fun editarEscrito(escrito: Escrito, idPersonaProblematica: String, idEscrito: String): Escrito?{
+        return jdbi.withHandle<Escrito, Exception> {
+            try {
+                it.createUpdate("UPDATE ESCRITO SET d_descripcion = :nuevaDescripcion WHERE c_id = :idEscrito AND a_id_pers_prob = :idPersProb")
+                    .bindBean(escrito)
+                    .bind("idEscrito", idEscrito)
+                    .bind("idPersProb", idPersonaProblematica)
+                    .executeAndReturnGeneratedKeys()
+                    .mapToBean(Escrito::class.java)
+                    .findOnly()
+            }catch (e: Exception){
+                e.printStackTrace()
+                null
+            }
         }
     }
 
