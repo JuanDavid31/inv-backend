@@ -11,7 +11,10 @@ class EscritoUseCase(val daoEscrito: DaoEscrito){
 
     fun darEscritosPorProblematica(idProblematica: Int) = daoEscrito.darEscritosPorProblematica(idProblematica)
 
-    fun agregarEscrito(escrito: Escrito, idPersonaProblematica: String) = daoEscrito.agregarEscrito(escrito, idPersonaProblematica)
+    fun agregarEscrito(escrito: Escrito, idPersonaProblematica: String): Any{
+        val escrito = daoEscrito.agregarEscrito(escrito, idPersonaProblematica)
+        return escrito ?: Error(arrayOf("No se pudo agregar el escrito, rectifique los parametros."))
+    }
 
     fun editarEscrito(escrito: Escrito, idPersonaProblematica: String, idEscrito: String): Any{
         val escritoActualizado = daoEscrito.editarEscrito(escrito, idPersonaProblematica, idEscrito)

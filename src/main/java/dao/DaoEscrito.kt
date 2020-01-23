@@ -26,15 +26,20 @@ class DaoEscrito(private val jdbi: Jdbi){
         }
     }
 
-    fun agregarEscrito(escrito: Escrito, idPersonaProblematica: String): Escrito{
-        return jdbi.withHandle<Escrito, Exception>{
-            it.createUpdate("""INSERT INTO ESCRITO(a_nombre, a_descripcion, c_id_grupo, a_id_pers_prob) 
+    fun agregarEscrito(escrito: Escrito, idPersonaProblematica: String): Escrito?{
+        return jdbi.withHandle<Escrito?, Exception>{
+            try{
+                it.createUpdate("""INSERT INTO ESCRITO(a_nombre, a_descripcion, c_id_grupo, a_id_pers_prob) 
 |               VALUES(:nombre, :descripcion, :idGrupo, :idPersProb)""".trimMargin())
-                .bindBean(escrito)
-                .bind("idPersProb", idPersonaProblematica)
-                .executeAndReturnGeneratedKeys()
-                .mapToBean(Escrito::class.java)
-                .findOnly()
+                        .bindBean(escrito)
+                        .bind("idPersProb", idPersonaProblematica)
+                        .executeAndReturnGeneratedKeys()
+                        .mapToBean(Escrito::class.java)
+                        .findOnly()
+            }catch (e: Exception){
+                e.printStackTrace()
+                null
+            }
         }
     }
 

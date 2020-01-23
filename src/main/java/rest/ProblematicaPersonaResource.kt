@@ -1,20 +1,5 @@
 package rest
 
-import entity.Error
-import entity.Escrito
-import entity.Nodo
-import org.glassfish.jersey.media.multipart.FormDataParam
-import org.hibernate.validator.constraints.NotEmpty
-import usecase.EscritoUseCase
-import usecase.FotoUseCase
-import usecase.PersonaUseCase
-import java.io.InputStream
-import javax.validation.constraints.NotNull
-import javax.validation.constraints.Size
-import javax.ws.rs.*
-import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.Response
-
 @Path("/problematicas")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -63,8 +48,14 @@ class ProblematicaPersonaResource(val escritoUseCase: EscritoUseCase, val fotoUs
     @Path("/{idProblematica}/personas/{email}/escritos")
     fun agregarEscrito(@PathParam("idProblematica") idProblematica: Int,
                        @PathParam("email") email: String,
-                       escrito: Escrito) =
-            escritoUseCase.agregarEscrito(escrito, "$email$idProblematica")
+                       escrito: Escrito): Response {
+        val resultado = escritoUseCase.agregarEscrito(escrito, "$email$idProblematica")
+        return when(resultado){
+            is Error -> Response.status(Response.Status.BAD_REQUEST).entity(resultado).build()
+            else -> Response.ok(resultado).build()
+        }
+    }
+
 
     @PUT
     @Path("/{idProblematica}/personas/{email}/escritos/{idEscrito}")
@@ -82,8 +73,8 @@ class ProblematicaPersonaResource(val escritoUseCase: EscritoUseCase, val fotoUs
     @DELETE
     @Path("/{idProblematica}/personas/{email}/escritos/{idEscrito}")
     fun eliminarEscrito(@PathParam("idProblematica") idProblematica: Int,
-                      @PathParam("email") email: String,
-                      @PathParam("idEscrito") idEscrito: String): Response{
+                        @PathParam("email") email: String,
+                        @PathParam("idEscrito") idEscrito: String): Response{
         val resultado = escritoUseCase.eliminarEscrito("$email$idProblematica", idEscrito)
         return when (resultado) {
             is Error -> Response.status(Response.Status.BAD_REQUEST).entity(resultado).build()
@@ -91,3 +82,18 @@ class ProblematicaPersonaResource(val escritoUseCase: EscritoUseCase, val fotoUs
         }
     }
 }
+import entity.Error
+import entity.Escrito
+import entity.Nodo
+import org.glassfish.jersey.media.multipart.FormDataParam
+import org.hibernate.validator.constraints.NotEmpty
+import usecase.EscritoUseCase
+import usecase.FotoUseCase
+import usecase.PersonaUseCase
+import java.io.InputStream
+import javax.validation.constraints.NotNull
+import javax.validation.constraints.Size
+import javax.ws.rs.*
+import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
+
