@@ -1,5 +1,21 @@
 package rest
 
+import entity.Error
+import entity.Escrito
+import entity.Nodo
+import org.glassfish.jersey.media.multipart.FormDataParam
+import org.hibernate.validator.constraints.NotEmpty
+import usecase.EscritoUseCase
+import usecase.FotoUseCase
+import usecase.PersonaUseCase
+import java.io.InputStream
+import javax.validation.constraints.NotNull
+import javax.validation.constraints.Size
+import javax.ws.rs.*
+import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
+
+
 @Path("/problematicas")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -82,18 +98,3 @@ class ProblematicaPersonaResource(val escritoUseCase: EscritoUseCase, val fotoUs
         }
     }
 }
-import entity.Error
-import entity.Escrito
-import entity.Nodo
-import org.glassfish.jersey.media.multipart.FormDataParam
-import org.hibernate.validator.constraints.NotEmpty
-import usecase.EscritoUseCase
-import usecase.FotoUseCase
-import usecase.PersonaUseCase
-import java.io.InputStream
-import javax.validation.constraints.NotNull
-import javax.validation.constraints.Size
-import javax.ws.rs.*
-import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.Response
-
