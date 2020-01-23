@@ -3,3 +3,4 @@ target/
 *.iml
 nodos/
 *.png
+/dependency-reduced-pom.xml

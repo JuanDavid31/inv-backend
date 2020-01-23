@@ -46,7 +46,8 @@ class DaoEscrito(private val jdbi: Jdbi){
     fun editarEscrito(escrito: Escrito, idPersonaProblematica: String, idEscrito: String): Escrito?{
         return jdbi.withHandle<Escrito, Exception> {
             try {
-                it.createUpdate("UPDATE ESCRITO SET d_descripcion = :nuevaDescripcion WHERE c_id = :idEscrito AND a_id_pers_prob = :idPersProb")
+                it.createUpdate("UPDATE ESCRITO SET a_nombre = :nombre, d_descripcion = :descripcion " +
+                    "WHERE c_id = :idEscrito AND a_id_pers_prob = :idPersProb")
                     .bindBean(escrito)
                     .bind("idEscrito", idEscrito)
                     .bind("idPersProb", idPersonaProblematica)

@@ -82,7 +82,7 @@ CREATE TABLE NODO
 (
     c_id           serial       not null,
     a_nombre       varchar(20) not null,
-    a_id_pers_prob varchar(40)  not null,
+    a_id_pers_prob varchar(50)  not null,
     a_url_foto     text,
     c_id_padre     int,
     c_id_grupo     int
@@ -102,7 +102,7 @@ CREATE TABLE REACCION
     c_id           serial      not null,
     c_valor        int         not null,
     c_id_grupo     int         not null,
-    a_id_pers_prob varchar(40) not null
+    a_id_pers_prob varchar(50) not null
 );
 
 ALTER TABLE REACCION
@@ -119,10 +119,10 @@ ALTER TABLE REACCION
 CREATE TABLE ESCRITO
 (
     c_id           serial,
-    a_nombre       varchar(20),
-    a_descripcion  varchar(500),
-    c_id_grupo     int,
-    a_id_pers_prob varchar(40)
+    a_nombre       varchar(20) not null,
+    a_descripcion  varchar(500) not null,
+    c_id_grupo     int not null,
+    a_id_pers_prob varchar(50) not null
 );
 
 ALTER TABLE ESCRITO
