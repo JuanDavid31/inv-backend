@@ -31,11 +31,11 @@ class DaoEscrito(private val jdbi: Jdbi){
             try{
                 it.createUpdate("""INSERT INTO ESCRITO(a_nombre, a_descripcion, c_id_grupo, a_id_pers_prob) 
 |               VALUES(:nombre, :descripcion, :idGrupo, :idPersProb)""".trimMargin())
-                        .bindBean(escrito)
-                        .bind("idPersProb", idPersonaProblematica)
-                        .executeAndReturnGeneratedKeys()
-                        .mapToBean(Escrito::class.java)
-                        .findOnly()
+                    .bindBean(escrito)
+                    .bind("idPersProb", idPersonaProblematica)
+                    .executeAndReturnGeneratedKeys()
+                    .mapToBean(Escrito::class.java)
+                    .findOnly()
             }catch (e: Exception){
                 e.printStackTrace()
                 null
@@ -43,10 +43,10 @@ class DaoEscrito(private val jdbi: Jdbi){
         }
     }
 
-    fun editarEscrito(escrito: Escrito, idPersonaProblematica: String, idEscrito: String): Escrito?{
+    fun editarEscrito(escrito: Escrito, idPersonaProblematica: String, idEscrito: Int): Escrito?{
         return jdbi.withHandle<Escrito, Exception> {
             try {
-                it.createUpdate("UPDATE ESCRITO SET a_nombre = :nombre, d_descripcion = :descripcion " +
+                it.createUpdate("UPDATE ESCRITO SET a_nombre = :nombre, a_descripcion = :descripcion " +
                     "WHERE c_id = :idEscrito AND a_id_pers_prob = :idPersProb")
                     .bindBean(escrito)
                     .bind("idEscrito", idEscrito)
@@ -71,7 +71,7 @@ class DaoEscrito(private val jdbi: Jdbi){
         }
     }
 
-    fun eliminarEscrito(idPersonaProblematica: String, idEscrito: String): Boolean {
+    fun eliminarEscrito(idPersonaProblematica: String, idEscrito: Int): Boolean {
         return jdbi.withHandle<Boolean, Exception> {
             it.createUpdate("DELETE FROM ESCRITO WHERE a_id_pers_prob = :idPersonaProblematica AND c_id = :idEscrito")
                 .bind("idPersonaProblematica", idPersonaProblematica)

@@ -77,7 +77,7 @@ class ProblematicaPersonaResource(val escritoUseCase: EscritoUseCase, val fotoUs
     @Path("/{idProblematica}/personas/{email}/escritos/{idEscrito}")
     fun editarEscrito(@PathParam("idProblematica") idProblematica: Int,
                       @PathParam("email") email: String,
-                      @PathParam("idEscrito") idEscrito: String,
+                      @PathParam("idEscrito") idEscrito: Int,
                       escrito: Escrito): Response{
         val resultado = escritoUseCase.editarEscrito(escrito, "$email$idProblematica", idEscrito)
         return when (resultado) {
@@ -90,7 +90,7 @@ class ProblematicaPersonaResource(val escritoUseCase: EscritoUseCase, val fotoUs
     @Path("/{idProblematica}/personas/{email}/escritos/{idEscrito}")
     fun eliminarEscrito(@PathParam("idProblematica") idProblematica: Int,
                         @PathParam("email") email: String,
-                        @PathParam("idEscrito") idEscrito: String): Response{
+                        @PathParam("idEscrito") idEscrito: Int): Response{
         val resultado = escritoUseCase.eliminarEscrito("$email$idProblematica", idEscrito)
         return when (resultado) {
             is Error -> Response.status(Response.Status.BAD_REQUEST).entity(resultado).build()

@@ -16,7 +16,7 @@ class EscritoUseCase(val daoEscrito: DaoEscrito){
         return escrito ?: Error(arrayOf("No se pudo agregar el escrito, rectifique los parametros."))
     }
 
-    fun editarEscrito(escrito: Escrito, idPersonaProblematica: String, idEscrito: String): Any{
+    fun editarEscrito(escrito: Escrito, idPersonaProblematica: String, idEscrito: Int): Any{
         val escritoActualizado = daoEscrito.editarEscrito(escrito, idPersonaProblematica, idEscrito)
         return escritoActualizado ?: Error(arrayOf("No se pudo actualizar el escrito, por favor verifique los parametros."))
     }
@@ -27,7 +27,7 @@ class EscritoUseCase(val daoEscrito: DaoEscrito){
     fun darEscritosPorPersona(idPersonaProblematica: String)
         = daoEscrito.darEscritos(idPersonaProblematica)
 
-    fun eliminarEscrito(idPersonaProblematica: String, idEscrito: String): Any {
+    fun eliminarEscrito(idPersonaProblematica: String, idEscrito: Int): Any {
         val seElimino: Boolean = daoEscrito.eliminarEscrito(idPersonaProblematica, idEscrito)
         return if(seElimino) Mensaje("Escrito eliminado correctamente") else Error(arrayOf("El escrito no se pudo eliminar, verifique los parametros ingresados."))
     }
