@@ -41,7 +41,7 @@ class GrupoUseCase(val daoGrupo: DaoGrupo, val daoReaccion: DaoReaccion, val nod
 
         reacciones.forEach { reacccion ->
             val grupo = grupos.find {it.get("data").get("id").asInt() == reacccion.idGrupo}
-            (grupo?.get("data") as ObjectNode).set("reaccion", IntNode(reacccion.valor))
+            (grupo?.get("data") as ObjectNode).set<JsonNode>("reaccion", IntNode(reacccion.valor))
         }
 
         return grupos + nodosJson
