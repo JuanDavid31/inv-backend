@@ -7,13 +7,22 @@ import java.util.*
 
 class DaoEscrito(private val jdbi: Jdbi){
 
-    fun darEscritosPorProblematica(idProblematica: Int): List<Escrito>{
-        return jdbi.withHandle<List<Escrito>, Exception>{
-            it.createQuery("SELECT P.C_ID, E.A_DESCRIPCION FROM PROBLEMATICA P, GRUPO G, ESCRITO E WHERE " +
-                "P.C_ID = :idProblematica AND P.C_FASE = 5 AND P.C_ID = G.C_ID_PROBLEMATICA AND G.C_ID = E.C_ID_GRUPO")
-                .bind("idProblematica", idProblematica)
-                .mapToBean(Escrito::class.java)
-                .list()
+    fun darEscritos(idProblematica: Int): List<MutableMap<String, Any>>{
+        return jdbi.withHandle<List<MutableMap<String, Any>>, Exception>{
+            it.createQuery("""
+                SELECT
+                    G.d_nombre "nombreGrupo", E.a_nombre "nombre", E.a_descripcion "descripcion", 
+                    p.a_email as "emailAutor", concat(p.d_nombres, ' ', p.d_apellidos) "autor"
+                FROM 
+                    PERSONA P
+                INNER JOIN persona_problematica PP ON P.a_email = PP.a_email
+                INNER JOIN ESCRITO E ON PP.a_id = E.a_id_pers_prob
+                INNER JOIN GRUPO G ON E.c_id_grupo = G.c_id
+                WHERE PP.c_id_problematica = :idProblematica
+                """.trimIndent())
+                    .bind("idProblematica", idProblematica)
+                    .mapToMap()
+                    .list()
         }
     }
 
