@@ -98,5 +98,7 @@ class ProblematicaUseCase(private val daoProblematica: DaoProblematica, private 
             .subscribe{println("Completando threads")}
     }
 
+    fun darProblematicasTerminadasPorPersona(email: String): List<Problematica>
+        = daoProblematica.darProblematicasTerminadasPorPersona(email)
 
 }

@@ -133,4 +133,17 @@ class DaoProblematica(internal val jdbi: Jdbi) {
         }
     }
 
+    fun darProblematicasTerminadasPorPersona(email: String): List<Problematica> {
+        return jdbi.withHandle<List<Problematica>, Exception> {
+            it.createQuery("""select p.*, pp.b_interventor from problematica p
+            inner join persona_problematica pp on p.c_id = pp.c_id_problematica
+            where pp.a_email = :email
+            and c_fase = 5 and pp.b_interventor = true    
+            """.trimIndent())
+            .bind("email", email)
+            .mapToBean(Problematica::class.java)
+            .list()
+        }
+    }
+
 }
