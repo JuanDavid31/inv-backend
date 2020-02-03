@@ -9,6 +9,15 @@ import java.util.*
 
 class EscritoUseCase(val daoEscrito: DaoEscrito){
 
+    fun darEscritosPorProblematica(idProblematica: Int): Any{
+        val escritos = daoEscrito.darEscritos(idProblematica)
+        return escritos.groupBy({it["nombreGrupo"]}, {
+            it.remove("nombreGrupo")
+            it
+        }).map { hashMapOf("nombreGrupo" to it.key, "escritos" to it.value) }
+        .toList()
+    }
+
     fun agregarEscrito(escrito: Escrito, idPersonaProblematica: String): Any{
         val escrito = daoEscrito.agregarEscrito(escrito, idPersonaProblematica)
         return escrito ?: Error(arrayOf("No se pudo agregar el escrito, rectifique los parametros."))

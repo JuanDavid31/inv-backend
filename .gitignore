@@ -4,3 +4,4 @@ target/
 nodos/
 *.png
 /dependency-reduced-pom.xml
+lib/

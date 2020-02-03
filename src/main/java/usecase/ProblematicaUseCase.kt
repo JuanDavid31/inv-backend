@@ -44,7 +44,7 @@ class ProblematicaUseCase(private val daoProblematica: DaoProblematica, private 
                     val cantidadGrupos: Int = daoProblematica.darCantidadGrupos(idProblematica)
                 }
             }
-            3 -> { //TODO: Calculo de cuantas reacciones deben haber
+            3 -> {
                 object {
                     val fase: Int = faseOptional.get()
                     val cantidadParticipantes: Int = daoProblematica.darCantidadParticipantes(idProblematica)
@@ -52,7 +52,7 @@ class ProblematicaUseCase(private val daoProblematica: DaoProblematica, private 
                     val cantidadReacciones: Int = daoProblematica.darCantidadReacciones(idProblematica)
                 }
             }
-            4 -> { //TODO: Calculo de cantidad de reacciones que deben haber
+            4 -> {
                 object {
                     val fase: Int = faseOptional.get()
                     val cantidadParticipantes: Int = daoProblematica.darCantidadParticipantes(idProblematica)
@@ -96,5 +96,7 @@ class ProblematicaUseCase(private val daoProblematica: DaoProblematica, private 
         }.thenRun { println("Evento de fase avanzada enviado.") }
     }
 
+    fun darProblematicasTerminadasPorPersona(email: String): List<Problematica>
+        = daoProblematica.darProblematicasTerminadasPorPersona(email)
 
 }

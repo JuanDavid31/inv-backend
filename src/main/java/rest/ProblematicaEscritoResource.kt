@@ -9,7 +9,7 @@ import javax.ws.rs.core.MediaType
 @Consumes(MediaType.APPLICATION_JSON)
 class ProblematicaEscritoResource(val escritoUseCase: EscritoUseCase){
 
-//    @GET
-//    @Path("/{idProblematica}/escritos")
-//    fun darEscritosPorProblematica(@PathParam("idProblematica") idProblematica: Int) = escritoUseCase.darEscritosPorProblematica(idProblematica)
+    @GET
+    @Path("/{idProblematica}/escritos")
+    fun darEscritosPorProblematica(@PathParam("idProblematica") idProblematica: Int) = escritoUseCase.darEscritosPorProblematica(idProblematica)
 }
