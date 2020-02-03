@@ -20,7 +20,7 @@ open class EventPublisher() {
 
     fun eliminarListener(eventSource: SseEventSource){
         val lista = publishers.toList()
-        val pair = lista.find { it.second.sesion.equals(eventSource) }
+        val pair = lista.find { it.second.eventSource.equals(eventSource) }
         pair?.second?.sesion?.invalidate()
         publishers.remove(pair?.first)
     }
