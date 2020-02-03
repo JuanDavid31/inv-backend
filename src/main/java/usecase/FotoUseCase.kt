@@ -11,17 +11,17 @@ import java.io.InputStream
 
 class FotoUseCase(private val daoNodo: DaoNodo, private val fotoUtils: FotoUtils, private val s3Utils: S3Utils) {
 
-    fun guardarFoto(nodo: Nodo, foto: InputStream, extensionFoto: String): Nodo? {
-        if (!fotoUtils.extensionValida(extensionFoto)) return null
+    fun guardarFoto(nodo: Nodo, foto: InputStream, extensionFoto: String): Any {
+        if (!fotoUtils.extensionValida(extensionFoto)) return Error(arrayOf("Solo imagenes con extensión .PNG, .JPG o .JPEG son validas"))
         try {
             nodo.id = daoNodo.agregarNodo(nodo)
-            if(nodo.id == 0) return null
+            if(nodo.id == 0) return Error(arrayOf("No fue posible agregar el nodo, verifique los parametros."))
             nodo.urlFoto = s3Utils.cargarImagen(nodo, foto, extensionFoto)
             daoNodo.actualizarUrlNodo(nodo)
             return nodo
         } catch (e: IOException) {
             daoNodo.eliminarNodo(nodo.id)
-            return null
+            return Error(arrayOf("Un error ha ocurrido, intentelo de nuevo."))
         }
     }
 

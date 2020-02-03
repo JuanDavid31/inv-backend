@@ -17,9 +17,7 @@ class EventBroadcasterFilter: ContainerRequestFilter {
     override fun filter(requestContext: ContainerRequestContext) {
         if(request != null){
             System.out.println("Si hay request")
-            val session = request?.session
-            println("${session?.id} - $session - ${session?.getAttribute("abc")}")
-            val algo = session?.id
+            val algo = request?.session?.id
             SingletonUtils.guardarIdSesion(algo)
         }else{
             System.out.println("No hay request")

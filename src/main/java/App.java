@@ -89,7 +89,7 @@ public class App extends Application<ConfiguracionApp> {
         //Utils
         JWTUtils jwtUtils = new JWTUtils(configuracionApp.jwtKey);
         CorreoUtils correoUtils = new CorreoUtils(configuracionApp.adminEmail, configuracionApp.adminPass);
-        FotoUtils fotoUtils = new FotoUtils(configuracionApp.ip);
+        FotoUtils fotoUtils = new FotoUtils();
         S3Utils s3Utils = new S3Utils();
 
         //JDBI y plugins

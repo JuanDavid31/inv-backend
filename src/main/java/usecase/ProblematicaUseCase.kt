@@ -4,11 +4,10 @@ import dao.DaoProblematica
 import entity.Error
 import entity.Mensaje
 import entity.Problematica
-import io.reactivex.Completable
-import io.reactivex.schedulers.Schedulers
 import rest.sse.DashboardEventPublisher
 import util.SingletonUtils
 import java.util.*
+import java.util.concurrent.CompletableFuture
 import kotlin.collections.HashMap
 
 class ProblematicaUseCase(private val daoProblematica: DaoProblematica, private val dashBoardEventPublisher: DashboardEventPublisher) {
@@ -90,12 +89,11 @@ class ProblematicaUseCase(private val daoProblematica: DaoProblematica, private 
 
         val idSesion = SingletonUtils.darIdSesion()
 
-        Completable
-            .fromRunnable {
-                println(Thread.currentThread().name)
-                dashBoardEventPublisher.difundirAParticipantesMenosA(idSesion, json, daoProblematica.darParticipantesPorProblematica(idProblematica));
-            }.subscribeOn(Schedulers.io())
-            .subscribe{println("Completando threads")}
+        CompletableFuture.runAsync {
+            val participantes = daoProblematica.darParticipantesPorProblematica(idProblematica)
+            println(Thread.currentThread().name)
+            dashBoardEventPublisher.difundirAParticipantesMenosA(idSesion, json, participantes);
+        }.thenRun { println("Evento de fase avanzada enviado.") }
     }
 
 

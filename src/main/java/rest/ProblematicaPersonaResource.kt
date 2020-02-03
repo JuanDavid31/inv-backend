@@ -30,8 +30,11 @@ class ProblematicaPersonaResource(val escritoUseCase: EscritoUseCase, val fotoUs
                   @NotNull @FormDataParam("nombre") nombre: String,
                   @PathParam("email") email: String,
                   @PathParam("idProblematica") idProblematica: Int): Response {
-        val nodo = fotoUseCase.guardarFoto(Nodo(nombre, email, idProblematica), foto, extensionFoto)
-        return if (nodo != null) Response.ok(nodo).build() else Response.status(Response.Status.BAD_REQUEST).build()
+        val resultado = fotoUseCase.guardarFoto(Nodo(nombre, email, idProblematica), foto, extensionFoto)
+        return when(resultado){
+            is Error -> Response.status(Response.Status.BAD_REQUEST).entity(resultado).build()
+            else -> Response.ok(resultado).build()
+        }
     }
 
     @GET

@@ -249,11 +249,6 @@
             <version>1.11.3</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.github.ReactiveX</groupId>
-            <artifactId>RxKotlin</artifactId>
-            <version>2.4.0</version>
-        </dependency>
     </dependencies>
     <repositories>
         <repository>

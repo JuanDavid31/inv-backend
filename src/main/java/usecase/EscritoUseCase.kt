@@ -9,8 +9,6 @@ import java.util.*
 
 class EscritoUseCase(val daoEscrito: DaoEscrito){
 
-    fun darEscritosPorProblematica(idProblematica: Int) = daoEscrito.darEscritosPorProblematica(idProblematica)
-
     fun agregarEscrito(escrito: Escrito, idPersonaProblematica: String): Any{
         val escrito = daoEscrito.agregarEscrito(escrito, idPersonaProblematica)
         return escrito ?: Error(arrayOf("No se pudo agregar el escrito, rectifique los parametros."))
@@ -20,9 +18,6 @@ class EscritoUseCase(val daoEscrito: DaoEscrito){
         val escritoActualizado = daoEscrito.editarEscrito(escrito, idPersonaProblematica, idEscrito)
         return escritoActualizado ?: Error(arrayOf("No se pudo actualizar el escrito, por favor verifique los parametros."))
     }
-
-//    fun darEscrito(idProblematica: Int, idGrupo: Int, email: String): Optional<Escrito>
-//         = daoEscrito.darEscrito("$email$idProblematica", idGrupo)
 
     fun darEscritosPorPersona(idPersonaProblematica: String)
         = daoEscrito.darEscritos(idPersonaProblematica)
