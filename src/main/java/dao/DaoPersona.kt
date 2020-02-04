@@ -65,4 +65,16 @@ class DaoPersona(val jdbi: Jdbi){
                     .list()
         }
     }
+
+    fun darInterventores(idProblematica: Int): List<String> {
+        return jdbi.withHandle<List<String>, Exception> {
+            it.createQuery("""SELECT d_nombre FROM PERSONA_PROBLEMATICA PP  
+            WHERE b_interventor = true AND c_id_problematica = :idProblematica
+            """.trimIndent())
+            .bind("idProblematica", idProblematica)
+            .mapTo(String::class.java)
+            .list()
+        }
+
+    }
 }

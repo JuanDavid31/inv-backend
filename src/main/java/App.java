@@ -68,7 +68,7 @@ public class App extends Application<ConfiguracionApp> {
         environment.servlets().setSessionHandler(new SessionHandler());
 
         DashboardEventPublisher dashBoardEventPublisher = new DashboardEventPublisher();
-        EventPublisher invitacionesEventPublisher = new InvitacionesEventPublisher();
+        InvitacionesEventPublisher invitacionesEventPublisher = new InvitacionesEventPublisher();
 
         //ws://localhost:8080/colaboracion
         ServletRegistration.Dynamic miServlet = environment.servlets().addServlet("miServlet", new InteraccionWebsocketServlet());
@@ -113,7 +113,7 @@ public class App extends Application<ConfiguracionApp> {
         FotoUseCase fotoUseCase = new FotoUseCase(daoNodo, fotoUtils, s3Utils);
         ProblematicaUseCase problematicaUseCase = new ProblematicaUseCase(daoProblematica, dashBoardEventPublisher);
         CorreoUseCase correoUseCase = new CorreoUseCase(daoPersona, correoUtils);
-        InvitacionUseCase invitacionUseCase = new InvitacionUseCase(daoInvitacion, invitacionesEventPublisher);
+        InvitacionUseCase invitacionUseCase = new InvitacionUseCase(daoInvitacion, daoPersona, invitacionesEventPublisher);
         NodoUseCase nodoUseCase = SingletonUtils.guardarNodoUseCase(new NodoUseCase(daoNodo));
         GrupoUseCase grupoUseCase = new GrupoUseCase(daoGrupo, daoReaccion, nodoUseCase);
         ReaccionUseCase reaccionUseCase = new ReaccionUseCase(daoReaccion);

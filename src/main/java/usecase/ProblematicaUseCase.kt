@@ -77,7 +77,7 @@ class ProblematicaUseCase(private val daoProblematica: DaoProblematica, private 
         if(faseActual.get() == 2){
             //TODO: Enviar un mensaje a todos los websockets para que ya no puedan editar.
         }
-        return Mensaje("Se avanzó exitosamente la fase de la problematica")
+        return faseActual.get()
     }
 
     private fun difundirAParticipantes(idProblematica: Int, faseActual: Optional<Int>) {
@@ -91,8 +91,7 @@ class ProblematicaUseCase(private val daoProblematica: DaoProblematica, private 
 
         CompletableFuture.runAsync {
             val participantes = daoProblematica.darParticipantesPorProblematica(idProblematica)
-            println(Thread.currentThread().name)
-            dashBoardEventPublisher.difundirAParticipantesMenosA(idSesion, json, participantes);
+            dashBoardEventPublisher.difundirAvanceFaseAParticipantesMenosA(idSesion, json, participantes);
         }.thenRun { println("Evento de fase avanzada enviado.") }
     }
 

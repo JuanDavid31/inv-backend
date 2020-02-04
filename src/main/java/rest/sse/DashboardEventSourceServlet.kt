@@ -10,10 +10,12 @@ class DashboardEventSourceServlet(private val eventPublisher: EventPublisher) : 
         val email = request.getParameter("email")
         val sseEventSource = SseEventSource(eventPublisher)
         val session = request.getSession()
+
         session.setAttribute("abc", "jaja")
         println("DashboardEventSourceServlet")
         println("${session.id} - $session")
         println("abc : ${session?.getAttribute("abc")}")
+
         eventPublisher.agregarListener(session.id, SessionWrapper(email, session, sseEventSource))
         return sseEventSource
     }
