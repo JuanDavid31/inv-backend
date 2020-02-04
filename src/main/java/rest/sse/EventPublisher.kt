@@ -22,7 +22,8 @@ open class EventPublisher() {
         val lista = publishers.toList()
         val pair = lista.find { it.second.eventSource.equals(eventSource) }
         pair?.second?.sesion?.invalidate()
-        publishers.remove(pair?.first)
+        val seBorro = publishers.remove(pair?.first)
+        println("$seBorro al borrar ${pair?.second?.emailUsuario}")
     }
 }
 
