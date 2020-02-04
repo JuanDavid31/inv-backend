@@ -1,5 +1,6 @@
 package rest
 
+import annotation.filter.ServerEventBroadcaster
 import entity.Error
 import entity.Invitacion
 import org.hibernate.validator.constraints.NotEmpty
@@ -16,6 +17,7 @@ import javax.ws.rs.core.Response
 class InvitacionResource(private val invitacionUseCase: InvitacionUseCase) {
 
     @POST
+    @ServerEventBroadcaster
     fun hacerInvitacion(@Valid @NotNull invitacion: Invitacion): Response {
         val resultado = invitacionUseCase.hacerInvitacion(invitacion)
         return when(resultado){
@@ -26,6 +28,7 @@ class InvitacionResource(private val invitacionUseCase: InvitacionUseCase) {
 
     @PUT
     @Path("/{idInvitacion}")
+    @ServerEventBroadcaster
     fun responderInvitacion(@PathParam("idInvitacion") idInvitacion: String,
                             @Valid @NotNull invitacion: Invitacion,
                             @QueryParam("aceptar") @NotNull aceptar: Boolean): Response {

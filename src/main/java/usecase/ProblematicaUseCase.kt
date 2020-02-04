@@ -81,11 +81,9 @@ class ProblematicaUseCase(private val daoProblematica: DaoProblematica, private 
     }
 
     private fun difundirAParticipantes(idProblematica: Int, faseActual: Optional<Int>) {
-        val json = HashMap<String, Any>()
-
-        json["accion"] = "Cambio fase problematica"
-        json["idProblematica"] = idProblematica
-        json["nuevaFase"] = faseActual.get() + 1
+        val json = hashMapOf("accion" to "Cambio fase problematica",
+                "idProblematica" to idProblematica,
+                "nuevaFase" to faseActual.get() + 1)
 
         val idSesion = SingletonUtils.darIdSesion()
 
