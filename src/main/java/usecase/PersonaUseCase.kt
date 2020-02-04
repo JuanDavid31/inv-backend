@@ -25,7 +25,7 @@ class PersonaUseCase(val correoUtils: CorreoUtils, val jwtUtils: JWTUtils, val d
     }
 
     private fun verificar(correo: String): Boolean{
-        return correoUtils.existe(correo)
+        return true//correoUtils.existe(correo)
     }
 
     fun darPersonaPorCredenciales(persona: Persona): Any{
