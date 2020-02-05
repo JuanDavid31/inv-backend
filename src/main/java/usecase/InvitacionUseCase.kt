@@ -4,7 +4,6 @@ import dao.DaoInvitacion
 import dao.DaoPersona
 import entity.Error
 import entity.Invitacion
-import entity.Persona
 import rest.sse.InvitacionesEventPublisher
 import util.SingletonUtils
 import java.util.concurrent.CompletableFuture
@@ -24,18 +23,19 @@ class InvitacionUseCase(private val daoInvitacion: DaoInvitacion,
     }
 
     private fun enviarNotificacion(invitacion: Invitacion) {
-        val jsonHash = hashMapOf("accion" to "Invitacion recibida", "invitacion" to invitacion)
-
         CompletableFuture.runAsync {
+            val invitacionAEnviar = daoInvitacion.darInvitacionesVigentesRecibidas(invitacion.emailDestinatario)
+                    .find { invitacion.idProblematica == it["idProblematica"] }
+            val jsonHash: Map<String, Any?> = mapOf("accion" to "Invitacion recibida", "invitacion" to invitacionAEnviar)
             invitacionesEventPublisher.enviarInvitacion(jsonHash, invitacion.emailDestinatario)
         }.thenRun { println("Evento de invitación enviado.") }
     }
 
     fun aceptarInvitacion(invitacion: Invitacion, idInvitacion: String): Any {
-        val invitacion = daoInvitacion.aceptarInvitacion(invitacion, idInvitacion)
-        return if(invitacion != null){
-            enviarRespuestaAInterventores(invitacion)
-            invitacion
+        val nuevaInvitacion = daoInvitacion.aceptarInvitacion(invitacion, idInvitacion)
+        return if(nuevaInvitacion != null){
+            enviarRespuestaAInterventores(nuevaInvitacion)
+            nuevaInvitacion
         }else{
             Error(arrayOf("Verifique los parametros ingresados"))
         }
@@ -61,7 +61,7 @@ class InvitacionUseCase(private val daoInvitacion: DaoInvitacion,
     fun darInvitacionesVigentes(emailDestinatario: String) = daoInvitacion.darInvitacionesVigentesRecibidas(emailDestinatario)
 
     fun enviarRespuestaAInterventores(invitacion: Invitacion){
-        val jsonHash = hashMapOf("accion" to "Invitacion respondida", "elemento" to invitacion)
+        val jsonHash = hashMapOf("accion" to "Invitacion respondida", "invitacion" to invitacion)
         val sesionId = SingletonUtils.darIdSesion()
         CompletableFuture.runAsync {
             val emailInterventores: List<String> = daoPersona.darInterventores(invitacion.idProblematica)

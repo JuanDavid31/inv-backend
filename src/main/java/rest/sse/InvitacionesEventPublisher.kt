@@ -1,7 +1,7 @@
 package rest.sse
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import java.util.HashMap
+import kotlin.collections.HashMap
 
 class InvitacionesEventPublisher : EventPublisher() {
 
@@ -11,7 +11,7 @@ class InvitacionesEventPublisher : EventPublisher() {
      * @param jsonHash JSON-like datos a enviar al usuario.
      * @param emailDestinatario Email de la persona que se esta invitando
      */
-    fun enviarInvitacion(jsonHash: HashMap<String, Any>, emailDestinatario: String) {
+    fun enviarInvitacion(jsonHash: Map<String, Any?>, emailDestinatario: String) {
         publishers.toList()
             .map { (_, sessionWrapper) -> sessionWrapper }
             .filter { it.emailUsuario == emailDestinatario } //El usuario conectado puede estar activo en varias ventanas del navegador.

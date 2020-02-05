@@ -14,11 +14,6 @@ class EventBroadcasterFilter: ContainerRequestFilter {
 
     override fun filter(requestContext: ContainerRequestContext) {
         val session = request?.session
-
-        println("EventBroadcastFilter")
-        println("${session?.id} - $session")
-        println("abc : ${session?.getAttribute("abc")}")
-
         SingletonUtils.guardarIdSesion(session?.id)
     }
 }

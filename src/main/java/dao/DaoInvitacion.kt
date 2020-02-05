@@ -65,8 +65,8 @@ class DaoInvitacion(private val jdbi: Jdbi) {
      * @return List que contiene Map(s) con los atributos id_problematica, nombre_remitente, email_remitente, para_interventor,
      * nombre_problematica, descripcion_problematica y fecha_creacion_problematica.
      */
-    fun darInvitacionesVigentesRecibidas(emailDestinatario: String): List<Any> {
-        return jdbi.withHandle<List<Any>, RuntimeException> {
+    fun darInvitacionesVigentesRecibidas(emailDestinatario: String): List<Map<String, Any>> {
+        return jdbi.withHandle<List<Map<String, Any>>, RuntimeException> {
             it.createQuery("SELECT I.a_id as \"idInvitacion\", PRO.c_id as \"idProblematica\", P.d_nombres as \"nombreRemitente\", I.a_email_remitente as \"emailRemitente\", " +
                     "I.b_para_interventor as \"paraInterventor\", PRO.a_nombre as \"nombreProblematica\", PRO.a_descripcion as \"descripcionProblematica\", " +
                     "PRO.f_fecha_creacion as \"fechaCreacionProblematica\" " +
@@ -119,11 +119,11 @@ class DaoInvitacion(private val jdbi: Jdbi) {
         return jdbi.withHandle<Invitacion?, RuntimeException> {
             try {
                 it.createUpdate("UPDATE INVITACION SET b_rechazada = true, b_vigente = false " +
-                        "WHERE a_email_destinatario = :emailDestinatario AND a_email_remitente = :emailRemitente AND c_id_problematica = :idProblematica")
-                        .bindBean(invitacion)
-                        .executeAndReturnGeneratedKeys()
-                        .mapToBean(Invitacion::class.java)
-                        .findOnly()
+                    "WHERE a_email_destinatario = :emailDestinatario AND a_email_remitente = :emailRemitente AND c_id_problematica = :idProblematica")
+                    .bindBean(invitacion)
+                    .executeAndReturnGeneratedKeys()
+                    .mapToBean(Invitacion::class.java)
+                    .findOnly()
             }catch (e: Exception){
                 e.printStackTrace()
                 null

@@ -26,6 +26,10 @@ public class Invitacion {
     public boolean paraInterventor;
 
     public String nombreDestinatario;
+    /**
+     * La vigencia indica si se puede response o no la invitacion.
+     * True si es posible responderla, false en caso contrario.
+     */
     public boolean estaVigente;
     public boolean rechazada;
 

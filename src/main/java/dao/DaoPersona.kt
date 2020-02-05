@@ -68,7 +68,7 @@ class DaoPersona(val jdbi: Jdbi){
 
     fun darInterventores(idProblematica: Int): List<String> {
         return jdbi.withHandle<List<String>, Exception> {
-            it.createQuery("""SELECT d_nombre FROM PERSONA_PROBLEMATICA PP  
+            it.createQuery("""SELECT a_email FROM PERSONA_PROBLEMATICA PP  
             WHERE b_interventor = true AND c_id_problematica = :idProblematica
             """.trimIndent())
             .bind("idProblematica", idProblematica)
