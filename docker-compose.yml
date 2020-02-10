@@ -11,8 +11,6 @@ services:
     ports:
       - "8080:8080"
       - "5005:5005"
-    volumes:
-      - imgsnodo:/home
     depends_on:
       - db
 volumes:
