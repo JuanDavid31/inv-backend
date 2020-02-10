@@ -15,14 +15,5 @@ services:
       - imgsnodo:/home
     depends_on:
       - db
-  frontend:
-    build: ./front
-    ports:
-      - "80:80"
-    volumes:
-      - imgsnodo:/home:ro
-    depends_on:
-      - backend
 volumes:
-  imgsnodo:
   pgdevdata:
