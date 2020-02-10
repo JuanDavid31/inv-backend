@@ -371,41 +371,41 @@ BEGIN
     INSERT INTO GRUPO(c_id_problematica, c_id_padre, d_nombre) VALUES(2, 7, 'Grupo 2-3');
     INSERT INTO GRUPO(c_id_problematica, c_id_padre, d_nombre) VALUES(2, 8, 'Grupo 2-4');
 
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan1@.com1', 'Paso 1', '', '', null, 1);
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan1@.com1', 'Paso 2', '', '', 1, 1);
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan1@.com1', 'Paso 3', '', '', 2, 1);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('juan1@.com1', 'Paso 1', '', '', null, 1);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('juan1@.com1', 'Paso 2', '', '', 1, 1);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('juan1@.com1', 'Paso 3', '', '', 2, 1);
 
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan1@.com1', 'Paso 1', '', '', 3, 2);
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan1@.com1', 'Paso 2', '', '', 4, 2);
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan1@.com1', 'Paso 3', '', '', 5, 2);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('juan1@.com1', 'Paso 1', '', '', 3, 2);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('juan1@.com1', 'Paso 2', '', '', 4, 2);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('juan1@.com1', 'Paso 3', '', '', 5, 2);
 
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan2@.com1', 'Paso 1', '', '', null, 3);
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan3@.com1', 'Paso 2', '', '', null, 3);
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan4@.com1', 'Paso 3', '', '', null, 3);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('juan2@.com1', 'Paso 1', '', '', null, 3);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('juan3@.com1', 'Paso 2', '', '', null, 3);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('juan4@.com1', 'Paso 3', '', '', null, 3);
 
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan5@.com1', 'Paso 1', '', '', null, 4);
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan6@.com1', 'Paso 2', '', '', null, 4);
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan7@.com1', 'Paso 3', '', '', null, 4);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('juan5@.com1', 'Paso 1', '', '', null, 4);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('juan6@.com1', 'Paso 2', '', '', null, 4);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('juan7@.com1', 'Paso 3', '', '', null, 4);
 
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan8@.com1', 'Paso 1', '', '', null, 5);
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan9@.com1', 'Paso 2', '', '', null, 5);
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('juan10@.com1', 'Paso 3', '', '', null, 5);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('juan8@.com1', 'Paso 1', '', '', null, 5);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('juan9@.com1', 'Paso 2', '', '', null, 5);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('juan10@.com1', 'Paso 3', '', '', null, 5);
 
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david1@.com2', 'Paso 1', '', '', null, 6); --16
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david1@.com2', 'Paso 2', '', '', 16, 6);
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david1@.com2', 'Paso 3', '', '', 17, 6);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('david1@.com2', 'Paso 1', '', '', null, 6); --16
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('david1@.com2', 'Paso 2', '', '', 16, 6);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('david1@.com2', 'Paso 3', '', '', 17, 6);
 
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david2@.com2', 'Paso 1', '', '', null, 7); --19
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david2@.com2', 'Paso 2', '', '', 19, 7);
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david2@.com2', 'Paso 3', '', '', 20, 7);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('david2@.com2', 'Paso 1', '', '', null, 7); --19
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('david2@.com2', 'Paso 2', '', '', 19, 7);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('david2@.com2', 'Paso 3', '', '', 20, 7);
 
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david3@.com2', 'Paso 1', '', '', null, 8); --22
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david3@.com2', 'Paso 2', '', '', 22, 8);
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david3@.com2', 'Paso 3', '', '', 23, 8);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('david3@.com2', 'Paso 1', '', '', null, 8); --22
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('david3@.com2', 'Paso 2', '', '', 22, 8);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('david3@.com2', 'Paso 3', '', '', 23, 8);
 
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david4@.com2', 'Paso 1', '', '', null, 9); --25
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david4@.com2', 'Paso 2', '', '', 25, 9);
-    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, a_ruta_foto, c_id_padre, c_id_grupo) VALUES('david4@.com2', 'Paso 3', '', '', 26, 9);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('david4@.com2', 'Paso 1', '', '', null, 9); --25
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('david4@.com2', 'Paso 2', '', '', 25, 9);
+    INSERT INTO NODO(a_id_pers_prob, a_nombre, a_url_foto, c_id_padre, c_id_grupo) VALUES('david4@.com2', 'Paso 3', '', '', 26, 9);
 
     INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(1, 1, 'juan1@.com1');
     INSERT INTO REACCION(c_valor, c_id_grupo, a_id_pers_prob) VALUES(0, 3, 'juan2@.com1');
