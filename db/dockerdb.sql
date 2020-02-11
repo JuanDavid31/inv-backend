@@ -1,8 +1,3 @@
-DROP SCHEMA public CASCADE;
-CREATE SCHEMA public;
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT ALL ON SCHEMA public TO public;
-
 CREATE TABLE PERSONA
 (
     a_email         varchar(45)  not null,
@@ -144,7 +139,6 @@ select
 	count(case when c_valor = 1 then c_valor end)  as "positiva"
     from reaccion group by c_id_grupo
  );
-
 
 
 --declarar la función que va a eliminar todas los registros de todas las tablas
@@ -435,8 +429,5 @@ BEGIN
 
     --Grupo 2-4 tiene la mayor puntuación con una reacción neutra
     --10 Escritos
-
 END;
 $$ LANGUAGE plpgsql;
-
-select agregardummydata();
