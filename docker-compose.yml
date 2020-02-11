@@ -6,6 +6,7 @@ services:
       - "5432:5432"
     volumes:
       - pgdevdata:/var/lib/postgresql/data
+    restart: always
   backend:
     build: .
     ports:
