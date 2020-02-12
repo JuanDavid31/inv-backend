@@ -12,7 +12,7 @@ alter table PERSONA
 CREATE TABLE PROBLEMATICA
 (
     c_id             SERIAL       not null,
-    a_nombre         varchar(60)  not null,
+    a_nombre         varchar(40)  not null,
     a_descripcion    varchar(500) not null,
     f_fecha_creacion timestamp    not null,
     c_fase           integer      not null
@@ -114,7 +114,7 @@ ALTER TABLE REACCION
 CREATE TABLE ESCRITO
 (
     c_id           serial,
-    a_nombre       varchar(20) not null,
+    a_nombre       varchar(40) not null,
     a_descripcion  varchar(500) not null,
     c_id_grupo     int not null,
     a_id_pers_prob varchar(50) not null

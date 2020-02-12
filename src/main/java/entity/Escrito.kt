@@ -14,7 +14,7 @@ class Escrito(){
 
     @JsonProperty
     @NotEmpty(message = "no puede ser vacio")
-    @Size(min = 4, max = 20, message = "debe tener minimo 4 y maximo 20 caracteres")
+    @Size(min = 4, max = 40, message = "debe tener minimo 4 y maximo 20 caracteres")
     @get:ColumnName("a_nombre")
     var nombre: String? = null
 

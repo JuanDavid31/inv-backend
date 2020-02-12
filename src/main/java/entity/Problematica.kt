@@ -17,7 +17,7 @@ class Problematica {
 
     @JsonProperty
     @NotNull(message = "no puede ser vacio")
-    @Size(min = 10, max = 60, message = "debe tener entre 10 y 60 caracteres y ser descriptivo")
+    @Size(min = 10, max = 40, message = "debe tener entre 10 y 40 caracteres y ser descriptivo")
     @get:ColumnName("a_nombre")
     var nombre: String? = null
 
