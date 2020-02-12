@@ -244,6 +244,11 @@
             <version>2.10.1</version>
         </dependency>
         <dependency>
+            <groupId>com.neverbounce</groupId>
+            <artifactId>neverbounce-api-java</artifactId>
+            <version>4.0.9</version>
+        </dependency>
+        <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
             <version>1.11.3</version>

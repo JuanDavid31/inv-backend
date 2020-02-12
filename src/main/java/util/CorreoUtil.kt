@@ -1,5 +1,9 @@
 package util
 
+import com.neverbounce.api.client.NeverbounceClient
+import com.neverbounce.api.client.NeverbounceClientFactory
+import com.neverbounce.api.model.SafeToSend
+import com.neverbounce.api.model.SingleCheckResponse
 import entity.Persona
 import java.util.*
 import javax.mail.*
@@ -39,14 +43,22 @@ class CorreoUtils(val usuario: String, val pass: String){
         return mensaje
     }
 
-    fun existe(correo: String): Boolean {
-        return try {
-            Transport.send(darMensajeVerificacionCorreo(correo))
-            true
-        }catch (e: Exception){
-            e.printStackTrace()
-            false
-        }
+    fun existe(correo: String): Boolean = verificar(correo)
+
+    fun verificar(correo: String): Boolean {
+        val token = "private_ed33e4a2b93a9c7c16c9813ed0c0b702"
+        val neverbounceClient: NeverbounceClient = NeverbounceClientFactory.create(token)
+
+        val singleCheckResponse: SingleCheckResponse = neverbounceClient
+                .prepareSingleCheckRequest()
+                .withEmail(correo) // address to verify
+                .withAddressInfo(true) // return address info with response
+                .withCreditsInfo(true) // return account credits info with response
+                .withTimeout(20) // only wait on slow email servers for 20 seconds max
+                .build()
+                .execute()
+
+        return singleCheckResponse.result.isSafeToSend == SafeToSend.YES
     }
 
     private fun darMensajeVerificacionCorreo(correo: String): Message{
