@@ -48,7 +48,6 @@ class CorreoUtils(val usuario: String, val pass: String){
     fun verificar(correo: String): Boolean {
         val token = "private_ed33e4a2b93a9c7c16c9813ed0c0b702"
         val neverbounceClient: NeverbounceClient = NeverbounceClientFactory.create(token)
-
         val singleCheckResponse: SingleCheckResponse = neverbounceClient
                 .prepareSingleCheckRequest()
                 .withEmail(correo) // address to verify
