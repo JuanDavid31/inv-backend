@@ -53,18 +53,11 @@ class CorreoUtils(val usuario: String, val pass: String){
                 .withEmail(correo) // address to verify
                 .withAddressInfo(true) // return address info with response
                 .withCreditsInfo(true) // return account credits info with response
-                .withTimeout(20) // only wait on slow email servers for 20 seconds max
+                .withTimeout(60) // only wait on slow email servers for 20 seconds max
                 .build()
                 .execute()
 
         return singleCheckResponse.result.isSafeToSend == SafeToSend.YES
     }
 
-    private fun darMensajeVerificacionCorreo(correo: String): Message{
-        val mensaje = MimeMessage(darSesion())
-        mensaje.addRecipients(Message.RecipientType.TO, correo)
-        mensaje.setSubject("Verificación de existencia")
-        mensaje.setText("Estimado usuario, si puede leer este mensaje entonces la verificación de correo ha sido exitosa")
-        return mensaje
-    }
 }

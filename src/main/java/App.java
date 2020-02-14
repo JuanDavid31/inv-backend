@@ -67,24 +67,18 @@ public class App extends Application<ConfiguracionApp> {
         //SessionHandler para mantener sesiones con los clientes conectados a los endpoint de SSE.
         environment.servlets().setSessionHandler(new SessionHandler());
 
-        DashboardEventPublisher dashBoardEventPublisher = new DashboardEventPublisher();
-        InvitacionesEventPublisher invitacionesEventPublisher = new InvitacionesEventPublisher();
+        EventPublisher eventPublisher = new EventPublisher();
 
         //ws://localhost:8080/colaboracion
-        ServletRegistration.Dynamic miServlet = environment.servlets().addServlet("miServlet", new InteraccionWebsocketServlet());
+        ServletRegistration.Dynamic miServlet = environment.servlets().addServlet("InteraccionServlet", new InteraccionWebsocketServlet());
         miServlet.setAsyncSupported(true);
         miServlet.addMapping("/colaboracion/*");
 
         //Server sent events servlets
         environment
             .servlets()
-            .addServlet("EventosDashboard", new DashboardEventSourceServlet(dashBoardEventPublisher))
-            .addMapping("/eventos-dashboard");
-
-        environment
-            .servlets()
-            .addServlet("EventosInvitaciones", new InvitacionesEventSourceServlet(invitacionesEventPublisher))
-            .addMapping("/eventos-invitaciones");
+            .addServlet("EventosSse", new EventosEventSourceServlet(eventPublisher))
+            .addMapping("/eventos");
 
         //Utils
         JWTUtils jwtUtils = new JWTUtils(configuracionApp.jwtKey);
@@ -111,9 +105,9 @@ public class App extends Application<ConfiguracionApp> {
 
         //Use cases
         FotoUseCase fotoUseCase = new FotoUseCase(daoNodo, fotoUtils, s3Utils);
-        ProblematicaUseCase problematicaUseCase = new ProblematicaUseCase(daoProblematica, dashBoardEventPublisher);
+        ProblematicaUseCase problematicaUseCase = new ProblematicaUseCase(daoProblematica, eventPublisher);
         CorreoUseCase correoUseCase = new CorreoUseCase(daoPersona, correoUtils);
-        InvitacionUseCase invitacionUseCase = new InvitacionUseCase(daoInvitacion, daoPersona, invitacionesEventPublisher);
+        InvitacionUseCase invitacionUseCase = new InvitacionUseCase(daoInvitacion, daoPersona, eventPublisher);
         NodoUseCase nodoUseCase = SingletonUtils.guardarNodoUseCase(new NodoUseCase(daoNodo));
         GrupoUseCase grupoUseCase = new GrupoUseCase(daoGrupo, daoReaccion, nodoUseCase);
         ReaccionUseCase reaccionUseCase = new ReaccionUseCase(daoReaccion);

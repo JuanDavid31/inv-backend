@@ -11,10 +11,10 @@ class PersonaUseCase(val correoUtils: CorreoUtils, val jwtUtils: JWTUtils, val d
     fun agregarPersona(persona: Persona): Any {
         val correoRegistrado = daoPersona.verificarExistencia(persona.email)
         val correoValido = verificar(persona.email)
-        return if(!correoValido){
-            Error(arrayOf("El correo no es valido"))
-        }else if(correoRegistrado){
+        return if(correoRegistrado){
             Error(arrayOf("Este correo ya esta en uso"))
+        }else if(!correoValido){
+            Error(arrayOf("El correo no es valido, ingrese uno diferente."))
         }else{
             daoPersona.agregarPersona(persona)
             object {

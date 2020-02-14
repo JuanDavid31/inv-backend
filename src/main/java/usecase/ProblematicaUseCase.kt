@@ -4,13 +4,12 @@ import dao.DaoProblematica
 import entity.Error
 import entity.Mensaje
 import entity.Problematica
-import rest.sse.DashboardEventPublisher
+import rest.sse.EventPublisher
 import util.SingletonUtils
 import java.util.*
 import java.util.concurrent.CompletableFuture
-import kotlin.collections.HashMap
 
-class ProblematicaUseCase(private val daoProblematica: DaoProblematica, private val dashBoardEventPublisher: DashboardEventPublisher) {
+class ProblematicaUseCase(private val daoProblematica: DaoProblematica, private val eventPublisher: EventPublisher) {
 
     fun agregarProblematicaPorPersona(email: String, problematica: Problematica): Any {
         val nuevaProblematica = daoProblematica.agregarProblematicaPorPersona(email, problematica)
@@ -89,7 +88,7 @@ class ProblematicaUseCase(private val daoProblematica: DaoProblematica, private 
 
         CompletableFuture.runAsync {
             val participantes = daoProblematica.darParticipantesPorProblematica(idProblematica)
-            dashBoardEventPublisher.difundirAvanceFaseAParticipantesMenosA(idSesion, json, participantes);
+            eventPublisher.difundirAvanceFaseAParticipantesMenosA(idSesion, json, participantes);
         }.thenRun { println("Evento de fase avanzada enviado.") }
     }
 

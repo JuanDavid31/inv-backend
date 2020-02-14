@@ -4,13 +4,13 @@ import dao.DaoInvitacion
 import dao.DaoPersona
 import entity.Error
 import entity.Invitacion
-import rest.sse.InvitacionesEventPublisher
+import rest.sse.EventPublisher
 import util.SingletonUtils
 import java.util.concurrent.CompletableFuture
 
 class InvitacionUseCase(private val daoInvitacion: DaoInvitacion,
                         private val daoPersona: DaoPersona,
-                        private val invitacionesEventPublisher: InvitacionesEventPublisher){
+                        private val eventPublisher: EventPublisher){
 
     fun hacerInvitacion(invitacion: Invitacion): Any {
         val nuevaInvitacion = daoInvitacion.agregarInvitacion(invitacion)
@@ -27,7 +27,7 @@ class InvitacionUseCase(private val daoInvitacion: DaoInvitacion,
             val invitacionAEnviar = daoInvitacion.darInvitacionesVigentesRecibidas(invitacion.emailDestinatario)
                     .find { invitacion.idProblematica == it["idProblematica"] }
             val jsonHash: Map<String, Any?> = mapOf("accion" to "Invitacion recibida", "invitacion" to invitacionAEnviar)
-            invitacionesEventPublisher.enviarInvitacion(jsonHash, invitacion.emailDestinatario)
+            eventPublisher.enviarInvitacion(jsonHash, invitacion.emailDestinatario)
         }.thenRun { println("Evento de invitación enviado.") }
     }
 
@@ -65,7 +65,7 @@ class InvitacionUseCase(private val daoInvitacion: DaoInvitacion,
         val sesionId = SingletonUtils.darIdSesion()
         CompletableFuture.runAsync {
             val emailInterventores: List<String> = daoPersona.darInterventores(invitacion.idProblematica)
-            invitacionesEventPublisher.difundirEventoDeRespuestaAInterventores(sesionId, jsonHash, emailInterventores)
+            eventPublisher.difundirEventoDeRespuestaAInterventores(sesionId, jsonHash, emailInterventores)
         }.thenRun{ println("Evento de invitacion respondida enviado") }
     }
 }
