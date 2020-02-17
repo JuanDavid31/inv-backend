@@ -57,7 +57,7 @@ class CorreoUtils(val usuario: String, val pass: String){
                 .build()
                 .execute()
 
-        return singleCheckResponse.result.isSafeToSend == SafeToSend.YES
+        return singleCheckResponse.result.isSafeToSend != SafeToSend.NO
     }
 
 }
