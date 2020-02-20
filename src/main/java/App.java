@@ -1,6 +1,6 @@
+import annotation.filter.AuthFilter;
 import annotation.filter.EventBroadcasterFilter;
 import dao.*;
-import annotation.filter.AuthFilter;
 import health.PlantillaHealthCheck;
 import io.dropwizard.Application;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
@@ -19,7 +19,8 @@ import org.jdbi.v3.core.mapper.CaseStrategy;
 import org.jdbi.v3.core.mapper.MapMappers;
 import org.jdbi.v3.postgres.PostgresPlugin;
 import rest.*;
-import rest.sse.*;
+import rest.sse.EventPublisher;
+import rest.sse.EventosEventSourceServlet;
 import usecase.*;
 import util.*;
 import ws.InteraccionWebsocketServlet;
@@ -82,7 +83,7 @@ public class App extends Application<ConfiguracionApp> {
 
         //Utils
         JWTUtils jwtUtils = new JWTUtils(configuracionApp.jwtKey);
-        CorreoUtils correoUtils = new CorreoUtils(configuracionApp.adminEmail, configuracionApp.adminPass);
+        CorreoUtils correoUtils = new CorreoUtils(configuracionApp.adminEmail, configuracionApp.adminPass, configuracionApp.neverBounceKey);
         FotoUtils fotoUtils = new FotoUtils();
         S3Utils s3Utils = new S3Utils();
 

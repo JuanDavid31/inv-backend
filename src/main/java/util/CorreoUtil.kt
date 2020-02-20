@@ -9,7 +9,7 @@ import java.util.*
 import javax.mail.*
 import javax.mail.internet.MimeMessage
 
-class CorreoUtils(val usuario: String, val pass: String){
+class CorreoUtils(val usuario: String, val pass: String, val neverBounceKey: String){
 
     private fun darSesion(): Session? {
         val prop = Properties()
@@ -46,8 +46,7 @@ class CorreoUtils(val usuario: String, val pass: String){
     fun existe(correo: String): Boolean = verificar(correo)
 
     fun verificar(correo: String): Boolean {
-        val token = "private_ed33e4a2b93a9c7c16c9813ed0c0b702"
-        val neverbounceClient: NeverbounceClient = NeverbounceClientFactory.create(token)
+        val neverbounceClient: NeverbounceClient = NeverbounceClientFactory.create(neverBounceKey)
         val singleCheckResponse: SingleCheckResponse = neverbounceClient
                 .prepareSingleCheckRequest()
                 .withEmail(correo) // address to verify

@@ -18,7 +18,8 @@ public class ConfiguracionApp extends Configuration {
     @NotEmpty
     public String adminPass = "";
 
-    public String ip = "localhost";
+    @NotEmpty
+    public String neverBounceKey = "";
 
     @Valid
     @NotNull
@@ -55,12 +56,12 @@ public class ConfiguracionApp extends Configuration {
     }
 
     @JsonProperty
-    public String getIp() {
-        return ip;
+    public String getNeverBounceKey() {
+        return neverBounceKey;
     }
 
     @JsonProperty
-    public void setIp(String ip) {
-        this.ip = ip;
+    public void setNeverBounceKey(String neverBounceKey) {
+        this.neverBounceKey = neverBounceKey;
     }
 }
