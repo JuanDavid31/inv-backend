@@ -39,7 +39,7 @@ class ProblematicaPersonaResource(val escritoUseCase: EscritoUseCase, val fotoUs
 
     @GET
     @Path("/{idProblematica}/personas/{email}/escritos")
-    fun darEscritosPorPersona(@PathParam("idProblematica") idProblematica: Int,
+    fun darEscritosPorProblematicaYPersona(@PathParam("idProblematica") idProblematica: Int,
                               @PathParam("email") email: String)
             = escritoUseCase.darEscritosPorPersona("$email$idProblematica")
 
