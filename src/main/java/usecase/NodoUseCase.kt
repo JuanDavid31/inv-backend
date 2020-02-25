@@ -7,17 +7,16 @@ import dao.DaoRelacion
 import entity.Mensaje
 import entity.Error
 import entity.Nodo
-import entity.Relacion
 
 class NodoUseCase(val daoNodo: DaoNodo, val daoRelacion: DaoRelacion) {
 
     fun apadrinar(id: Int, idPadre: Int): Any {
-        val apadrinado = daoRelacion.conectarNodos(id, idPadre, 1);
+        val apadrinado = daoRelacion.agregarNodoANodo(id, idPadre, 1);
         return if (apadrinado) Mensaje("Conexión exitosa") else Error(arrayOf("El nodo no existe."))
     }
 
     fun desApadrinar(id: Int, idPadre: Int): Any {
-        val conexionesEliminadas = daoRelacion.eliminarConexionesPadreEHijo(id, idPadre)
+        val conexionesEliminadas = daoRelacion.eliminarNodoANodo(id, idPadre)
         return if(conexionesEliminadas) Mensaje("Conexiones eliminadas exitosamente") else Error(arrayOf("El nodo no existe o no tiene conexiones."))
     }
 

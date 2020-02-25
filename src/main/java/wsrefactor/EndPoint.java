@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.google.api.client.json.Json;
 import entity.Grupo;
 import entity.Relacion;
 import entity.Sala;
@@ -184,7 +185,7 @@ public class EndPoint {
         relacion.setIdGrupo(Integer.parseInt(id));
         relacion.setIdGrupoPadre(Integer.parseInt(idPadre));
         relacion.setFase(2);
-        EndPointHandler.agregarRelacion(relacion);
+        EndPointHandler.agregarRelacionNodoGrupo(relacion); //TODO: Ojito con esto
     }
 
     private void persistirEdgeNodo(JsonNode edge){
@@ -194,7 +195,7 @@ public class EndPoint {
         relacion.setIdNodo(Integer.parseInt(id));
         relacion.setIdNodoPadre(Integer.parseInt(idPadre));
         relacion.setFase(2);
-        EndPointHandler.agregarRelacion(relacion);
+        EndPointHandler.agregarRelacionNodoGrupo(relacion); //TODO: Ojito con esto
     }
 
     private String moverElemento(JsonNode json, Session session) {
@@ -206,9 +207,22 @@ public class EndPoint {
         String id = elemento.get("data").get("id").asText();
         JsonNode parent = elemento.get("data").get("parent");
 
+        agregarOEliminarRelacionEntreNodoYGrupo(id, parent);
+
         ((ObjectNode)nodos.get(id).get("data")).set("parent", parent != null ? parent : NullNode.getInstance());
 
         return json.toString();
+    }
+
+    private void agregarOEliminarRelacionEntreNodoYGrupo(String id, JsonNode parent){
+        Relacion relacion = new Relacion();
+        relacion.setIdNodo(Integer.parseInt(id));
+        if(parent != null){ //Creo una relación enrte grupo y nodo
+            relacion.setIdGrupoPadre(Integer.parseInt(parent.asText()));
+            EndPointHandler.agregarRelacionNodoGrupo(relacion);
+        }else{ //Elimino una relación entre grupo y nodo
+            EndPointHandler.eliminarRelacionNodoGrupo(relacion);
+        }
     }
 
     private String eliminarElemento(JsonNode json, Session session) {
@@ -226,7 +240,42 @@ public class EndPoint {
             sala.getGruposEliminados().put(id, new ObjectMapper().createObjectNode());
         }
 
+        //Edge nodo. Edge grupo.
+
+        switch (json.get("tipo").asText()){
+            case "Grupo":
+                //TODO: Eliminar grupo en la DB
+                eliminarGrupo(elemento);
+                break;
+            case "Edge grupo":
+                //TODO: Eliminar relación grupo a grupo
+                eliminarRelacionGrupoAGrupo(elemento);
+                break;
+            case "Edge nodo":
+                //TODO: Eliminar relación nodo a nodo.
+                eliminarRelacionNodoANodo(elemento);
+                break;
+            default: break;
+        }
+
         return json.toString();
+    }
+
+    private void eliminarGrupo(JsonNode elemento){
+        String idGrupo = elemento.get("data").get("id").asText();
+        EndPointHandler.eliminarGrupo(Integer.parseInt(idGrupo));
+    }
+
+    private void eliminarRelacionGrupoAGrupo(JsonNode elemento){
+        String idPadre = elemento.get("data").get("source").asText();
+        String id = elemento.get("data").get("target").asText();
+        EndPointHandler.eliminarRelacionGrupoAGrupo(id, idPadre);
+    }
+
+    private void eliminarRelacionNodoANodo(JsonNode elemento){
+        String idPadre = elemento.get("data").get("source").asText();
+        String id = elemento.get("data").get("target").asText();
+        EndPointHandler.eliminarRelacionNodoANodo(id, idPadre);
     }
 
     private void enviarNodosACliente(Session session) {

@@ -67,4 +67,6 @@ class GrupoUseCase(val daoGrupo: DaoGrupo, val daoReaccion: DaoReaccion, val nod
      * Lanza una excepción si la lista esta vacia.
      */
     fun eliminarConexiones(idsGrupos: List<Int>) = if(idsGrupos.isEmpty()) false else daoGrupo.eliminarConexiones(idsGrupos)
+
+    fun eliminarGrupo(idGrupo: Int) = daoGrupo.eliminarGrupo(idGrupo)
 }

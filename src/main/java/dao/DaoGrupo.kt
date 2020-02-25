@@ -93,4 +93,11 @@ class DaoGrupo(private val jdbi: Jdbi) {
             false
         }
     }
+
+    fun eliminarGrupo(idGrupo: Int) =
+        jdbi.withHandle<Boolean, Exception> {
+            it.createUpdate("DELETE FROM GRUPO WHERE c_id = :id")
+            .bind("id", idGrupo)
+            .execute() > 0
+        }
 }

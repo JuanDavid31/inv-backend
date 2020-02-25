@@ -271,7 +271,15 @@ public class EndPointHandler {
         return grupoUseCase.agregarGrupo(idProblematica, grupo);
     }
 
-    public static void agregarRelacion(Relacion relacion) {
-        relacionUseCase.conectarNodos(relacion); // ?
+    public static void agregarRelacionNodoGrupo(Relacion relacion) {
+        relacionUseCase.conectarNodoYGrupo(relacion);
+    }
+
+    public static void eliminarRelacionNodoGrupo(Relacion relacion) {
+        relacionUseCase.desconectarNodoYGrupo(relacion);
+    }
+
+    public static void eliminarGrupo(int idGrupo) {
+        grupoUseCase.eliminarGrupo(idGrupo);
     }
 }
