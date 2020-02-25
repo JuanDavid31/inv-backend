@@ -1,17 +1,19 @@
-package ws;
+package wsrefactor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-
 import entity.*;
 import org.eclipse.jetty.websocket.api.Session;
 import usecase.GrupoUseCase;
 import usecase.NodoUseCase;
+import usecase.RelacionUseCase;
 import util.SingletonUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -20,6 +22,7 @@ public class EndPointHandler {
 
     public static GrupoUseCase grupoUseCase;
     public static NodoUseCase nodoUseCase;
+    public static RelacionUseCase relacionUseCase;
 
     private static Map<Integer, Sala> salasActivas = new ConcurrentHashMap<>();
 
@@ -33,10 +36,11 @@ public class EndPointHandler {
 
         synchronized (SingletonUtils.lock){
             if(sala.getClientes().size() != 1) return;// Es el primer cliente en conectarse
-            List<JsonNode> grupos = grupoUseCase.darGrupos(idProblematica);
-            List<JsonNode> nodos = nodoUseCase.darNodosPorProblematica(idProblematica);
-            nodos.addAll(grupos);
-            sala.cambiarNodos(nodos);
+            List<JsonNode> gruposYConexiones = grupoUseCase.darGrupos(idProblematica);
+            List<JsonNode> nodosYConexiones = nodoUseCase.darNodosPorProblematica(idProblematica);
+
+            nodosYConexiones.addAll(gruposYConexiones);
+            sala.cambiarNodos(nodosYConexiones);
         }
     }
 
@@ -265,5 +269,9 @@ public class EndPointHandler {
 
     public static Grupo agregarGrupo(int idProblematica, Grupo grupo) {
         return grupoUseCase.agregarGrupo(idProblematica, grupo);
+    }
+
+    public static void agregarRelacion(Relacion relacion) {
+        relacionUseCase.conectarNodos(relacion); // ?
     }
 }

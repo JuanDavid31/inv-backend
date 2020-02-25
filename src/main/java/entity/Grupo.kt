@@ -21,6 +21,10 @@ class Grupo {
         idPadre = null
     }
 
+    constructor(nombre: String){
+        this.nombre = nombre;
+    }
+
     constructor(id: Int, nombre: String, idPadre: Int){
         this.id = id
         this.nombre = nombre

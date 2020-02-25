@@ -3,8 +3,31 @@ package dao
 import entity.Nodo
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.core.mapper.reflect.ColumnName
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException
 import java.lang.Exception
+
+
+class NodoIndividual{
+    @get:ColumnName("c_id")
+    var id: Int = 0
+    @get:ColumnName("a_nombre")
+    var nombre: String = ""
+    @get:ColumnName("a_url_foto")
+    var urlFoto: String = ""
+    @get:ColumnName("c_id_nodo_padre")
+    var idPadre: Int = 0
+    constructor()
+}
+
+class ConexionNodo{
+    @get:ColumnName("c_id")
+    var id: Int = 0
+    @get:ColumnName("c_id_nodo_padre")
+    var idPadre: Int? = null
+    constructor()
+}
+
 
 /**
  * Manejo de excepciones completo
@@ -14,7 +37,9 @@ class DaoNodo(private val jdbi: Jdbi) {
     fun darNodosPorPersonaYProblematica(idPersonaProblematica: String): List<Nodo> {
         return jdbi.withHandle<List<Nodo>, Exception> {
             try {
-                it.createQuery("SELECT * FROM NODO WHERE a_id_pers_prob = :idPersProb")
+                it.createQuery("""SELECT c_id, a_nombre, a_url_foto, c_id_nodo_padre FROM NODO N
+                    INNER JOIN RELACION R ON R.c_id_nodo = N.c_id WHERE R.c_fase = 1 
+                    AND a_id_pers_prob = :idPersProb""")
                     .bind("idPersProb", idPersonaProblematica)
                     .mapToBean(Nodo::class.java)
                     .list()
@@ -31,11 +56,12 @@ class DaoNodo(private val jdbi: Jdbi) {
     fun darNodosPorProblematica(idProblematica: Int): List<Nodo>{
         return jdbi.withHandle<List<Nodo>, Exception> {
             try {
-                it.createQuery("""SELECT N.c_id, N.a_nombre, N.a_url_foto, N.c_id_grupo, concat(p.d_nombres, ' ', p.d_apellidos) as "nombreCreador"
-                FROM NODO n LEFT JOIN GRUPO G on G.c_id = N.c_id_grupo
+                it.createQuery("""SELECT N.c_id, N.a_nombre, N.a_url_foto, R.c_id_grupo_padre as c_id_grupo, 
+                concat(p.d_nombres, ' ', p.d_apellidos) as "nombreCreador" FROM NODO n LEFT JOIN GRUPO G on G.c_id = N.c_id_grupo
                 inner join PERSONA_PROBLEMATICA pp on pp.a_id = n.a_id_pers_prob
                 inner join persona p on pp.a_email = p.a_email
-                where PP.c_id_problematica = :idProblematica""")
+                inner join RELACON R ON N.c_id = R.c_id_nodo
+                where PP.c_id_problematica = :idProblematica AND R.c_fase = 2""")
                 .bind("idProblematica", idProblematica)
                 .mapToBean(Nodo::class.java)
                 .list()
@@ -70,35 +96,11 @@ class DaoNodo(private val jdbi: Jdbi) {
         }
     }
 
-    fun apadrinar(id: Int, idPadre: Int): Boolean {
-        return jdbi.withHandle<Boolean, Exception> {
-            it.createUpdate("UPDATE NODO SET c_id_padre = :idPadre WHERE c_id = :id")
-                .bind("id", id)
-                .bind("idPadre", idPadre)
-                .execute() > 0
-        }
-    }
-
-    /**
-     * Dado el id del nodo padre, se buscaran nodos hijo y se eliminara la relación entre ellos.
-     * Los nodos hijos perderan a su padre.
-     * @param idPadre
-     * @return
-     * @throws UnableToExecuteStatementException
-     */
-    fun eliminarConexionesPadreEHijo(idNodo: Int): Boolean {
-        return jdbi.withHandle<Boolean, RuntimeException> {
-            it.createUpdate("UPDATE NODO SET c_id_padre = null WHERE c_id = :id")
-                .bind("id", idNodo)
-                .execute() > 0
-        }
-    }
-
     fun eliminarNodo(id: Int): Nodo {
         return jdbi.inTransaction<Nodo, RuntimeException> {
             try{
                 val idProblematica = darIdProblematica(it, id)
-                eliminarConexionConHijo(it, id)
+                eliminarTodaConexion(it, id)
                 val nodo = eliminarElementoNodo(it, id)
                 nodo.idProblematica = idProblematica
                 nodo
@@ -116,8 +118,8 @@ class DaoNodo(private val jdbi: Jdbi) {
             .mapTo(Int::class.java)
             .findOnly()
 
-    private fun eliminarConexionConHijo(handle: Handle, idNodo: Int){
-        handle.createUpdate("UPDATE NODO SET c_id_padre = null WHERE c_id_padre = :id")
+    private fun eliminarTodaConexion(handle: Handle, idNodo: Int){
+        handle.createUpdate("DELETE FROM RELACION WHERE c_id_nodo = :id OR c_id_nodo_padre = :id")
             .bind("id", idNodo)
             .execute()
     }
@@ -141,5 +143,18 @@ class DaoNodo(private val jdbi: Jdbi) {
             }
         }
     }
+
+    fun darConexionesSegundaFase(idProblematica: Int): List<ConexionNodo> =
+        jdbi.withHandle<List<ConexionNodo>, Exception> {
+            it.createQuery("""SELECT N.c_id, R.c_id_nodo_padre FROM NODO n
+                inner join PERSONA_PROBLEMATICA pp on pp.a_id = n.a_id_pers_prob
+                inner join RELACION R ON N.c_id = R.c_id_nodo
+                where PP.c_id_problematica = :idProblematica AND R.c_fase = 2""")
+                .bind("idProblematica", idProblematica)
+                .mapToBean(ConexionNodo::class.java)
+                .list()
+        }
+
+
 
 }

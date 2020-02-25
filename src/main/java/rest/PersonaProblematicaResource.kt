@@ -32,8 +32,8 @@ class PersonaProblematicaResource(private val problematicaUseCase: ProblematicaU
     @Path("/{email}/problematicas")
 //    @VerificadorAuth
     fun darProblematicasPorPersona(@PathParam("email") email: String,
-                                   @QueryParam("fase") fase: Int?)
-        = when(fase){
+                                   @QueryParam("fase") fase: Int?)=
+        when(fase){
             5 ->  problematicaUseCase.darProblematicasTerminadasPorPersona(email)
             else -> problematicaUseCase.darProblematicasPorPersona(email)
         }

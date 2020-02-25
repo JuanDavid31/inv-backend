@@ -22,7 +22,7 @@ class NodoResource(private val fotoUseCase: FotoUseCase, private val nodoUseCase
             if (apadrinar) {
                 nodoUseCase.apadrinar(idNodo, idPadre)
             } else {
-                nodoUseCase.desApadrinar(idNodo)
+                nodoUseCase.desApadrinar(idNodo, idPadre)
             }
         }
 

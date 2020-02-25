@@ -1,4 +1,4 @@
-package ws;
+package wsrefactor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import entity.Grupo;
+import entity.Relacion;
 import entity.Sala;
 import entity.SesionCliente;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
@@ -28,9 +29,9 @@ import java.util.stream.Collectors;
 public class EndPoint {
 
     public EndPoint(){
-        System.out.println("Instanciando clase EndPoint");
         EndPointHandler.grupoUseCase = SingletonUtils.darGrupoUseCase();
         EndPointHandler.nodoUseCase = SingletonUtils.darNodoUseCase();
+        EndPointHandler.relacionUseCase = SingletonUtils.darRelacionUseCase();
     }
 
     @OnWebSocketConnect
@@ -132,24 +133,25 @@ public class EndPoint {
         Sala sala = EndPointHandler.darSala(idSala);
         Map<String, JsonNode> nodos = sala.getNodos();
         JsonNode elemento = json.get("elemento");
-        if(elemento.get("data").get("source") != null){ //Es grupo
 
-            nodos.put(elemento.get("data").get("id").asText(), elemento); //Agrego el grupo a los nodos de la sala.
-
-            sala.getGruposAgregados().put(elemento.get("data").get("id").asText(), elemento); //Agrego el grupo a los nuevos elementos. TODO: Eliminar.
-            agregarADbYReenviarAtodos(elemento, idSala, session); //TODO: nuevo
-        }else{ //Es edge
-            String edgeId = elemento.get("data").get("id").asText();
-            nodos.put(edgeId, elemento);
-            sala.getGruposAgregados().put(edgeId, elemento); //TODO: Eliminar.
-
-            agregarEdgeYReenviarATodos();
-
+        nodos.put(elemento.get("data").get("id").asText(), elemento);
+        switch (json.get("tipo").asText()){
+            case "Grupo":
+                persistirYReenviarGrupo(elemento, idSala, session);
+                break;
+            case "Edge grupo":
+                persistirEdgeGrupo(elemento);
+                break;
+            case "Edge nodo":
+                persistirEdgeNodo(elemento);
+                break;
+            default: break;
         }
+
         return json.toString();
     }
 
-    private void agregarADbYReenviarAtodos(JsonNode elemento, int idProblematica, Session session){
+    private void persistirYReenviarGrupo(JsonNode elemento, int idProblematica, Session session){
         String idProvicional = elemento.get("data").get("id").asText();
         String nombreGrupo = elemento.get("data").get("nombre").asText();
         CompletableFuture.supplyAsync(() -> EndPointHandler.agregarGrupo(idProblematica, new Grupo(nombreGrupo)))
@@ -159,16 +161,40 @@ public class EndPoint {
             nuevoJson.put("id", idProvicional);
             nuevoJson.put("nuevoId", grupo.getId());
             try {
+                actualizarIdGrupo(session, idProvicional, grupo.getId());
                 difundirATodos(session, new ObjectMapper().writeValueAsString(nuevoJson));
-                actualizarIdGrupo(idProvicional, grupo.getId());
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
         });
     }
 
-    private void actualizarIdGrupo(int id, int idNuevo){
+    private void actualizarIdGrupo(Session session, String id, int idNuevo){
+        Sala sala = EndPointHandler.darSala(EndPointHandler.extraerIdSala(session));
+        JsonNode grupo = sala.getNodos().get(id);
+        ((ObjectNode)grupo.get("data")).set("id", new TextNode(Integer.toString(idNuevo))); //Actualizamos el id del elemento.
+        sala.getNodos().remove(id);
+        sala.getNodos().put(Integer.toString(idNuevo), grupo);
+    }
 
+    private void persistirEdgeGrupo(JsonNode edge){
+        String idPadre = edge.get("data").get("source").asText();
+        String id = edge.get("data").get("target").asText();
+        Relacion relacion = new Relacion();
+        relacion.setIdGrupo(Integer.parseInt(id));
+        relacion.setIdGrupoPadre(Integer.parseInt(idPadre));
+        relacion.setFase(2);
+        EndPointHandler.agregarRelacion(relacion);
+    }
+
+    private void persistirEdgeNodo(JsonNode edge){
+        String idPadre = edge.get("data").get("source").asText();
+        String id = edge.get("data").get("target").asText();
+        Relacion relacion = new Relacion();
+        relacion.setIdNodo(Integer.parseInt(id));
+        relacion.setIdNodoPadre(Integer.parseInt(idPadre));
+        relacion.setFase(2);
+        EndPointHandler.agregarRelacion(relacion);
     }
 
     private String moverElemento(JsonNode json, Session session) {
@@ -205,19 +231,11 @@ public class EndPoint {
 
     private void enviarNodosACliente(Session session) {
         Sala sala = EndPointHandler.darSala(EndPointHandler.extraerIdSala(session));
-        HashMap<String, Object> jsonMap = new HashMap<String, Object>();
-
-        List<ObjectNode> solicitantes = sala.getClientes().values().stream().map(sesionCliente -> {
-            ObjectNode solicitante = new ObjectMapper().createObjectNode();
-            solicitante.set("nombre", new TextNode(sesionCliente.getNombre()));
-            solicitante.set("email", new TextNode(sesionCliente.getEmail()));
-            solicitante.set("solicitandoOrganizacion", sesionCliente.getSolicitandoOrganizacion() ? BooleanNode.TRUE : BooleanNode.FALSE);
-            return solicitante;
-        }).collect(Collectors.toList());
+        HashMap<String, Object> jsonMap = new HashMap<>();
 
         jsonMap.put("accion", "Nodos");
         jsonMap.put("nodos", sala.getNodos().values());
-        jsonMap.put("solicitantes", solicitantes);
+        jsonMap.put("solicitantes", darSolicitantesPorSala(sala));
 
         try {
             String jsonString = new ObjectMapper().writeValueAsString(jsonMap);
@@ -225,6 +243,16 @@ public class EndPoint {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+    }
+
+    private List<ObjectNode> darSolicitantesPorSala(Sala sala){
+        return sala.getClientes().values().stream().map(sesionCliente -> {
+            ObjectNode solicitante = new ObjectMapper().createObjectNode();
+            solicitante.set("nombre", new TextNode(sesionCliente.getNombre()));
+            solicitante.set("email", new TextNode(sesionCliente.getEmail()));
+            solicitante.set("solicitandoOrganizacion", sesionCliente.getSolicitandoOrganizacion() ? BooleanNode.TRUE : BooleanNode.FALSE);
+            return solicitante;
+        }).collect(Collectors.toList());
     }
 
     /**

@@ -9,7 +9,10 @@ class DaoGrupo(private val jdbi: Jdbi) {
 
     fun darGrupos(idProblematica: Int): MutableList<Grupo> {
         return jdbi.withHandle<MutableList<Grupo>, RuntimeException> {
-            it.createQuery("SELECT * FROM GRUPO G WHERE G.c_id_problematica = :idProblematica")
+            it.createQuery("""SELECT G.c_id, G.d_nombre, G.c_id_problematica, R.c_id_grupo_padre as c_id_padre FROM GRUPO G
+                INNER JOIN RELACION R ON R.c_id_grupo = G.c_id
+|               WHERE G.c_id_problematica = :idProblematica
+|               AND R.c_fase = 2""".trimMargin())
                 .bind("idProblematica", idProblematica)
                 .mapToBean(Grupo::class.java)
                 .list()
@@ -40,35 +43,6 @@ class DaoGrupo(private val jdbi: Jdbi) {
         }
     }
 
-    fun apadrinar(id: Int, idPadre: Int, idProblematica: Int): Boolean {
-        return try{
-            jdbi.withHandle<Boolean, RuntimeException> {
-                it.createUpdate("UPDATE GRUPO SET c_id_padre = :idPadre WHERE c_id = :id AND c_id_problematica = :idProblematica")
-                        .bind("id", id)
-                        .bind("idPadre", idPadre)
-                        .bind("idProblematica", idProblematica)
-                        .execute() > 0
-            }
-        }catch (e: Exception){
-            e.printStackTrace()
-            false
-        }
-    }
-
-    fun desApadrinar(id: Int, idProblematica: Int): Boolean {
-        return try{
-            jdbi.withHandle<Boolean, RuntimeException> {
-                it.createUpdate("UPDATE GRUPO SET c_id_padre = null WHERE c_id = :id AND c_id_problematica = :idProblematica")
-                        .bind("id", id)
-                        .bind("idProblematica", idProblematica)
-                        .execute() > 0
-            }
-        }catch (e: Exception){
-            e.printStackTrace()
-            false
-        }
-    }
-
     fun darGruposConReacciones(idProblematica: Int): List<GrupoConReaccion> {
         return jdbi.withHandle<List<GrupoConReaccion>, RuntimeException> {
             it.createQuery("""
@@ -90,26 +64,6 @@ class DaoGrupo(private val jdbi: Jdbi) {
                 .bind("idPersonaProblematica", idPersonaProblematica)
                 .mapToBean(Grupo::class.java)
                 .findFirst()
-        }
-    }
-
-    fun eliminarGrupo(id: Int, idProblematica: Int): Boolean {
-        return try{
-            jdbi.inTransaction<Boolean, RuntimeException> {
-                desApadrinar(id, idProblematica)
-
-                it.createUpdate("UPDATE NODO SET c_id_padre = null WHERE c_id_padre = :idPadre")
-                        .bind("idPadre", id)
-                        .execute()
-
-                it.createUpdate("DELETE FROM GRUPO WHERE c_id = :id AND c_id_problematica = :idProblematica")
-                        .bind("id", id)
-                        .bind("idProblematica", idProblematica)
-                        .execute() > 0
-            }
-        }catch (e: Exception){
-            e.printStackTrace()
-            false
         }
     }
 

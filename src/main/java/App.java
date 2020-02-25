@@ -100,6 +100,7 @@ public class App extends Application<ConfiguracionApp> {
         DaoProblematica daoProblematica = new DaoProblematica(jdbi);
         DaoInvitacion daoInvitacion = new DaoInvitacion(jdbi);
         DaoNodo daoNodo = new DaoNodo(jdbi);
+        DaoRelacion daoRelacion = new DaoRelacion(jdbi);
         DaoReaccion daoReaccion = new DaoReaccion(jdbi);
         DaoGrupo daoGrupo = new DaoGrupo(jdbi);
         DaoEscrito daoEscrito = new DaoEscrito(jdbi);
@@ -109,7 +110,7 @@ public class App extends Application<ConfiguracionApp> {
         ProblematicaUseCase problematicaUseCase = new ProblematicaUseCase(daoProblematica, eventPublisher);
         CorreoUseCase correoUseCase = new CorreoUseCase(daoPersona, correoUtils);
         InvitacionUseCase invitacionUseCase = new InvitacionUseCase(daoInvitacion, daoPersona, eventPublisher);
-        NodoUseCase nodoUseCase = SingletonUtils.guardarNodoUseCase(new NodoUseCase(daoNodo));
+        NodoUseCase nodoUseCase = SingletonUtils.guardarNodoUseCase(new NodoUseCase(daoNodo, daoRelacion));
         GrupoUseCase grupoUseCase = new GrupoUseCase(daoGrupo, daoReaccion, nodoUseCase);
         ReaccionUseCase reaccionUseCase = new ReaccionUseCase(daoReaccion);
         EscritoUseCase escritoUseCase = new EscritoUseCase(daoEscrito);

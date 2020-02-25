@@ -2,6 +2,7 @@ package util;
 
 import usecase.GrupoUseCase;
 import usecase.NodoUseCase;
+import usecase.RelacionUseCase;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,5 +39,12 @@ public class SingletonUtils {
 
     public static void guardarIdSesion(String idSession){
         idSesion.set(idSession);
+    }
+
+    public static RelacionUseCase darRelacionUseCase() { return (RelacionUseCase) singletons.get("relacionUseCase"); }
+
+    public static RelacionUseCase guardarRelacionUseCase(RelacionUseCase relacionUseCase){
+        singletons.put("relacionUseCase", relacionUseCase);
+        return relacionUseCase;
     }
 }

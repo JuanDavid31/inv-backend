@@ -3,34 +3,45 @@ package usecase
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import dao.DaoNodo
+import dao.DaoRelacion
 import entity.Mensaje
 import entity.Error
 import entity.Nodo
+import entity.Relacion
 
-class NodoUseCase(val daoNodo: DaoNodo) {
+class NodoUseCase(val daoNodo: DaoNodo, val daoRelacion: DaoRelacion) {
 
     fun apadrinar(id: Int, idPadre: Int): Any {
-        val apadrinado = daoNodo.apadrinar(id, idPadre)
+        val apadrinado = daoRelacion.conectarNodos(id, idPadre, 1);
         return if (apadrinado) Mensaje("Conexión exitosa") else Error(arrayOf("El nodo no existe."))
     }
 
-    fun desApadrinar(id: Int): Any {
-        val conexionesEliminadas = daoNodo.eliminarConexionesPadreEHijo(id)
+    fun desApadrinar(id: Int, idPadre: Int): Any {
+        val conexionesEliminadas = daoRelacion.eliminarConexionesPadreEHijo(id, idPadre)
         return if(conexionesEliminadas) Mensaje("Conexiones eliminadas exitosamente") else Error(arrayOf("El nodo no existe o no tiene conexiones."))
     }
 
     fun darNodosPorProblematica(idProblematica: Int): List<JsonNode> {
-        return daoNodo.darNodosPorProblematica(idProblematica).map {
+        val nodosJson = daoNodo.darNodosPorProblematica(idProblematica).map {
             val data = hashMapOf("id" to it.id,
                     "nombre" to it.nombre,
                     "parent" to it.idGrupo,
                     "urlFoto" to it.urlFoto,
                     "nombreCreador" to it.nombreCreador)
 
-            val nodo = hashMapOf("data" to data)
+            hashMapOf("data" to data)
+        }.map { ObjectMapper().valueToTree<JsonNode>(it) }
 
-            ObjectMapper().valueToTree<JsonNode>(nodo)
-        }
+        val conexionesJson: List<JsonNode> = daoNodo.darConexionesSegundaFase(idProblematica)
+                .filter { it.idPadre != null }
+                .map {
+                    val data = hashMapOf("id" to "${it.idPadre}${it.id}",
+                            "source" to it.idPadre,
+                            "target" to it.id)
+
+                    hashMapOf("data" to data)
+                }.map { ObjectMapper().valueToTree<JsonNode>(it) }
+        return nodosJson + conexionesJson
     }
 
     fun actualizarGrupoNodo(nodo: Nodo) = daoNodo.actualizarGrupoNodo(nodo)
