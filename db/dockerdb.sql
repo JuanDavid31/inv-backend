@@ -62,7 +62,6 @@ CREATE TABLE GRUPO
 (
     c_id              serial      not null,
     c_id_problematica int         not null,
-    c_id_padre        int,
     d_nombre          varchar(30) not null
 );
 
@@ -70,27 +69,35 @@ ALTER TABLE GRUPO
     ADD CONSTRAINT PK_GRUPO primary key (c_id);
 ALTER TABLE GRUPO
     ADD CONSTRAINT FK_GRUPO_PROBLEMATICA foreign key (c_id_problematica) REFERENCES PROBLEMATICA (c_id);
-ALTER TABLE GRUPO
-    ADD CONSTRAINT FK_GRUPO_PADRE foreign key (c_id_padre) REFERENCES GRUPO (c_id);
 
 CREATE TABLE NODO
 (
     c_id           serial       not null,
     a_nombre       varchar(20) not null,
     a_id_pers_prob varchar(50)  not null,
-    a_url_foto     text,
-    c_id_padre     int,
-    c_id_grupo     int
+    a_url_foto     text
 );
 
 ALTER TABLE NODO
     ADD CONSTRAINT PK_NODO primary key (c_id);
 ALTER TABLE NODO
     add constraint FK_NODO_PERS_PROB foreign key (a_id_pers_prob) REFERENCES PERSONA_PROBLEMATICA (a_id);
-ALTER TABLE NODO
-    ADD CONSTRAINT FK_NODO_PADRE foreign key (c_id_padre) REFERENCES NODO (c_id);
-ALTER TABLE NODO
-    ADD CONSTRAINT FK_NODO_GRUPO foreign key (c_id_grupo) REFERENCES GRUPO (c_id);
+
+CREATE TABLE RELACION
+(
+    c_id serial not null,
+    c_id_grupo int,
+    c_id_grupo_padre int,
+    c_id_nodo int,
+    c_id_nodo_padre int,
+    c_fase int not null
+);
+
+ALTER TABLE RELACION ADD CONSTRAINT FK_RELACION_GRUPO_HIJO FOREIGN KEY (c_id_grupo) REFERENCES GRUPO (c_id);
+ALTER TABLE RELACION ADD CONSTRAINT FK_RELACION_GRUPO_PADRE FOREIGN KEY (c_id_grupo_padre) REFERENCES GRUPO (c_id);
+ALTER TABLE RELACION ADD CONSTRAINT FK_RELACION_NODO_HIJO FOREIGN KEY (c_id_nodo) REFERENCES NODO (c_id);
+ALTER TABLE RELACION ADD CONSTRAINT FK_RELACION_NODO_PADRE FOREIGN KEY (c_id_nodo_padre) REFERENCES NODO (c_id);
+ALTER TABLE RELACION ADD CONSTRAINT CK_RELACION CHECK ( 1 >= c_fase AND c_fase <= 2 );
 
 CREATE TABLE REACCION
 (
@@ -159,6 +166,7 @@ BEGIN
     ALTER SEQUENCE problematica_c_id_seq RESTART WITH 1;
     ALTER SEQUENCE grupo_c_id_seq RESTART WITH 1;
     ALTER SEQUENCE nodo_c_id_seq RESTART WITH 1;
+    ALTER SEQUENCE relacion_c_id_seq RESTART WITH 1;
 END;
 $$ LANGUAGE plpgsql;
 
