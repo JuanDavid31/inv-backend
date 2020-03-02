@@ -16,7 +16,7 @@ class NodoUseCase(val daoNodo: DaoNodo, val daoRelacion: DaoRelacion) {
     }
 
     fun desApadrinar(id: Int, idPadre: Int): Any {
-        val conexionesEliminadas = daoRelacion.eliminarNodoANodo(id, idPadre)
+        val conexionesEliminadas = daoRelacion.eliminarNodoANodo(id, idPadre, 1)
         return if(conexionesEliminadas) Mensaje("Conexiones eliminadas exitosamente") else Error(arrayOf("El nodo no existe o no tiene conexiones."))
     }
 
