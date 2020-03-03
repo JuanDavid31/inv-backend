@@ -10,7 +10,7 @@ class Nodo {
     var nombre: String = ""
     @get:ColumnName("a_url_foto")
     var urlFoto: String = ""
-    @get:ColumnName("c_id_padre")
+    @get:ColumnName("c_id_nodo_padre")
     var idPadre: Int = 0
     @get:ColumnName("c_id_grupo")
     var idGrupo: Int? = null

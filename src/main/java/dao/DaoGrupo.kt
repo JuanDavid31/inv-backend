@@ -21,7 +21,7 @@ class DaoGrupo(private val jdbi: Jdbi) {
 
     fun agregarGrupo(idProblematica: Int, grupo: Grupo): Grupo {
         return jdbi.withHandle<Grupo, RuntimeException> { handle ->
-            handle.createUpdate("INSERT INTO GRUPO(c_id_problematica, d_nombre, c_id_padre) VALUES(:idProblematica, :nombre, :idPadre)")
+            handle.createUpdate("INSERT INTO GRUPO(c_id_problematica, d_nombre) VALUES(:idProblematica, :nombre)")
                 .bind("idProblematica", idProblematica)
                 .bindBean(grupo)
                 .executeAndReturnGeneratedKeys()

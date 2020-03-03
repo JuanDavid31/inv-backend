@@ -37,9 +37,9 @@ class DaoNodo(private val jdbi: Jdbi) {
     fun darNodosPorPersonaYProblematica(idPersonaProblematica: String): List<Nodo> {
         return jdbi.withHandle<List<Nodo>, Exception> {
             try {
-                it.createQuery("""SELECT c_id, a_nombre, a_url_foto, c_id_nodo_padre FROM NODO N
-                    INNER JOIN RELACION R ON R.c_id_nodo = N.c_id WHERE R.c_fase = 1 
-                    AND a_id_pers_prob = :idPersProb""")
+                it.createQuery("""SELECT N.c_id, a_nombre, a_url_foto, c_id_nodo_padre FROM NODO N
+                LEFT JOIN RELACION R ON R.c_id_nodo = N.c_id WHERE a_id_pers_prob = :idPersProb
+                AND (R.c_fase = 1 OR R.c_fase is null)""")
                     .bind("idPersProb", idPersonaProblematica)
                     .mapToBean(Nodo::class.java)
                     .list()
@@ -56,12 +56,15 @@ class DaoNodo(private val jdbi: Jdbi) {
     fun darNodosPorProblematica(idProblematica: Int): List<Nodo>{
         return jdbi.withHandle<List<Nodo>, Exception> {
             try {
-                it.createQuery("""SELECT N.c_id, N.a_nombre, N.a_url_foto, R.c_id_grupo_padre as c_id_grupo, 
-                concat(p.d_nombres, ' ', p.d_apellidos) as "nombreCreador" FROM NODO n LEFT JOIN GRUPO G on G.c_id = N.c_id_grupo
-                inner join PERSONA_PROBLEMATICA pp on pp.a_id = n.a_id_pers_prob
+                it.createQuery("""select N.c_id, N.a_nombre, N.a_url_foto, r.c_id_grupo_padre as c_id_grupo,
+                concat(p.d_nombres, ' ', p.d_apellidos) as "nombreCreador"
+                from nodo n
+                inner join persona_problematica pp on n.a_id_pers_prob = pp.a_id
                 inner join persona p on pp.a_email = p.a_email
-                inner join RELACON R ON N.c_id = R.c_id_nodo
-                where PP.c_id_problematica = :idProblematica AND R.c_fase = 2""")
+                left join relacion r on n.c_id = r.c_id_nodo
+                left join grupo g on r.c_id_grupo_padre = g.c_id
+                where pp.c_id_problematica = :idProblematica
+                AND (r.c_fase = 2 Or r.c_fase is null)""")
                 .bind("idProblematica", idProblematica)
                 .mapToBean(Nodo::class.java)
                 .list()

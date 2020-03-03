@@ -69,6 +69,8 @@ ALTER TABLE GRUPO
     ADD CONSTRAINT PK_GRUPO primary key (c_id);
 ALTER TABLE GRUPO
     ADD CONSTRAINT FK_GRUPO_PROBLEMATICA foreign key (c_id_problematica) REFERENCES PROBLEMATICA (c_id);
+    
+SELECT setval('grupo_c_id_seq', 10000, false);
 
 CREATE TABLE NODO
 (
