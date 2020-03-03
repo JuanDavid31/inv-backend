@@ -7,9 +7,6 @@ import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.google.gson.JsonObject;
-import entity.Grupo;
-import entity.Relacion;
 import entity.Sala;
 import entity.SesionCliente;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
@@ -22,7 +19,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
@@ -30,9 +26,9 @@ import java.util.stream.Collectors;
 public class EndPoint {
 
     public EndPoint(){
+        System.out.println("Instanciando clase EndPoint");
         EndPointHandler.grupoUseCase = SingletonUtils.darGrupoUseCase();
         EndPointHandler.nodoUseCase = SingletonUtils.darNodoUseCase();
-        EndPointHandler.relacionUseCase = SingletonUtils.darRelacionUseCase();
     }
 
     @OnWebSocketConnect
@@ -76,7 +72,7 @@ public class EndPoint {
         switch (json.get("accion").asText()){
             case "Conectarse":
                 return agregarDatos(json, session);
-            case "Actualizar posiciones": //Esta acción SOLO SALE del cliente
+            case "Actualizar posiciones": //Esta acción no existe en el cliente
                 return actualizarPosiciones(json, session);
             case "Agregar elemento":
                 return agregarElemento(json, session);
@@ -91,7 +87,7 @@ public class EndPoint {
             case "Mover":
                 return moverNodo(json, session);
             case "Mover padre":
-                return moverNodoPadre(json, session); //Movimiento en x & Y.
+                return moverNodoPadre(json, session);
             case "Cambio solicitud de organizacion":
                 return cambioSolicitudOrganizacion(json, session);
             case "Cambiar nombre":
@@ -122,7 +118,9 @@ public class EndPoint {
 
     private String actualizarPosiciones(JsonNode json, Session session) {
         JsonNode nodos = json.get("nodos");
-        for(JsonNode nodo : nodos){ EndPointHandler.actualizarPosicionNodo(nodo, session);}
+        for(JsonNode nodo : nodos){
+            EndPointHandler.actualizarPosicionNodo(nodo, session);
+        }
         EndPointHandler.guardarPosicionesIniciales(nodos, session);
         return json.toString();
     }
@@ -132,82 +130,16 @@ public class EndPoint {
         Sala sala = EndPointHandler.darSala(idSala);
         Map<String, JsonNode> nodos = sala.getNodos();
         JsonNode elemento = json.get("elemento");
+        if(elemento.get("data").get("source") != null){ //Es grupo
+            nodos.put(elemento.get("data").get("id").asText(), elemento);
+            sala.getGruposAgregados().put(elemento.get("data").get("id").asText(), elemento);
+        }else{ //Es edge
+            String edgeId = elemento.get("data").get("id").asText();
 
-        nodos.put(elemento.get("data").get("id").asText(), elemento);
-        switch (json.get("tipo").asText()){
-            case "Grupo":
-                persistirYReenviarGrupo(elemento, idSala, session);
-                break;
-            case "Edge grupo":
-                persistirEdgeGrupo(elemento);
-                break;
-            case "Edge nodo":
-                persistirEdgeNodo(elemento);
-                break;
-            default: break;
+            nodos.put(edgeId, elemento);
+            sala.getGruposAgregados().put(edgeId, elemento);
         }
-
         return json.toString();
-    }
-
-    private void persistirYReenviarGrupo(JsonNode elemento, int idProblematica, Session session){
-        String idProvicional = elemento.get("data").get("id").asText();
-        String nombreGrupo = elemento.get("data").get("nombre").asText();
-        CompletableFuture.supplyAsync(() -> {
-            System.out.println("Inicia la inserción del nuevo grupo");
-            return EndPointHandler.agregarGrupo(idProblematica, new Grupo(nombreGrupo));
-        }).thenAcceptAsync(grupo -> {
-            System.out.println("Termina la inserción del nuevo grupo");
-            HashMap nuevoJson = new HashMap();
-            nuevoJson.put("accion", "Actualizar id grupo");
-            nuevoJson.put("id", idProvicional);
-            nuevoJson.put("nuevoId", grupo.getId());
-            try {
-                actualizarIdGrupo(session, idProvicional, grupo.getId());
-                difundirATodos(session, new ObjectMapper().writeValueAsString(nuevoJson));
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    private void actualizarIdGrupo(Session session, String idProvicional, int idNuevo){
-        Sala sala = EndPointHandler.darSala(EndPointHandler.extraerIdSala(session));
-        JsonNode grupo = sala.getNodos().get(idProvicional);
-        ((ObjectNode)grupo.get("data")).set("id", new TextNode(Integer.toString(idNuevo))); //Actualizamos el id del elemento.
-        ((ObjectNode)grupo.get("data")).set("idAntiguo", new TextNode(idProvicional));
-        sala.getNodos().remove(idProvicional);
-        sala.getNodos().put(Integer.toString(idNuevo), grupo);
-    }
-
-    private void persistirEdgeGrupo(JsonNode edge){
-        Relacion relacion = jsonNodeAEdgeGrupo(edge);
-        EndPointHandler.agregarRelacionGrupoAGrupo(relacion);
-    }
-
-    private Relacion jsonNodeAEdgeGrupo(JsonNode edge){
-        String idPadre = edge.get("data").get("source").asText();
-        String id = edge.get("data").get("target").asText();
-        Relacion relacion = new Relacion();
-        relacion.setIdGrupo(Integer.parseInt(id));
-        relacion.setIdGrupoPadre(Integer.parseInt(idPadre));
-        relacion.setFase(2);
-        return relacion;
-    }
-
-    private void persistirEdgeNodo(JsonNode edge){
-        Relacion relacion = jsonNodeAEdgeNodo(edge);
-        EndPointHandler.agregarRelacionNodoANodo(relacion);
-    }
-
-    private Relacion jsonNodeAEdgeNodo(JsonNode edge){
-        String idPadre = edge.get("data").get("source").asText();
-        String id = edge.get("data").get("target").asText();
-        Relacion relacion = new Relacion();
-        relacion.setIdNodo(Integer.parseInt(id));
-        relacion.setIdNodoPadre(Integer.parseInt(idPadre));
-        relacion.setFase(2);
-        return relacion;
     }
 
     private String moverElemento(JsonNode json, Session session) {
@@ -219,51 +151,9 @@ public class EndPoint {
         String id = elemento.get("data").get("id").asText();
         JsonNode parent = elemento.get("data").get("parent");
 
-        agregarOEliminarRelacionEntreNodoYGrupo(id, parent, session);
-
         ((ObjectNode)nodos.get(id).get("data")).set("parent", parent != null ? parent : NullNode.getInstance());
 
         return json.toString();
-    }
-
-    private void agregarOEliminarRelacionEntreNodoYGrupo(String id, JsonNode parent, Session session){
-        Relacion relacion = new Relacion();
-        relacion.setIdNodo(Integer.parseInt(id));
-
-        if(parent == null){//Elimino una relación entre grupo y nodo
-            EndPointHandler.eliminarRelacionNodoGrupo(relacion);
-            return;
-        }
-
-        //Creo una relación enrte grupo y nodo
-        if(esIdSecuencial(parent.asText())){
-            System.out.println("Cliente nuevo servidor nuevo");
-            relacion.setIdGrupoPadre(Integer.parseInt(parent.asText()));
-            EndPointHandler.agregarRelacionNodoGrupo(relacion);
-            return;
-        }
-
-        boolean existeGrupoPorIdProvicional = EndPointHandler.existeGrupoPorIdProvicional(parent.asText(), session);
-
-        if(existeGrupoPorIdProvicional){
-            System.out.println("Cliente viejo servidor viejo");
-            System.out.println("ERROR GRAVISIMO. Esto no debería suceder. En el servidor hay id secuencial y significa que no la inserción del grupo no se ha terminado.");
-        }else{
-            System.out.println("Cliente viejo servidor nuevo");
-            JsonNode grupo = EndPointHandler.darGrupoPorIdProvicional(parent.asText(), session);
-            String idGrupoString = grupo.get("data").get("id").asText();
-            relacion.setIdGrupoPadre(Integer.parseInt(idGrupoString));
-            EndPointHandler.agregarRelacionNodoGrupo(relacion);
-        }
-    }
-
-    private boolean esIdSecuencial(String id){
-        try{
-            Integer.parseInt(id);
-            return true;
-        }catch (NumberFormatException ignored){
-            return false;
-        }
     }
 
     private String eliminarElemento(JsonNode json, Session session) {
@@ -275,51 +165,30 @@ public class EndPoint {
 
         nodos.remove(id);
 
-        switch (json.get("tipo").asText()){
-            case "Grupo":
-                eliminarGrupo(elemento);
-                break;
-            case "Edge grupo":
-                eliminarRelacionGrupoAGrupo(elemento);
-                break;
-            case "Edge nodo":
-                eliminarRelacionNodoANodo(elemento);
-                break;
-            default: break;
+        if(sala.getGruposAgregados().containsKey(id)){
+            sala.getGruposAgregados().remove(id);
+        }else{
+            sala.getGruposEliminados().put(id, new ObjectMapper().createObjectNode());
         }
 
         return json.toString();
     }
 
-    private void eliminarGrupo(JsonNode elemento){
-        String idGrupo = elemento.get("data").get("id").asText();
-        EndPointHandler.eliminarGrupo(Integer.parseInt(idGrupo));
-    }
-
-    private void eliminarRelacionGrupoAGrupo(JsonNode elemento){
-        String idPadre = elemento.get("data").get("source").asText();
-        String id = elemento.get("data").get("target").asText();
-        Relacion relacion = new Relacion();
-        relacion.setIdGrupo(Integer.parseInt(id));
-        relacion.setIdGrupoPadre(Integer.parseInt(idPadre));
-        EndPointHandler.eliminarRelacionGrupoAGrupo(relacion);
-    }
-
-    private void eliminarRelacionNodoANodo(JsonNode elemento){
-        String idPadreString = elemento.get("data").get("source").asText();
-        String idString = elemento.get("data").get("target").asText();
-        int idPadre = Integer.parseInt(idPadreString);
-        int id = Integer.parseInt(idString);
-        EndPointHandler.eliminarRelacionNodoANodo(id, idPadre);
-    }
-
     private void enviarNodosACliente(Session session) {
         Sala sala = EndPointHandler.darSala(EndPointHandler.extraerIdSala(session));
-        HashMap<String, Object> jsonMap = new HashMap<>();
+        HashMap<String, Object> jsonMap = new HashMap<String, Object>();
+
+        List<ObjectNode> solicitantes = sala.getClientes().values().stream().map(sesionCliente -> {
+            ObjectNode solicitante = new ObjectMapper().createObjectNode();
+            solicitante.set("nombre", new TextNode(sesionCliente.getNombre()));
+            solicitante.set("email", new TextNode(sesionCliente.getEmail()));
+            solicitante.set("solicitandoOrganizacion", sesionCliente.getSolicitandoOrganizacion() ? BooleanNode.TRUE : BooleanNode.FALSE);
+            return solicitante;
+        }).collect(Collectors.toList());
 
         jsonMap.put("accion", "Nodos");
         jsonMap.put("nodos", sala.getNodos().values());
-        jsonMap.put("solicitantes", darSolicitantesPorSala(sala));
+        jsonMap.put("solicitantes", solicitantes);
 
         try {
             String jsonString = new ObjectMapper().writeValueAsString(jsonMap);
@@ -327,16 +196,6 @@ public class EndPoint {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-    }
-
-    private List<ObjectNode> darSolicitantesPorSala(Sala sala){
-        return sala.getClientes().values().stream().map(sesionCliente -> {
-            ObjectNode solicitante = new ObjectMapper().createObjectNode();
-            solicitante.set("nombre", new TextNode(sesionCliente.getNombre()));
-            solicitante.set("email", new TextNode(sesionCliente.getEmail()));
-            solicitante.set("solicitandoOrganizacion", sesionCliente.getSolicitandoOrganizacion() ? BooleanNode.TRUE : BooleanNode.FALSE);
-            return solicitante;
-        }).collect(Collectors.toList());
     }
 
     /**
@@ -447,13 +306,16 @@ public class EndPoint {
         int idSala = EndPointHandler.extraerIdSala(session);
         Sala sala = EndPointHandler.darSala(idSala);
         Map<String, JsonNode> nodos = sala.getNodos();
+        Map<String, JsonNode> gruposAgregados = sala.getGruposAgregados();
 
         String id = json.get("grupo").get("data").get("id").asText();
         String nuevoNombre = json.get("grupo").get("data").get("nombre").asText();
 
         ((ObjectNode) nodos.get(id).get("data")).replace("nombre", new TextNode(nuevoNombre));
 
-        //TODO: Persistir los cambios en la DB.
+        if(gruposAgregados.containsKey(id)){
+            ((ObjectNode) gruposAgregados.get(id).get("data")).replace("nombre", new TextNode(nuevoNombre));
+        }
 
         return json.toString();
     }
