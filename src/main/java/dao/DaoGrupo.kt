@@ -30,10 +30,10 @@ class DaoGrupo(private val jdbi: Jdbi) {
         }
     }
 
-    fun actualizarNombreYPadreGrupo(grupo: Grupo): Boolean {
+    fun actualizarNombre(grupo: Grupo): Boolean {
         return try{
             jdbi.withHandle<Boolean, RuntimeException> {
-                it.createUpdate("UPDATE GRUPO SET d_nombre = :nombre, c_id_padre = :idPadre WHERE c_id = :id")
+                it.createUpdate("UPDATE GRUPO SET d_nombre = :nombre WHERE c_id = :id")
                     .bindBean(grupo)
                     .execute() > 0
             }

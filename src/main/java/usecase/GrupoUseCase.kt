@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.node.*
 import dao.DaoGrupo
 import dao.DaoReaccion
 import entity.Grupo
-import entity.GrupoConReaccion
 
 class GrupoUseCase(val daoGrupo: DaoGrupo, val daoReaccion: DaoReaccion, val nodoUseCase: NodoUseCase){
 
@@ -32,7 +31,7 @@ class GrupoUseCase(val daoGrupo: DaoGrupo, val daoReaccion: DaoReaccion, val nod
 
     fun agregarGrupo(idProblematica: Int, grupo: Grupo) = daoGrupo.agregarGrupo(idProblematica, grupo)
 
-    fun actualizarNombreYPadreGrupo(grupo: Grupo): Boolean = daoGrupo.actualizarNombreYPadreGrupo(grupo)
+    fun actualizarNombre(grupo: Grupo): Boolean = daoGrupo.actualizarNombre(grupo)
 
     fun darGruposConReaccionDeUsuario(idProblematica: Int, email: String): List<JsonNode> {
         val grupos = darGrupos(idProblematica)

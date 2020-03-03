@@ -29,6 +29,7 @@ public class EndPoint {
         System.out.println("Instanciando clase EndPoint");
         EndPointHandler.grupoUseCase = SingletonUtils.darGrupoUseCase();
         EndPointHandler.nodoUseCase = SingletonUtils.darNodoUseCase();
+        EndPointHandler.relacionUseCase = SingletonUtils.darRelacionUseCase();
     }
 
     @OnWebSocketConnect
