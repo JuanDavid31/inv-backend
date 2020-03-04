@@ -61,7 +61,8 @@ public class EndPointHandler {
     private static void agregarNuevosGrupos(Sala sala, int idProblematica) {
         Map<String, JsonNode> gruposAgregados = sala.getGruposAgregados();
         agregarGrupos(gruposAgregados, idProblematica);
-        agregarRelacionesNuevas(gruposAgregados);
+        agregarRelacionesNuevas(gruposAgregados); //Agrega relaciones entre grupos
+        agregarRelacionesNuevas(sala.getRelacionesAgregadas()); //Agrega relaciones entre
     }
 
     /**
@@ -90,6 +91,8 @@ public class EndPointHandler {
             }));
     }
 
+    public final static int ID_GRUPO_INICIAL = 10000;
+
     private static void agregarRelacionesNuevas(Map<String, JsonNode> grupos){
         System.out.println("agregarRelacionesNuevas");
         grupos.values()
@@ -106,20 +109,28 @@ public class EndPointHandler {
 
                     Relacion relacion = new Relacion();
 
-                    if(id >= 10000 && idPadre >= 10000){ //Agrego edge grupos
-                        relacion.setIdGrupo(id);
+                    if(idPadre >= ID_GRUPO_INICIAL){
                         relacion.setIdGrupoPadre(idPadre);
-                        
-                        
-                        System.out.println("Conecto grupos");
-                        relacionUseCase.conectarGrupos(relacion);
+                    }else{
+                        relacion.setIdNodoPadre(idPadre);
+                    }
+
+                    if(id >= ID_GRUPO_INICIAL){
+                        relacion.setIdGrupo(id);
                     }else{
                         relacion.setIdNodo(id);
-                        relacion.setIdNodoPadre(idPadre);
-
-                        System.out.println("Conecto nodo y grupo");
-                        relacionUseCase.conectarNodoYGrupo(relacion);
                     }
+
+                    if(idPadre >= ID_GRUPO_INICIAL){
+                        if(id >= ID_GRUPO_INICIAL){
+                            relacionUseCase.conectarGrupos(relacion);
+                        }else{
+                            relacionUseCase.conectarNodoYGrupo(relacion);
+                        }
+                    }else if(id <= ID_GRUPO_INICIAL){
+                        relacionUseCase.conectarNodos(relacion);
+                    }
+
                 }));
     }
 
@@ -146,8 +157,19 @@ public class EndPointHandler {
 
     private static void eliminarGrupos(Sala sala, int idSala) {
         Map<String, JsonNode> gruposEliminados = sala.getGruposEliminados();
+        eliminarConexiones(gruposEliminados);
+        eliminarConexiones(sala.getRelacionesEliminadas());
 
-        gruposEliminados.values()
+        List<Integer> idsGrupos = gruposEliminados.entrySet()
+                .stream()
+                .map(entry -> Integer.parseInt(entry.getKey()))
+                .collect(Collectors.toList());
+
+        grupoUseCase.eliminarGrupos(idsGrupos, idSala);
+    }
+
+    private static void eliminarConexiones(Map<String, JsonNode> elementos){
+        elementos.values()
                 .stream()
                 .filter(nodo -> nodo.get("data") != null)
                 .filter(nodo -> nodo.get("data").get("source") != null)
@@ -157,25 +179,28 @@ public class EndPointHandler {
 
                     Relacion relacion = new Relacion();
 
-                    if(id >= 10000 && idPadre >= 10000){ //Agrego edge grupos
-                        relacion.setIdGrupo(id);
+                    if(idPadre >= ID_GRUPO_INICIAL){
                         relacion.setIdGrupoPadre(idPadre);
+                    }else{
+                        relacion.setIdNodoPadre(idPadre);
+                    }
 
-                        relacionUseCase.desconectarGrupos(relacion);
+                    if(id >= ID_GRUPO_INICIAL){
+                        relacion.setIdGrupo(id);
                     }else{
                         relacion.setIdNodo(id);
-                        relacion.setIdNodoPadre(idPadre);
+                    }
 
-                        relacionUseCase.desconectarNodoYGrupo(relacion);
+                    if(idPadre >= ID_GRUPO_INICIAL){
+                        if(id >= ID_GRUPO_INICIAL){
+                            relacionUseCase.desconectarGrupos(relacion);
+                        }else{
+                            relacionUseCase.desconectarNodoYGrupo(relacion);
+                        }
+                    }else if(id <= ID_GRUPO_INICIAL){
+                        relacionUseCase.desconectarNodos(relacion.getIdNodo(), relacion.getIdNodoPadre());
                     }
                 });
-
-        List<Integer> idsGrupos = gruposEliminados.entrySet()
-                .stream()
-                .map(entry -> Integer.parseInt(entry.getKey()))
-                .collect(Collectors.toList());
-
-        grupoUseCase.eliminarGrupos(idsGrupos, idSala);
     }
 
     /**

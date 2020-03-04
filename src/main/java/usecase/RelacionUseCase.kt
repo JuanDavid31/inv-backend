@@ -5,7 +5,7 @@ import entity.Relacion
 
 class RelacionUseCase (val daoRelacion: DaoRelacion){
 
-    fun conectarNodos(relacion: Relacion) = daoRelacion.agregarNodoANodo(relacion.id, relacion.idNodoPadre, 2)
+    fun conectarNodos(relacion: Relacion) = daoRelacion.agregarNodoANodo(relacion.idNodo, relacion.idNodoPadre, 2)
 
     fun conectarNodoYGrupo(relacion: Relacion)= daoRelacion.agregarNodoAGrupo(relacion)
 

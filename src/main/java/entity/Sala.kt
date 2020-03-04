@@ -7,13 +7,13 @@ import java.util.concurrent.ConcurrentHashMap
 
 class Sala(val clientes: MutableMap<String, SesionCliente>, var nodos: MutableMap<String, JsonNode>){
 
-    val gruposAgregados: MutableMap<String, JsonNode> = ConcurrentHashMap<String, JsonNode>()
-    val gruposEliminados: MutableMap<String, JsonNode> = ConcurrentHashMap<String, JsonNode>()
-    
-    val relacionesAgregadas: MutableMap<String, JsonNode> = ConcurrentHashMap<String, JsonNode>()
-    val relacionesEliminadas: MutableMap<String, JsonNode> = ConcurrentHashMap<String, JsonNode>()
+    val gruposAgregados: MutableMap<String, JsonNode> = ConcurrentHashMap()
+    val gruposEliminados: MutableMap<String, JsonNode> = ConcurrentHashMap()
 
-    var posicionesIniciales: JsonNode? = null;
+    val relacionesAgregadas: MutableMap<String, JsonNode> = ConcurrentHashMap()
+    val relacionesEliminadas: MutableMap<String, JsonNode> = ConcurrentHashMap()
+
+    var posicionesIniciales: JsonNode? = null
 
     fun agregarSesion(sesion: Session){
         clientes[sesion.hashCode().toString()] = SesionCliente(sesion, "", "", false)

@@ -147,10 +147,26 @@ public class EndPoint {
         Map<String, JsonNode> nodos = sala.getNodos();
         JsonNode elemento = json.get("elemento");
 
-        String id = elemento.get("data").get("id").asText();
-        JsonNode parent = elemento.get("data").get("parent");
+        JsonNode idNode = elemento.get("data").get("id");
 
-        ((ObjectNode)nodos.get(id).get("data")).set("parent", parent != null ? parent : NullNode.getInstance());
+        String id = idNode.asText();
+        JsonNode parentNode = elemento.get("data").get("parent");
+
+        JsonNode posibleParentNode = nodos.get(id).get("data").get("parent");
+        ((ObjectNode)nodos.get(id).get("data")).set("parent", parentNode != null ? parentNode : NullNode.getInstance());
+
+        ObjectNode conexion = new ObjectMapper().createObjectNode();
+        if(parentNode == null){
+            conexion.set("source", posibleParentNode);
+            conexion.set("target", idNode);
+            Map<String, JsonNode> conexionesEliminadas = sala.getRelacionesEliminadas();
+            conexionesEliminadas.put(posibleParentNode.asText() + idNode.asText(), conexion);
+        }else{
+            conexion.set("source", parentNode);
+            conexion.set("target", idNode);
+            Map<String, JsonNode> conexionesAgregadas = sala.getRelacionesAgregadas();
+            conexionesAgregadas.put(parentNode.asText() + idNode.asText(), conexion);
+        }
 
         return json.toString();
     }

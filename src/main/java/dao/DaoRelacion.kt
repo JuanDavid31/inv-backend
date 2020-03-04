@@ -5,7 +5,7 @@ import org.jdbi.v3.core.Jdbi
 
 class DaoRelacion(val jdbi: Jdbi) {
 
-    fun agregarNodoANodo(id: Int, idPadre: Int, fase: Int): Boolean =
+    fun agregarNodoANodo(id: Int?, idPadre: Int?, fase: Int): Boolean =
         jdbi.withHandle<Boolean, Exception> {
             it.createUpdate("INSERT INTO RELACION(c_id_nodo, c_id_nodo_padre, c_fase) VALUES (:id, :idPadre, :fase) ")
                 .bind("id", id)
