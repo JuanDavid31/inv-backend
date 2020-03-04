@@ -3,7 +3,6 @@ package ws;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.IntNode;
 
-import com.google.api.client.json.Json;
 import entity.*;
 import org.eclipse.jetty.websocket.api.Session;
 import usecase.GrupoUseCase;
@@ -48,7 +47,7 @@ public class EndPointHandler {
         synchronized (SingletonUtils.lock){
             agregarNuevosGrupos(sala, idSala);
             eliminarGruposNuevosDeGruposActuales(sala);
-            actualizarNodosActuales(sala);
+            actualizarNombresAGruposActuales(sala);
             eliminarGrupos(sala, idSala);
             salasActivas.remove(idSala);
         }
@@ -62,8 +61,9 @@ public class EndPointHandler {
     private static void agregarNuevosGrupos(Sala sala, int idProblematica) {
         Map<String, JsonNode> gruposAgregados = sala.getGruposAgregados();
         agregarGrupos(gruposAgregados, idProblematica);
-        agregarRelacionesNuevas(gruposAgregados, gruposAgregados); //Agrega relaciones entre grupos
-        agregarRelacionesNuevas(sala.getRelacionesAgregadas(), gruposAgregados); //Agrega relaciones entre
+        agregarRelacionesGrupoNodo(sala.getRelacionesNodoAGrupoAgregadas(), gruposAgregados);
+        agregarRelacionesGrupoAGrupo(gruposAgregados); //Agrega relaciones entre
+        //TODO:agregarRelacionesNodoANodo(gruposAgregados);
     }
 
     /**
@@ -94,9 +94,10 @@ public class EndPointHandler {
 
     public final static int ID_GRUPO_INICIAL = 10000;
 
-    private static void agregarRelacionesNuevas(Map<String, JsonNode> grupos, Map<String, JsonNode> gruposCambiados){
-        System.out.println("agregarRelacionesNuevas");
-        grupos.values()
+    private static void agregarRelacionesGrupoNodo(Map<String, JsonNode> relacionesNuevas,
+                                                   Map<String, JsonNode> gruposAgregados){
+        System.out.println("agregarRelacionesGrupoNodo");
+        relacionesNuevas.values()
                 .stream()
                 .peek(elemento -> System.out.println("Peek before" + elemento.toString()))
                 .filter(elemento -> !elemento.isInt())
@@ -106,35 +107,62 @@ public class EndPointHandler {
                     String sourceString = conexion.get("data").get("source").asText();
                     String targetString = conexion.get("data").get("target").asText();
 
-                    int idPadre = gruposCambiados.get(sourceString).asInt();
-                    int id = gruposCambiados.get(targetString).asInt();
+                    int idPadre;
+                    if(gruposAgregados.get(sourceString) != null){ //El grupo es nuevo.
+                        idPadre = gruposAgregados.get(sourceString).asInt();
+                    }else{//El grupo es viejo.
+                        idPadre = Integer.parseInt(sourceString);
+                    }
+
+                    int id = Integer.parseInt(targetString);
 
                     Relacion relacion = new Relacion();
 
-                    if(idPadre >= ID_GRUPO_INICIAL){
-                        relacion.setIdGrupoPadre(idPadre);
-                    }else{
-                        relacion.setIdNodoPadre(idPadre);
-                    }
+                    relacion.setIdGrupoPadre(idPadre);
+                    relacion.setIdNodo(id);
 
-                    if(id >= ID_GRUPO_INICIAL){
-                        relacion.setIdGrupo(id);
-                    }else{
-                        relacion.setIdNodo(id);
-                    }
-
-                    if(idPadre >= ID_GRUPO_INICIAL){
-                        if(id >= ID_GRUPO_INICIAL){
-                            relacionUseCase.conectarGrupos(relacion);
-                        }else{
-                            relacionUseCase.conectarNodoYGrupo(relacion);
-                        }
-                    }else if(id <= ID_GRUPO_INICIAL){
-                        relacionUseCase.conectarNodos(relacion);
-                    }
-
+                    relacionUseCase.conectarNodoYGrupo(relacion);
                 }));
     }
+
+    private static void agregarRelacionesGrupoAGrupo(Map<String, JsonNode> gruposAgregados){
+        System.out.println("agregarRelacionesGrupoAGrupo");
+        gruposAgregados.values()
+                .stream()
+                .peek(elemento -> System.out.println("Peek before" + elemento.toString()))
+                .filter(elemento -> !elemento.isInt())
+                .filter(grupo -> grupo.get("data").get("source") != null)
+                .peek(grupo -> System.out.println("Peek after" + grupo.toString()))
+                .forEach(consumerWrapper(conexion -> {
+                    String sourceString = conexion.get("data").get("source").asText();
+                    String targetString = conexion.get("data").get("target").asText();
+
+                    int idPadre;
+
+                    if(gruposAgregados.get(sourceString) != null){ //Grupo nuevo
+                        idPadre = gruposAgregados.get(sourceString).asInt();
+                    }else{//Grupo viejo
+                        idPadre = Integer.parseInt(sourceString);
+                    }
+
+                    int id;
+
+                    if(gruposAgregados.get(targetString) != null){ //Grupo nuevo
+                        id = gruposAgregados.get(targetString).asInt();
+                    }else{//Grupo viejo
+                        id = Integer.parseInt(targetString);
+                    }
+
+                    Relacion relacion = new Relacion();
+
+                    relacion.setIdGrupoPadre(idPadre);
+                    relacion.setIdGrupo(id);
+
+                    relacionUseCase.conectarGrupos(relacion);
+                }));
+    }
+
+
 
     private static void eliminarGruposNuevosDeGruposActuales(Sala sala) {
         Map<String, JsonNode> nodos = sala.getNodos();
@@ -143,7 +171,7 @@ public class EndPointHandler {
             .forEach(nodos::remove);
     }
 
-    private static void actualizarNodosActuales(Sala sala) {
+    private static void actualizarNombresAGruposActuales(Sala sala) {
         Map<String, JsonNode> nodos = sala.getNodos();
         nodos.values()
             .stream()
@@ -159,8 +187,8 @@ public class EndPointHandler {
 
     private static void eliminarGrupos(Sala sala, int idSala) {
         Map<String, JsonNode> gruposEliminados = sala.getGruposEliminados();
+        eliminarConexiones(sala.getRelacionesNodoAGrupoEliminadas());
         eliminarConexiones(gruposEliminados);
-        eliminarConexiones(sala.getRelacionesEliminadas());
 
         //TODO: Optimizar esto un poquito
         List<Integer> idsGrupos = gruposEliminados.entrySet()
@@ -177,8 +205,8 @@ public class EndPointHandler {
                 .filter(nodo -> nodo.get("data") != null)
                 .filter(nodo -> nodo.get("data").get("source") != null)
                 .forEach(nodo -> {
-                    int id = Integer.parseInt(nodo.get("data").get("target").asText());
-                    int idPadre = Integer.parseInt(nodo.get("data").get("source").asText());
+                    int id = Integer.parseInt(nodo.get("data").get("target").asText()); //Estos ids son secuenciales, por tanto no hay problema.
+                    int idPadre = Integer.parseInt(nodo.get("data").get("source").asText()); //Pues estos son nodos viejos
 
                     Relacion relacion = new Relacion();
 

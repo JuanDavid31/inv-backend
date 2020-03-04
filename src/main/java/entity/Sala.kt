@@ -10,8 +10,8 @@ class Sala(val clientes: MutableMap<String, SesionCliente>, var nodos: MutableMa
     val gruposAgregados: MutableMap<String, JsonNode> = ConcurrentHashMap()
     val gruposEliminados: MutableMap<String, JsonNode> = ConcurrentHashMap()
 
-    val relacionesAgregadas: MutableMap<String, JsonNode> = ConcurrentHashMap()
-    val relacionesEliminadas: MutableMap<String, JsonNode> = ConcurrentHashMap()
+    val relacionesNodoAGrupoAgregadas: MutableMap<String, JsonNode> = ConcurrentHashMap()
+    val relacionesNodoAGrupoEliminadas: MutableMap<String, JsonNode> = ConcurrentHashMap()
 
     var posicionesIniciales: JsonNode? = null
 

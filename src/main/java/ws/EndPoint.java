@@ -163,7 +163,7 @@ public class EndPoint {
             data.set("source", posibleParentNode);
             data.set("target", idNode);
             conexion.set("data", data);
-            Map<String, JsonNode> conexionesEliminadas = sala.getRelacionesEliminadas();
+            Map<String, JsonNode> conexionesEliminadas = sala.getRelacionesNodoAGrupoEliminadas();
             conexionesEliminadas.put(posibleParentNode.asText() + idNode.asText(), conexion);
         }else{
             System.out.println("ParentNode else");
@@ -171,7 +171,7 @@ public class EndPoint {
             data.set("target", idNode);
             conexion.set("data", data);
             System.out.println(conexion.toString());
-            Map<String, JsonNode> conexionesAgregadas = sala.getRelacionesAgregadas();
+            Map<String, JsonNode> conexionesAgregadas = sala.getRelacionesNodoAGrupoAgregadas();
             conexionesAgregadas.put(parentNode.asText() + idNode.asText(), conexion);
         }
 
