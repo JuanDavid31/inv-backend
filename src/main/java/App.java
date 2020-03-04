@@ -115,6 +115,8 @@ public class App extends Application<ConfiguracionApp> {
         ReaccionUseCase reaccionUseCase = new ReaccionUseCase(daoReaccion);
         EscritoUseCase escritoUseCase = new EscritoUseCase(daoEscrito);
         PersonaUseCase personaUseCase = new PersonaUseCase(correoUtils, jwtUtils, daoPersona);
+        RelacionUseCase relacionUseCase = new RelacionUseCase(daoRelacion);
+        SingletonUtils.guardarRelacionUseCase(relacionUseCase);
 
         //Filtros
         final AuthFilter authFilter = new AuthFilter(jwtUtils);

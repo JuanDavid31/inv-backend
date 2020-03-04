@@ -121,6 +121,7 @@ public class EndPointHandler {
                     relacion.setIdGrupoPadre(idPadre);
                     relacion.setIdNodo(id);
 
+                    System.out.println(relacionUseCase);
                     relacionUseCase.conectarNodoYGrupo(relacion);
                 }));
     }
