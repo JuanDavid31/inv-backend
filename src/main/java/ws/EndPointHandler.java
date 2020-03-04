@@ -160,6 +160,7 @@ public class EndPointHandler {
         eliminarConexiones(gruposEliminados);
         eliminarConexiones(sala.getRelacionesEliminadas());
 
+        //TODO: Optimizar esto un poquito
         List<Integer> idsGrupos = gruposEliminados.entrySet()
                 .stream()
                 .map(entry -> Integer.parseInt(entry.getKey()))

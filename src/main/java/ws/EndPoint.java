@@ -155,15 +155,19 @@ public class EndPoint {
         JsonNode posibleParentNode = nodos.get(id).get("data").get("parent");
         ((ObjectNode)nodos.get(id).get("data")).set("parent", parentNode != null ? parentNode : NullNode.getInstance());
 
+        ObjectNode data = new ObjectMapper().createObjectNode();
         ObjectNode conexion = new ObjectMapper().createObjectNode();
         if(parentNode == null){
-            conexion.set("source", posibleParentNode);
-            conexion.set("target", idNode);
+
+            data.set("source", posibleParentNode);
+            data.set("target", idNode);
+            conexion.set("data", data);
             Map<String, JsonNode> conexionesEliminadas = sala.getRelacionesEliminadas();
             conexionesEliminadas.put(posibleParentNode.asText() + idNode.asText(), conexion);
         }else{
-            conexion.set("source", parentNode);
-            conexion.set("target", idNode);
+            data.set("source", parentNode);
+            data.set("target", idNode);
+            conexion.set("data", data);
             Map<String, JsonNode> conexionesAgregadas = sala.getRelacionesAgregadas();
             conexionesAgregadas.put(parentNode.asText() + idNode.asText(), conexion);
         }
@@ -191,7 +195,7 @@ public class EndPoint {
 
     private void enviarNodosACliente(Session session) {
         Sala sala = EndPointHandler.darSala(EndPointHandler.extraerIdSala(session));
-        HashMap<String, Object> jsonMap = new HashMap<String, Object>();
+        HashMap<String, Object> jsonMap = new HashMap<>();
 
         List<ObjectNode> solicitantes = sala.getClientes().values().stream().map(sesionCliente -> {
             ObjectNode solicitante = new ObjectMapper().createObjectNode();
