@@ -131,15 +131,13 @@ public class EndPoint {
         Sala sala = EndPointHandler.darSala(idSala);
         Map<String, JsonNode> nodos = sala.getNodos();
         JsonNode elemento = json.get("elemento");
-        if(elemento.get("data").get("source") != null){ //Es grupo
-            nodos.put(elemento.get("data").get("id").asText(), elemento);
-            sala.getGruposAgregados().put(elemento.get("data").get("id").asText(), elemento);
-        }else{ //Es edge
-            String edgeId = elemento.get("data").get("id").asText();
-
-            nodos.put(edgeId, elemento);
-            sala.getGruposAgregados().put(edgeId, elemento);
-        }
+        
+        String edgeId = elemento.get("data").get("id").asText();
+        nodos.put(edgeId, elemento);
+        
+        System.out.println("agregarElemento -> " + elemento.toString());
+        sala.getGruposAgregados().put(edgeId, elemento);
+        
         return json.toString();
     }
 

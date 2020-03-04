@@ -70,24 +70,33 @@ public class EndPointHandler {
      * @param grupos
      * @param idProblematica
      */
-    private static void agregarGrupos(Map<String, JsonNode> grupos, int idProblematica){
+    private static void agregarGrupos(Map<String, JsonNode> grupos, int idProblematica){ 
+        System.out.println("agregarGrupos(");
         grupos.values()
             .stream()
+            .peek(grupo -> System.out.println("Peek before" + grupo.toString()))
             .filter(grupo -> grupo.get("data").get("esGrupo") != null)
+            .peek(grupo -> System.out.println("Peek after" + grupo.toString()))
             .forEach(consumerWrapper(grupo -> {
+                
                 String idProvicional = grupo.get("data").get("id").asText();
                 String nombreGrupo = grupo.get("data").get("nombre").asText();
 
                 Grupo nuevoGrupo = grupoUseCase.agregarGrupo(idProblematica, new Grupo(0, nombreGrupo));
+                
+                System.out.println("Grupo agregado -> " + nuevoGrupo.getNombre());
 
                 grupos.replace(idProvicional, new IntNode(nuevoGrupo.getId()));
             }));
     }
 
     private static void agregarRelacionesNuevas(Map<String, JsonNode> grupos){
+        System.out.println("agregarRelacionesNuevas");
         grupos.values()
                 .stream()
+                .peek(grupo -> System.out.println("Peek before" + grupo.toString()))
                 .filter(grupo -> grupo.get("data").get("source") != null)
+                .peek(grupo -> System.out.println("Peek after" + grupo.toString()))
                 .forEach(consumerWrapper(conexion -> {
                     String sourceString = conexion.get("data").get("source").asText();
                     String targetString = conexion.get("data").get("target").asText();
@@ -100,12 +109,15 @@ public class EndPointHandler {
                     if(id >= 10000 && idPadre >= 10000){ //Agrego edge grupos
                         relacion.setIdGrupo(id);
                         relacion.setIdGrupoPadre(idPadre);
-
+                        
+                        
+                        System.out.println("Conecto grupos");
                         relacionUseCase.conectarGrupos(relacion);
                     }else{
                         relacion.setIdNodo(id);
                         relacion.setIdNodoPadre(idPadre);
 
+                        System.out.println("Conecto nodo y grupo");
                         relacionUseCase.conectarNodoYGrupo(relacion);
                     }
                 }));
