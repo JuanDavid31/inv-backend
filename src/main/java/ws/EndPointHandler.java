@@ -73,7 +73,9 @@ public class EndPointHandler {
      * @param idProblematica
      */
     private static void agregarGrupos(Map<String, JsonNode> gruposNuevos, int idProblematica){
-        System.out.println("agregarGrupos(");
+        System.out.println("agregarGrupos()");
+        gruposNuevos.forEach((key, value) -> System.out.println(value));
+
         gruposNuevos.values()
             .stream()
             .peek(grupo -> System.out.println("Peek before" + grupo.toString()))
@@ -96,7 +98,8 @@ public class EndPointHandler {
 
     private static void agregarRelacionesGrupoNodo(Map<String, JsonNode> relacionesNuevas,
                                                    Map<String, JsonNode> gruposAgregados){
-        System.out.println("agregarRelacionesGrupoNodo");
+        System.out.println("agregarRelacionesGrupoNodo()");
+        relacionesNuevas.forEach((s, jsonNode) -> System.out.println(jsonNode));
         relacionesNuevas.values()
                 .stream()
                 .peek(elemento -> System.out.println("Peek before" + elemento.toString()))
@@ -121,13 +124,14 @@ public class EndPointHandler {
                     relacion.setIdGrupoPadre(idPadre);
                     relacion.setIdNodo(id);
 
-                    System.out.println(relacionUseCase);
+                    System.out.println(relacion.toString());
                     relacionUseCase.conectarNodoYGrupo(relacion);
                 }));
     }
 
     private static void agregarRelacionesGrupoAGrupo(Map<String, JsonNode> gruposAgregados){
-        System.out.println("agregarRelacionesGrupoAGrupo");
+        System.out.println("agregarRelacionesGrupoAGrupo()");
+        gruposAgregados.forEach((s, jsonNode) -> System.out.println(jsonNode));
         gruposAgregados.values()
                 .stream()
                 .peek(elemento -> System.out.println("Peek before" + elemento.toString()))
@@ -159,11 +163,10 @@ public class EndPointHandler {
                     relacion.setIdGrupoPadre(idPadre);
                     relacion.setIdGrupo(id);
 
+                    System.out.println(relacion.toString());
                     relacionUseCase.conectarGrupos(relacion);
                 }));
     }
-
-
 
     private static void eliminarGruposNuevosDeGruposActuales(Sala sala) {
         Map<String, JsonNode> nodos = sala.getNodos();
@@ -201,6 +204,8 @@ public class EndPointHandler {
     }
 
     private static void eliminarConexiones(Map<String, JsonNode> elementos){
+        System.out.println("eliminarConexiones()");
+        elementos.forEach((s, jsonNode) -> System.out.println(jsonNode));
         elementos.values()
                 .stream()
                 .filter(nodo -> nodo.get("data") != null)
@@ -225,11 +230,14 @@ public class EndPointHandler {
 
                     if(idPadre >= ID_GRUPO_INICIAL){
                         if(id >= ID_GRUPO_INICIAL){
+                            System.out.println("Desconectando  grupos -> " + relacion.toString());
                             relacionUseCase.desconectarGrupos(relacion);
                         }else{
+                            System.out.println("Desconectando NodoYGrupo-> " + relacion.toString());
                             relacionUseCase.desconectarNodoYGrupo(relacion);
                         }
                     }else if(id <= ID_GRUPO_INICIAL){
+                        System.out.println("Desconectando nodos -> " + relacion.toString());
                         relacionUseCase.desconectarNodos(relacion.getIdNodo(), relacion.getIdNodoPadre());
                     }
                 });
