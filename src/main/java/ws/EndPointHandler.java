@@ -68,12 +68,12 @@ public class EndPointHandler {
     /**
      * Grupos con padre en null seran mapeados a Grupo(s), agregados a la db y con el nuevo id que se le fue asignado
      * actualizara el valor del hashmap grupos por un nodo simple con el nuevo id.
-     * @param grupos
+     * @param gruposNuevos
      * @param idProblematica
      */
-    private static void agregarGrupos(Map<String, JsonNode> grupos, int idProblematica){ 
+    private static void agregarGrupos(Map<String, JsonNode> gruposNuevos, int idProblematica){
         System.out.println("agregarGrupos(");
-        grupos.values()
+        gruposNuevos.values()
             .stream()
             .peek(grupo -> System.out.println("Peek before" + grupo.toString()))
             .filter(grupo -> grupo.get("data").get("esGrupo") != null)
@@ -87,7 +87,7 @@ public class EndPointHandler {
                 
                 System.out.println("Grupo agregado -> " + nuevoGrupo.getNombre());
 
-                grupos.replace(idProvicional, new IntNode(nuevoGrupo.getId()));
+                gruposNuevos.replace(idProvicional, new IntNode(nuevoGrupo.getId()));
             }));
     }
 
@@ -97,7 +97,8 @@ public class EndPointHandler {
         System.out.println("agregarRelacionesNuevas");
         grupos.values()
                 .stream()
-                .peek(grupo -> System.out.println("Peek before" + grupo.toString()))
+                .peek(elemento -> System.out.println("Peek before" + elemento.toString()))
+                .filter(elemento -> !elemento.isInt())
                 .filter(grupo -> grupo.get("data").get("source") != null)
                 .peek(grupo -> System.out.println("Peek after" + grupo.toString()))
                 .forEach(consumerWrapper(conexion -> {
