@@ -3,6 +3,7 @@ package ws;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.IntNode;
 
+import com.google.api.client.json.Json;
 import entity.*;
 import org.eclipse.jetty.websocket.api.Session;
 import usecase.GrupoUseCase;
@@ -61,8 +62,8 @@ public class EndPointHandler {
     private static void agregarNuevosGrupos(Sala sala, int idProblematica) {
         Map<String, JsonNode> gruposAgregados = sala.getGruposAgregados();
         agregarGrupos(gruposAgregados, idProblematica);
-        agregarRelacionesNuevas(gruposAgregados); //Agrega relaciones entre grupos
-        agregarRelacionesNuevas(sala.getRelacionesAgregadas()); //Agrega relaciones entre
+        agregarRelacionesNuevas(gruposAgregados, gruposAgregados); //Agrega relaciones entre grupos
+        agregarRelacionesNuevas(sala.getRelacionesAgregadas(), gruposAgregados); //Agrega relaciones entre
     }
 
     /**
@@ -93,7 +94,7 @@ public class EndPointHandler {
 
     public final static int ID_GRUPO_INICIAL = 10000;
 
-    private static void agregarRelacionesNuevas(Map<String, JsonNode> grupos){
+    private static void agregarRelacionesNuevas(Map<String, JsonNode> grupos, Map<String, JsonNode> gruposCambiados){
         System.out.println("agregarRelacionesNuevas");
         grupos.values()
                 .stream()
@@ -105,8 +106,8 @@ public class EndPointHandler {
                     String sourceString = conexion.get("data").get("source").asText();
                     String targetString = conexion.get("data").get("target").asText();
 
-                    int idPadre = grupos.get(sourceString).asInt();
-                    int id = grupos.get(targetString).asInt();
+                    int idPadre = gruposCambiados.get(sourceString).asInt();
+                    int id = gruposCambiados.get(targetString).asInt();
 
                     Relacion relacion = new Relacion();
 
