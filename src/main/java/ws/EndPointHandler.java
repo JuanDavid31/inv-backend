@@ -85,7 +85,7 @@ public class EndPointHandler {
 
                 Grupo nuevoGrupo = grupoUseCase.agregarGrupo(idProblematica, new Grupo(0, nombreGrupo));
                 
-                System.out.println("Grupo agregado -> " + nuevoGrupo.getNombre());
+                System.out.println("Grupo agregado -> Id: " + nuevoGrupo.getId() + " Nombre: " + nuevoGrupo.getNombre());
 
                 gruposNuevos.replace(idProvicional, new IntNode(nuevoGrupo.getId()));
             }));

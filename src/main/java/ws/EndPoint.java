@@ -142,6 +142,7 @@ public class EndPoint {
     }
 
     private String moverElemento(JsonNode json, Session session) {
+        System.out.println("Mover elemento");
         int idSala = EndPointHandler.extraerIdSala(session);
         Sala sala = EndPointHandler.darSala(idSala);
         Map<String, JsonNode> nodos = sala.getNodos();
@@ -158,16 +159,18 @@ public class EndPoint {
         ObjectNode data = new ObjectMapper().createObjectNode();
         ObjectNode conexion = new ObjectMapper().createObjectNode();
         if(parentNode == null){
-
+            System.out.println("ParentNode === null");
             data.set("source", posibleParentNode);
             data.set("target", idNode);
             conexion.set("data", data);
             Map<String, JsonNode> conexionesEliminadas = sala.getRelacionesEliminadas();
             conexionesEliminadas.put(posibleParentNode.asText() + idNode.asText(), conexion);
         }else{
+            System.out.println("ParentNode else");
             data.set("source", parentNode);
             data.set("target", idNode);
             conexion.set("data", data);
+            System.out.println(conexion.toString());
             Map<String, JsonNode> conexionesAgregadas = sala.getRelacionesAgregadas();
             conexionesAgregadas.put(parentNode.asText() + idNode.asText(), conexion);
         }
