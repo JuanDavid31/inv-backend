@@ -23,4 +23,15 @@ class Relacion() {
     @get:ColumnName("c_fase")
     var fase: Int? = null
 
+
+    override fun toString(): String {
+        return "Relacion{" +
+            "id='" + id + '\'' +
+            ", idNodo='" + idNodo + '\'' +
+            ", idNodoPadre=" + idNodoPadre + '\'' +
+            ", idGrupo=" + idGrupo + '\'' +
+            ", idGrupoPadre=" + idGrupoPadre +
+            '}';
+    }
+
 }

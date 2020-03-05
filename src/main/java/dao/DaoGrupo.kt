@@ -9,7 +9,9 @@ class DaoGrupo(private val jdbi: Jdbi) {
 
     fun darGrupos(idProblematica: Int): MutableList<Grupo> {
         return jdbi.withHandle<MutableList<Grupo>, RuntimeException> {
-            it.createQuery("SELECT * FROM GRUPO WHERE c_id_problematica = :idProblematica")
+            it.createQuery("""select g.*, r.c_id_grupo_padre as c_id_padre
+                from grupo g left join relacion r on g.c_id = r.c_id_grupo
+                where c_id_problematica = :idProblematica""")
                 .bind("idProblematica", idProblematica)
                 .mapToBean(Grupo::class.java)
                 .list()

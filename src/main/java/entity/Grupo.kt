@@ -21,13 +21,13 @@ class Grupo {
         idPadre = null
     }
 
-    constructor(nombre: String){
-        this.nombre = nombre;
+    override fun toString(): String {
+        return "Relacion{" +
+                "id='" + id + '\'' +
+                ", idPadre='" + idPadre + '\'' +
+                ", nombre=" + nombre + '\'' +
+                ", idProblematica=" + idProblematica +
+                '}';
     }
 
-    constructor(id: Int, nombre: String, idPadre: Int){
-        this.id = id
-        this.nombre = nombre
-        this.idPadre = idPadre
-    }
 }

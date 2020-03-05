@@ -134,15 +134,13 @@ public class EndPoint {
         
         String edgeId = elemento.get("data").get("id").asText();
         nodos.put(edgeId, elemento);
-        
-        System.out.println("agregarElemento -> " + elemento.toString());
+
         sala.getGruposAgregados().put(edgeId, elemento);
         
         return json.toString();
     }
 
     private String moverElemento(JsonNode json, Session session) {
-        System.out.println("Mover elemento");
         int idSala = EndPointHandler.extraerIdSala(session);
         Sala sala = EndPointHandler.darSala(idSala);
         Map<String, JsonNode> nodos = sala.getNodos();
@@ -159,18 +157,15 @@ public class EndPoint {
         ObjectNode data = new ObjectMapper().createObjectNode();
         ObjectNode conexion = new ObjectMapper().createObjectNode();
         if(parentNode == null){
-            System.out.println("ParentNode === null");
             data.set("source", posibleParentNode);
             data.set("target", idNode);
             conexion.set("data", data);
             Map<String, JsonNode> conexionesEliminadas = sala.getRelacionesNodoAGrupoEliminadas();
             conexionesEliminadas.put(posibleParentNode.asText() + idNode.asText(), conexion);
         }else{
-            System.out.println("ParentNode else");
             data.set("source", parentNode);
             data.set("target", idNode);
             conexion.set("data", data);
-            System.out.println(conexion.toString());
             Map<String, JsonNode> conexionesAgregadas = sala.getRelacionesNodoAGrupoAgregadas();
             conexionesAgregadas.put(parentNode.asText() + idNode.asText(), conexion);
         }
@@ -190,8 +185,10 @@ public class EndPoint {
         if(sala.getGruposAgregados().containsKey(id)){
             sala.getGruposAgregados().remove(id);
         }else{
-            sala.getGruposEliminados().put(id, new ObjectMapper().createObjectNode());
+            sala.getGruposEliminados().put(id, elemento);
         }
+
+        //TODO: Agregar logica para relaicones eliminadas.
 
         return json.toString();
     }

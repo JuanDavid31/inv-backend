@@ -18,7 +18,7 @@ class GrupoUseCase(val daoGrupo: DaoGrupo, val daoReaccion: DaoReaccion, val nod
                     "esGrupo" to true)
         }.map { ObjectMapper().valueToTree<JsonNode>(hashMapOf("data" to it)) }
 
-        val conexionesJson: List<JsonNode> = grupos.filter { it.idPadre != null }
+        val conexionesJson: List<JsonNode> = grupos.filter { it.idPadre != null } //TODO: Se puede reemplazar por una busqueda en la tabla Relación.
                 .map {
                     val data = hashMapOf("id" to "${it.idPadre}${it.id}",
                             "source" to it.idPadre,

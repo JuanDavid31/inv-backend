@@ -32,9 +32,9 @@ class DaoRelacion(val jdbi: Jdbi) {
 
     fun eliminarNodoAGrupo(relacion: Relacion) =
         jdbi.withHandle<Boolean, Exception> {
-            it.createUpdate("DELETE FROM RELACION WHERE c_id_nodo = :idNodo AND c_id_grupo_padre is not null")
-            .bindBean(relacion)
-            .execute() > 0
+            it.createUpdate("DELETE FROM RELACION WHERE c_id_nodo = :idNodo AND c_id_grupo_padre = :idGrupoPadre")
+                .bindBean(relacion)
+                .execute() > 0
         }
 
     fun agregarGrupoAGrupo(relacion: Relacion): Boolean =
