@@ -3,6 +3,7 @@ package ws;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.IntNode;
 
+import com.google.api.client.json.Json;
 import entity.*;
 import org.eclipse.jetty.websocket.api.Session;
 import usecase.GrupoUseCase;
@@ -46,7 +47,6 @@ public class EndPointHandler {
         if(sala.getClientes().size() != 0)return;
         synchronized (SingletonUtils.lock){
             agregarNuevosGrupos(sala, idSala);
-            eliminarGruposNuevosDeGruposActuales(sala);
             actualizarNombresAGruposActuales(sala);
             eliminarGrupos(sala, idSala);
             salasActivas.remove(idSala);
@@ -62,8 +62,10 @@ public class EndPointHandler {
         Map<String, JsonNode> gruposAgregados = sala.getGruposAgregados();
         agregarGrupos(gruposAgregados, idProblematica);
         agregarRelacionesGrupoNodo(sala.getRelacionesNodoAGrupoAgregadas(), gruposAgregados);
-        agregarRelacionesGrupoAGrupo(gruposAgregados);
         agregarRelacionesNodoANodo(gruposAgregados);
+        agregarRelacionesGrupoAGrupo(gruposAgregados);
+
+        eliminarGruposNuevosDeGruposActuales(gruposAgregados, sala.getNodos());
     }
 
     /**
@@ -97,18 +99,18 @@ public class EndPointHandler {
 
     public final static int ID_GRUPO_INICIAL = 10000;
 
-    private static void agregarRelacionesGrupoNodo(Map<String, JsonNode> relacionesNuevas,
-                                                   Map<String, JsonNode> gruposAgregados){
+    private static void agregarRelacionesGrupoNodo(Map<String, JsonNode> relacionesGrupoANodoNuevas, Map<String, JsonNode> gruposAgregados){
         System.out.println("agregarRelacionesGrupoNodo()");
-        relacionesNuevas.forEach((s, jsonNode) -> System.out.println(jsonNode));
-        relacionesNuevas.values()
+        relacionesGrupoANodoNuevas.forEach((s, jsonNode) -> System.out.println(jsonNode));
+        relacionesGrupoANodoNuevas.values()
                 .stream()
                 .filter(elemento -> !elemento.isInt())
                 .filter(grupo -> grupo.get("data").get("source") != null)
-                .filter(grupo -> grupo.get("data").get("source").asInt() >= ID_GRUPO_INICIAL && grupo.get("data").get("target").asInt() < ID_GRUPO_INICIAL)
+                //.filter(grupo -> grupo.get("data").get("target").isInt())
+                .filter(grupo -> grupo.get("data").get("target").asInt() < ID_GRUPO_INICIAL)
                 .forEach(consumerWrapper(conexion -> {
                     String sourceString = conexion.get("data").get("source").asText();
-                    String targetString = conexion.get("data").get("target").asText();
+                    int id = conexion.get("data").get("target").asInt();
 
                     int idPadre;
                     if(gruposAgregados.get(sourceString) != null){ //El grupo es nuevo.
@@ -116,8 +118,6 @@ public class EndPointHandler {
                     }else{//El grupo es viejo.
                         idPadre = Integer.parseInt(sourceString);
                     }
-
-                    int id = Integer.parseInt(targetString);
 
                     Relacion relacion = new Relacion();
 
@@ -130,20 +130,55 @@ public class EndPointHandler {
                 }));
     }
 
+    private static void agregarRelacionesNodoANodo(Map<String, JsonNode> gruposAgregados){
+        System.out.println("agregarRElaconesNodoANodo()");
+        gruposAgregados.values()
+                .stream()
+                .filter(elemento -> !elemento.isInt())
+                .filter(grupo -> grupo.get("data").get("source") != null)
+                .peek(grupo -> System.out.println(grupo.get("data").get("source").isNumber() && grupo.get("data").get("target").canConvertToInt()))
+                .filter(grupo -> grupo.get("data").get("source").canConvertToInt() && grupo.get("data").get("target").canConvertToInt())
+                .filter(grupo -> grupo.get("data").get("source").asInt() < ID_GRUPO_INICIAL && grupo.get("data").get("target").asInt() < ID_GRUPO_INICIAL)
+                .forEach(System.out::println);
+
+
+
+        gruposAgregados.values()
+                .stream()
+                .filter(elemento -> !elemento.isInt())
+                .filter(grupo -> grupo.get("data").get("source") != null)
+                .filter(grupo -> isNumeric(grupo.get("data").get("source").asText()) && isNumeric(grupo.get("data").get("target").asText()))
+                .filter(grupo -> grupo.get("data").get("source").asInt() < ID_GRUPO_INICIAL && grupo.get("data").get("target").asInt() < ID_GRUPO_INICIAL)
+                .forEach(consumerWrapper(conexion -> {
+                    int idPadre = conexion.get("data").get("source").asInt();
+                    int id = conexion.get("data").get("target").asInt();
+
+
+                    Relacion relacion = new Relacion();
+
+                    relacion.setIdNodoPadre(idPadre);
+                    relacion.setIdNodo(id);
+                    relacion.setFase(2);
+
+                    boolean exito = relacionUseCase.conectarNodos(relacion);
+
+                    System.out.println(exito + " " + relacion.toString());
+                    gruposAgregados.remove(conexion.get("data").get("id").asText());
+                }));
+    }
+
     private static void agregarRelacionesGrupoAGrupo(Map<String, JsonNode> gruposAgregados){
         System.out.println("agregarRelacionesGrupoAGrupo()");
         gruposAgregados.values()
                 .stream()
                 .filter(elemento -> !elemento.isInt())
                 .filter(grupo -> grupo.get("data").get("source") != null)
-                .filter(grupo -> grupo.get("data").get("source").asInt() >= ID_GRUPO_INICIAL && grupo.get("data").get("target").asInt() >= ID_GRUPO_INICIAL)
                 .forEach(System.out::println);
 
         gruposAgregados.values()
                 .stream()
                 .filter(elemento -> !elemento.isInt())
                 .filter(grupo -> grupo.get("data").get("source") != null)
-                .filter(grupo -> grupo.get("data").get("source").asInt() >= ID_GRUPO_INICIAL && grupo.get("data").get("target").asInt() >= ID_GRUPO_INICIAL)
                 .forEach(consumerWrapper(conexion -> {
                     String sourceString = conexion.get("data").get("source").asText();
                     String targetString = conexion.get("data").get("target").asText();
@@ -175,41 +210,10 @@ public class EndPointHandler {
                 }));
     }
 
-    private static void agregarRelacionesNodoANodo(Map<String, JsonNode> gruposAgregados){
-        System.out.println("agregarRElaconesNodoANodo()");
-        gruposAgregados.values()
-                .stream()
-                .filter(elemento -> !elemento.isInt())
-                .filter(grupo -> grupo.get("data").get("source") != null)
-                .filter(grupo -> grupo.get("data").get("source").asInt() < ID_GRUPO_INICIAL && grupo.get("data").get("target").asInt() < ID_GRUPO_INICIAL)
-                .forEach(System.out::println);
-
-        gruposAgregados.values()
-                .stream()
-                .filter(elemento -> !elemento.isInt())
-                .filter(grupo -> grupo.get("data").get("source") != null)
-                .filter(grupo -> grupo.get("data").get("source").asInt() < ID_GRUPO_INICIAL && grupo.get("data").get("target").asInt() < ID_GRUPO_INICIAL)
-                .forEach(consumerWrapper(conexion -> {
-                    int idPadre = conexion.get("data").get("source").asInt();
-                    int id = conexion.get("data").get("target").asInt();
-
-
-                    Relacion relacion = new Relacion();
-
-                    relacion.setIdNodoPadre(idPadre);
-                    relacion.setIdNodo(id);
-                    relacion.setFase(2);
-
-                    boolean exito = relacionUseCase.conectarNodos(relacion);
-                    System.out.println(exito + " " + relacion.toString());
-                }));
-    }
-
-    private static void eliminarGruposNuevosDeGruposActuales(Sala sala) {
-        Map<String, JsonNode> nodos = sala.getNodos();
-        sala.getGruposAgregados()
-            .keySet()
-            .forEach(nodos::remove);
+    private static void eliminarGruposNuevosDeGruposActuales(Map<String, JsonNode> gruposAgregados, Map<String, JsonNode> nodos) {
+        gruposAgregados
+                .keySet()
+                .forEach(nodos::remove);
     }
 
     private static void actualizarNombresAGruposActuales(Sala sala) {
@@ -329,5 +333,16 @@ public class EndPointHandler {
                 ex.printStackTrace();
             }
         };
+    }
+
+    private static boolean isNumeric(final String str) {
+
+        // null or empty
+        if (str == null || str.length() == 0) {
+            return false;
+        }
+
+        return str.chars().allMatch(Character::isDigit);
+
     }
 }
