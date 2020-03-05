@@ -62,8 +62,8 @@ public class EndPointHandler {
         Map<String, JsonNode> gruposAgregados = sala.getGruposAgregados();
         agregarGrupos(gruposAgregados, idProblematica);
         agregarRelacionesGrupoNodo(sala.getRelacionesNodoAGrupoAgregadas(), gruposAgregados);
-        agregarRelacionesGrupoAGrupo(gruposAgregados); //Agrega relaciones entre
-        //TODO:agregarRelacionesNodoANodo(gruposAgregados);
+        agregarRelacionesGrupoAGrupo(gruposAgregados);
+        agregarRelacionesNodoANodo(gruposAgregados);
     }
 
     /**
@@ -105,6 +105,7 @@ public class EndPointHandler {
                 .stream()
                 .filter(elemento -> !elemento.isInt())
                 .filter(grupo -> grupo.get("data").get("source") != null)
+                .filter(grupo -> grupo.get("data").get("source").asInt() >= ID_GRUPO_INICIAL && grupo.get("data").get("target").asInt() < ID_GRUPO_INICIAL)
                 .forEach(consumerWrapper(conexion -> {
                     String sourceString = conexion.get("data").get("source").asText();
                     String targetString = conexion.get("data").get("target").asText();
@@ -135,12 +136,14 @@ public class EndPointHandler {
                 .stream()
                 .filter(elemento -> !elemento.isInt())
                 .filter(grupo -> grupo.get("data").get("source") != null)
+                .filter(grupo -> grupo.get("data").get("source").asInt() >= ID_GRUPO_INICIAL && grupo.get("data").get("target").asInt() >= ID_GRUPO_INICIAL)
                 .forEach(System.out::println);
 
         gruposAgregados.values()
                 .stream()
                 .filter(elemento -> !elemento.isInt())
                 .filter(grupo -> grupo.get("data").get("source") != null)
+                .filter(grupo -> grupo.get("data").get("source").asInt() >= ID_GRUPO_INICIAL && grupo.get("data").get("target").asInt() >= ID_GRUPO_INICIAL)
                 .forEach(consumerWrapper(conexion -> {
                     String sourceString = conexion.get("data").get("source").asText();
                     String targetString = conexion.get("data").get("target").asText();
@@ -172,6 +175,36 @@ public class EndPointHandler {
                 }));
     }
 
+    private static void agregarRelacionesNodoANodo(Map<String, JsonNode> gruposAgregados){
+        System.out.println("agregarRElaconesNodoANodo()");
+        gruposAgregados.values()
+                .stream()
+                .filter(elemento -> !elemento.isInt())
+                .filter(grupo -> grupo.get("data").get("source") != null)
+                .filter(grupo -> grupo.get("data").get("source").asInt() < ID_GRUPO_INICIAL && grupo.get("data").get("target").asInt() < ID_GRUPO_INICIAL)
+                .forEach(System.out::println);
+
+        gruposAgregados.values()
+                .stream()
+                .filter(elemento -> !elemento.isInt())
+                .filter(grupo -> grupo.get("data").get("source") != null)
+                .filter(grupo -> grupo.get("data").get("source").asInt() < ID_GRUPO_INICIAL && grupo.get("data").get("target").asInt() < ID_GRUPO_INICIAL)
+                .forEach(consumerWrapper(conexion -> {
+                    int idPadre = conexion.get("data").get("source").asInt();
+                    int id = conexion.get("data").get("target").asInt();
+
+
+                    Relacion relacion = new Relacion();
+
+                    relacion.setIdNodoPadre(idPadre);
+                    relacion.setIdNodo(id);
+                    relacion.setFase(2);
+
+                    boolean exito = relacionUseCase.conectarNodos(relacion);
+                    System.out.println(exito + " " + relacion.toString());
+                }));
+    }
+
     private static void eliminarGruposNuevosDeGruposActuales(Sala sala) {
         Map<String, JsonNode> nodos = sala.getNodos();
         sala.getGruposAgregados()
@@ -198,7 +231,6 @@ public class EndPointHandler {
         eliminarConexiones(sala.getRelacionesNodoAGrupoEliminadas());
         eliminarConexiones(gruposEliminados);
 
-        //TODO: Optimizar esto un poquito
         List<Integer> idsGrupos = gruposEliminados.entrySet()
                 .stream()
                 .filter(entry -> entry.getValue().get("data") != null)
