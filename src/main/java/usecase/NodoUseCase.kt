@@ -21,15 +21,22 @@ class NodoUseCase(val daoNodo: DaoNodo, val daoRelacion: DaoRelacion) {
     }
 
     fun darNodosPorProblematica(idProblematica: Int): List<JsonNode> {
-        val nodosJson = daoNodo.darNodosPorProblematica(idProblematica).map {
-            val data = hashMapOf("id" to it.id,
-                    "nombre" to it.nombre,
-                    "parent" to it.idGrupo,
-                    "urlFoto" to it.urlFoto,
-                    "nombreCreador" to it.nombreCreador)
+        val nodosJson = daoNodo.darNodosPorProblematica(idProblematica)
+                .map {
+                    if (it.idPadre == 1) {
+                        it.idPadre = 0
+                    }
+                    it
+                }
+                .map {
+                    val data = hashMapOf("id" to it.id,
+                            "nombre" to it.nombre,
+                            "parent" to it.idGrupo,
+                            "urlFoto" to it.urlFoto,
+                            "nombreCreador" to it.nombreCreador)
 
-            hashMapOf("data" to data)
-        }.map { ObjectMapper().valueToTree<JsonNode>(it) }
+                    hashMapOf("data" to data)
+                }.map { ObjectMapper().valueToTree<JsonNode>(it) }
 
         val conexionesJson: List<JsonNode> = daoNodo.darConexionesSegundaFase(idProblematica)
                 .filter { it.idPadre != null }
@@ -43,5 +50,4 @@ class NodoUseCase(val daoNodo: DaoNodo, val daoRelacion: DaoRelacion) {
         return nodosJson + conexionesJson
     }
 
-    fun actualizarGrupoNodo(nodo: Nodo) = daoNodo.actualizarGrupoNodo(nodo)
 }
