@@ -7,6 +7,7 @@ import dao.DaoRelacion
 import entity.Mensaje
 import entity.Error
 import entity.Nodo
+import entity.Relacion
 
 class NodoUseCase(val daoNodo: DaoNodo, val daoRelacion: DaoRelacion) {
 
@@ -21,22 +22,23 @@ class NodoUseCase(val daoNodo: DaoNodo, val daoRelacion: DaoRelacion) {
     }
 
     fun darNodosPorProblematica(idProblematica: Int): List<JsonNode> {
-        val nodosJson = daoNodo.darNodosPorProblematica(idProblematica)
-                .map {
-                    if (it.idPadre == 1) {
-                        it.idPadre = 0
-                    }
-                    it
-                }
-                .map {
-                    val data = hashMapOf("id" to it.id,
-                            "nombre" to it.nombre,
-                            "parent" to it.idGrupo,
-                            "urlFoto" to it.urlFoto,
-                            "nombreCreador" to it.nombreCreador)
+        val relacionesNodoGrupo: List<Relacion> = daoRelacion.darRelacionesNodoGrupoPorProblematica(idProblematica)
+        val nodos = daoNodo.darNodosPorProblematica(idProblematica)
 
-                    hashMapOf("data" to data)
-                }.map { ObjectMapper().valueToTree<JsonNode>(it) }
+        relacionesNodoGrupo.forEach {
+            val nodoEncontrado = nodos.find { nodo -> nodo.id == it.idNodo }
+            nodoEncontrado?.idGrupo = it.idGrupoPadre!!
+        }
+
+        val nodosJson = nodos.map {
+                val data = hashMapOf("id" to it.id,
+                        "nombre" to it.nombre,
+                        "parent" to it.idGrupo,
+                        "urlFoto" to it.urlFoto,
+                        "nombreCreador" to it.nombreCreador)
+
+                hashMapOf("data" to data)
+            }.map { ObjectMapper().valueToTree<JsonNode>(it) }
 
         val conexionesJson: List<JsonNode> = daoNodo.darConexionesSegundaFase(idProblematica)
                 .filter { it.idPadre != null }
