@@ -157,17 +157,30 @@ public class EndPoint {
         ObjectNode data = new ObjectMapper().createObjectNode();
         ObjectNode conexion = new ObjectMapper().createObjectNode();
         if(parentNode == null){
-            data.set("source", posibleParentNode);
-            data.set("target", idNode);
-            conexion.set("data", data);
-            Map<String, JsonNode> conexionesEliminadas = sala.getRelacionesNodoAGrupoEliminadas();
-            conexionesEliminadas.put(posibleParentNode.asText() + idNode.asText(), conexion);
+            String idNuevaConexionEliminada = posibleParentNode.asText() + idNode.asText();
+            if(sala.getRelacionesNodoAGrupoAgregadas().get(idNuevaConexionEliminada) != null){
+                sala.getRelacionesNodoAGrupoAgregadas().remove(idNuevaConexionEliminada);
+            }else{
+                data.set("source", posibleParentNode);
+                data.set("target", idNode);
+                conexion.set("data", data);
+                Map<String, JsonNode> conexionesEliminadas = sala.getRelacionesNodoAGrupoEliminadas();
+                conexionesEliminadas.put(idNuevaConexionEliminada, conexion);
+            }
+            System.out.println("Agrego relación nodo a grupo eliminada");
         }else{
+            String idNuevaConexionAgregada = parentNode.asText() + idNode.asText();
+            if(sala.getRelacionesNodoAGrupoEliminadas().get(idNuevaConexionAgregada) != null) {
+                sala.getRelacionesNodoAGrupoEliminadas().remove(idNuevaConexionAgregada);
+            }
+
             data.set("source", parentNode);
             data.set("target", idNode);
             conexion.set("data", data);
             Map<String, JsonNode> conexionesAgregadas = sala.getRelacionesNodoAGrupoAgregadas();
-            conexionesAgregadas.put(parentNode.asText() + idNode.asText(), conexion);
+            conexionesAgregadas.put(idNuevaConexionAgregada, conexion);
+
+            System.out.println("Agrego relación nodo a grupo NUEVA");
         }
 
         return json.toString();
