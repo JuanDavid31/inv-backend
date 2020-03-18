@@ -45,9 +45,11 @@ class DaoGrupo(private val jdbi: Jdbi) {
     fun darGruposConReacciones(idProblematica: Int): List<GrupoConReaccion> {
         return jdbi.withHandle<List<GrupoConReaccion>, RuntimeException> {
             it.createQuery("""
-                SELECT c_id, d_nombre, c_id_padre, V.negativa, V.neutra, V.positiva FROM GRUPO INNER JOIN
-                VISTA_CONTEO_REACCIONES V on V.c_id_grupo = c_id
-                WHERE c_id_problematica = :idProblematica
+                select g.c_id, g.d_nombre, r.c_id_grupo_padre as c_id_padre, vcr.negativa, vcr.negativa, vcr.positiva  
+                from grupo g
+                inner join vista_conteo_reacciones vcr on c_id_grupo = g.c_id
+                left join relacion r on g.c_id = r.c_id_grupo
+                where c_id_problematica = :idProblematica
                 """.trimIndent())
                 .bind("idProblematica", idProblematica)
                 .mapToBean(GrupoConReaccion::class.java)

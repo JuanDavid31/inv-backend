@@ -11,11 +11,11 @@ class GrupoConReaccion {
     @get:ColumnName("d_nombre")
     var nombre: String? = null
     @get:ColumnName("negativa")
-    var reaccionesNegativas: Int? = null
+    var reaccionesNegativas: Int = 0
     @get:ColumnName("neutra")
-    var reaccionesNeutras: Int? = null
+    var reaccionesNeutras: Int = 0
     @get:ColumnName("positiva")
-    var reaccionesPositivas: Int? = null
+    var reaccionesPositivas: Int = 0
     var esGrupo: Boolean = true
 
     constructor()
