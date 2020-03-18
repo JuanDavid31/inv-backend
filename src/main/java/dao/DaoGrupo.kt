@@ -45,7 +45,7 @@ class DaoGrupo(private val jdbi: Jdbi) {
     fun darGruposConReacciones(idProblematica: Int): List<GrupoConReaccion> {
         return jdbi.withHandle<List<GrupoConReaccion>, RuntimeException> {
             it.createQuery("""
-                select g.c_id, g.d_nombre, r.c_id_grupo_padre as c_id_padre, vcr.negativa, vcr.negativa, vcr.positiva  
+                select g.c_id, g.d_nombre, r.c_id_grupo_padre as c_id_padre, vcr.negativa, vcr.neutra, vcr.positiva  
                 from grupo g
                 inner join vista_conteo_reacciones vcr on c_id_grupo = g.c_id
                 left join relacion r on g.c_id = r.c_id_grupo
