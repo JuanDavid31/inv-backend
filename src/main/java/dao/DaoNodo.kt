@@ -56,15 +56,11 @@ class DaoNodo(private val jdbi: Jdbi) {
     fun darNodosPorProblematica(idProblematica: Int): List<Nodo>{
         return jdbi.withHandle<List<Nodo>, Exception> {
             try {
-                it.createQuery("""select N.c_id, N.a_nombre, N.a_url_foto, r.c_id_grupo_padre as c_id_grupo,
-                concat(p.d_nombres, ' ', p.d_apellidos) as "nombreCreador"
+                it.createQuery("""select N.c_id, N.a_nombre, N.a_url_foto, concat(p.d_nombres, ' ', p.d_apellidos) as "nombreCreador"
                 from nodo n
                 inner join persona_problematica pp on n.a_id_pers_prob = pp.a_id
                 inner join persona p on pp.a_email = p.a_email
-                left join relacion r on n.c_id = r.c_id_nodo
-                left join grupo g on r.c_id_grupo_padre = g.c_id
-                where pp.c_id_problematica = :idProblematica
-                AND (r.c_fase = 2 Or r.c_fase is null)""")
+                where pp.c_id_problematica = :idProblematica""")
                 .bind("idProblematica", idProblematica)
                 .mapToBean(Nodo::class.java)
                 .list()

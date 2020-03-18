@@ -22,7 +22,7 @@ class Grupo {
     }
 
     override fun toString(): String {
-        return "Relacion{" +
+        return "Grupo{" +
                 "id='" + id + '\'' +
                 ", idPadre='" + idPadre + '\'' +
                 ", nombre=" + nombre + '\'' +

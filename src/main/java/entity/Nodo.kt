@@ -21,14 +21,20 @@ class Nodo {
 
     constructor(){}
 
-    constructor(id: Int, idGrupo: Int?){
-        this.id = id
-        this.idGrupo = idGrupo
-    }
-
     constructor(nombre: String, email: String, idProblematica: Int){
         this.nombre = nombre
         this.email = email
         this.idProblematica = idProblematica
     }
+
+    override fun toString(): String {
+        return "Nodo{" +
+                "id='" + id + '\'' +
+                ", idPadre='" + idPadre + '\'' +
+                ", nombre=" + nombre + '\'' +
+                ", idProblematica=" + idProblematica + '\'' +
+                ", urlFoto=" + urlFoto +
+                '}';
+    }
+
 }

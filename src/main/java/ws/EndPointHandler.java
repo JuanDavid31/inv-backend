@@ -33,6 +33,21 @@ public class EndPointHandler {
 
         if(sala.getClientes().size() != 1) return; // Es el primer cliente en conectarse
         synchronized (SingletonUtils.lock){
+            System.out.println("Clientes");
+            System.out.println(sala.getClientes());
+            System.out.println("Grupos agregados");
+            System.out.println(sala.getGruposAgregados());
+            System.out.println("Grupos eliminados");
+            System.out.println(sala.getGruposEliminados());
+            System.out.println("Posiciones iniciales");
+            System.out.println(sala.getPosicionesIniciales());
+            System.out.println("Nodos");
+            System.out.println(sala.getNodos());
+            System.out.println("NodoGrupo agregadas");
+            System.out.println(sala.getRelacionesNodoAGrupoAgregadas());
+            System.out.println("NodoGrupo eliminadas");
+            System.out.println(sala.getRelacionesNodoAGrupoEliminadas());
+
             List<JsonNode> grupos = grupoUseCase.darGrupos(idProblematica);
             List<JsonNode> nodos = nodoUseCase.darNodosPorProblematica(idProblematica);
             nodos.addAll(grupos);

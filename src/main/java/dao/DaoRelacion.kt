@@ -51,4 +51,18 @@ class DaoRelacion(val jdbi: Jdbi) {
             .execute() > 0
         }
 
+    fun darRelacionesNodoGrupoPorProblematica(idProblematica: Int): List<Relacion> =
+        jdbi.withHandle<List<Relacion>, Exception> {
+            it.createQuery("""select r.* from
+            grupo g inner join relacion r on g.c_id = r.c_id_grupo_padre
+            where c_id_problematica = :idProblematica
+            AND r.c_id_nodo is not null 
+            AND r.c_id_nodo_padre is null
+            AND r.c_id_grupo is null
+            AND c_fase = 2 """.trimIndent())
+            .bind("idProblematica", idProblematica)
+            .mapToBean(Relacion::class.java)
+            .list()
+        }
+
 }
