@@ -6,7 +6,7 @@ adminPass: ${ADMIN_PASS}
 
 neverBounceKey: ${NEVER_BOUNCE_API_KEY}
 
-# Database settings..
+# Database settings.
 database:
 
   # the name of your JDBC driver
